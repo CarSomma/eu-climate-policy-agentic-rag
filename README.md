@@ -8,14 +8,15 @@ A retrieval-augmented generation (RAG) system that helps students and early-stag
 - [What It Does](#what-it-does)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
+- [Usage](#usage)
 
 ## Further Documentation
 
-- [docs/pipeline.md](docs/pipeline.md) running the document pipeline and ingestion
-- [docs/notebooks.md](docs/notebooks.md) available notebooks
-- [docs/package-structure.md](docs/package-structure.md) codebase layout and key modules
-- [docs/data.md](docs/data.md) data stages and usage examples
-- [docs/tests.md](docs/tests.md) running the test suite
+- [docs/pipeline.md](docs/pipeline.md): running the document pipeline and ingestion
+- [docs/notebooks.md](docs/notebooks.md): available notebooks
+- [docs/package-structure.md](docs/package-structure.md): codebase layout and key modules
+- [docs/data.md](docs/data.md): data stages and usage examples
+- [docs/tests.md](docs/tests.md): running the test suite
 
 ## The Problem
 
@@ -27,32 +28,89 @@ A user asks a question like: *"How does the EU's 2030 climate target relate to t
 
 The codebase has two main workflows:
 
-1. **Document pipeline** discover and fetch official EU climate policy documents, convert them to Markdown, and save them locally.
-2. **RAG assistant** load a structured JSON dataset and answer questions with cited responses.
+1. **Document pipeline**: discover and fetch official EU climate policy documents, convert them to Markdown, and save them locally.
+2. **RAG assistant**: load a structured JSON dataset and answer questions with cited responses.
 
 ## Prerequisites
 
-- Python 3.13 or later
+- Python 3.13 or later (you can install it with `uv`)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
 - An [OpenAI API key](https://platform.openai.com/api-keys) (used by both the fetch agent and the RAG assistant)
 - Playwright browsers (installed automatically via `uv sync`; run `uv run playwright install` if needed)
 
 ## Setup
 
-1. Install uv if you don't have it yet: https://docs.astral.sh/uv/getting-started/installation/
-2. Clone this repository (or download the zip and extract it).
-3. Create a `.env` file from the template and add your API key:
+1. Install `uv` if you do not have it yet:
 
+   https://docs.astral.sh/uv/getting-started/installation/
+
+2. Clone this repository, then move into the project folder:
+
+   ```bash
+   git clone <repository-url>
+   cd ai-buildcamp-project-starter
+   ```
+
+   If you downloaded the project as a zip file, extract it and open a terminal in the extracted folder.
+
+3. Install Python 3.13 with `uv` if it is not already available:
+
+   ```bash
+   uv python install 3.13
+   ```
+
+   The project requires Python 3.13 or later, and `uv sync` will use a compatible interpreter.
+
+4. Create a local environment file and add your OpenAI API key:
+
+   ```bash
    cp .env.example .env
-   # then open .env and set OPENAI_API_KEY=`<your key>`
-4. Install dependencies:
+   ```
 
+   Then open `.env` and replace the placeholder value:
+
+   ```bash
+   OPENAI_API_KEY=your-openai-key-here
+   ```
+
+5. Install the project dependencies:
+
+   ```bash
    uv sync
-5. Start Jupyter:
+   ```
 
+6. Install Playwright browsers if they were not installed automatically:
+
+   ```bash
+   uv run playwright install
+   ```
+
+7. Check that the CLI is available:
+
+   ```bash
+   uv run eu-climate-ask --help
+   ```
+
+8. Start Jupyter if you want to run the notebooks:
+
+   ```bash
    uv run jupyter notebook
+   ```
 
 ## Usage
+
+### Sample questions
+
+Users can ask broad explanatory questions, targeted policy questions, or comparison questions, for example:
+
+- How does the EU's 2030 climate target relate to the 2040 goal?
+- What is the European Climate Law, and what does it require?
+- What is the Carbon Border Adjustment Mechanism?
+- How does the European Union Emissions Trading System support climate neutrality?
+- What is the Fit for 55 package?
+- How does the Paris Agreement shape the EU's climate targets?
+- What role do carbon removals play in the EU's 2040 climate target?
+- What does the Clean Industrial Deal add to EU climate policy?
 
 ### Ask a question from the terminal
 
@@ -94,7 +152,7 @@ uv run eu-climate-pipeline
 uv run eu-climate-ingest
 ```
 
-### Discover documents programmatically
+### Read some documents
 
 ```python
 from eu_climate_policy_rag import discover_and_enrich_documents
