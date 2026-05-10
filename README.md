@@ -1,6 +1,6 @@
 # EU Climate Policy Q&A RAG Assistant
 
-A retrieval-augmented generation (RAG) system that helps students and early-stage policy learners navigate EU climate policy documents quickly and accurately.
+An agentic retrieval-augmented generation (RAG) system that helps students and early-stage policy learners navigate EU climate policy documents quickly and accurately.
 
 ## Table of Contents
 
