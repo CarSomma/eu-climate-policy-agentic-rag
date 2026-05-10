@@ -1,0 +1,783 @@
+![european flag](./../../../../images/eclogo.jpg)EUROPEAN COMMISSION
+
+Brussels, 18.12.2023
+
+COM(2023) 796 final
+
+COMMUNICATION FROM THE COMMISSION TO THE EUROPEAN PARLIAMENT, THE COUNCIL, THE EUROPEAN ECONOMIC AND SOCIAL COMMITTEE AND THE COMMITTEE OF THE REGIONS
+
+EU wide assessment of the draft updated National Energy and Climate Plans
+
+An important step towards the more ambitious 2030 energy and climate objectives under the European Green Deal and RePowerEU
+
+1INTRODUCTION - UPDATED INTEGRATED NATIONAL ENERGY AND CLIMATE PLANS: AN IMPORTANT STEP TOWARDS DELIVERING ON THE GREEN DEAL AND THE REPOWEREU PLAN
+
+Recent years have clearly shown the need for the EU to keep on track and move faster down the path to climate neutrality, and to building a resilient energy system and an economy that is both competitive and sustainable. The new global temperature records and the more frequent extreme weather events are evidence of the acceleration of the climate crisis. Further to a pandemic, the return of war to the European continent and the worst global energy crisis in decades have threatened energy security and affordability, and economic stability in Europe. In response to these threats, the EU has taken decisive action by accelerating the implementation of the European Green Deal, putting in place in record time the ‘Fit for 55’ package and the REPowerEU Plan. Now is the time for the Union, together with the Member States, to implement those commitments while supporting households and businesses, and making the EU economy future-proof and resilient.
+
+Since 2018, EU Member States have used the Regulation on the Governance of the Energy Union and Climate Action
+[1](#footnote2)
+ as the basis for a comprehensive governance system to meet the EU’s climate and energy targets and objectives for 2030, and to build a resilient Energy Union fit to meet future challenges.
+
+The National Energy and Climate Plans (NECPs) are the main strategic policy planning tool for Member States to describe how they will meet the objectives and targets set in the Energy Union and stay on track to achieve climate neutrality and resilience by 2050. They provide short, medium and long-term investment predictability, and are a key tool to mobilise the massive investment needed to achieve the collective goal of climate neutrality. The plans help to ensure that the EU’s transition is socially just, provides energy security and affordability.
+
+In late 2019, Member States submitted their final NECPs. In 2023, they reviewed and updated their NECPs for the first time to meet the increased energy and climate targets and objectives under the European Green Deal, the European Climate Law, the ‘Fit for 55’ package and the 2022 REPowerEU Plan. The updated plans factor in the increased challenges for a more resilient Energy Union, including the consequences of war in Ukraine, and reflect the EU’s international commitments under the Paris Agreement.
+
+In the aftermath of the multiple global challenges that arose in the last years, the Commission also established the Recovery and Resilience Facility (RRF) to build more sustainable and resilient EU economies. With 23 REPowerEU chapters adopted as part of Member States’ Recovery and Resilience Plans (RRPs) and 27 revised RRPs, more than 42% (EUR 275 billion) of the total revised RRF allocation will finance investments and reforms supporting the green transition and the REPowerEU plan. Those reforms contribute directly to the NECPs objectives. The updated NECP must fully explore synergies with RRPs.
+
+Updated NECPs give Member States the right framework to deliver on their commitments and reach the 2030 targets of a net domestic reduction of GHG emissions of at least 55%; a minimum 42.5% share of renewable energy with a view to reaching 45%; and reduce final energy consumption at EU level by 11.7%.
+
+With solid plans, the climate and energy transitions can become an economic growth strategy for our continent, making the transition compatible with an economic future that is stable, innovative and prosperous and that creates future-proof and resilient jobs. In the iterative dialogue with Member States on their updated NECPs, the Commission will put renewed and stronger focus on competitiveness, innovation and investments within the Energy Union, including a simplified regulatory environment.
+
+The Commission has now assessed the 21 draft updated plans submitted by the Member States by mid-November
+[2](#footnote3)
+. While most of the Member States have now submitted their draft updated plans, the Commission regrets the significant delay in the submission of several draft plans
+[3](#footnote4)
+ which has significantly compromised the process, and calls on all Member States to respect the deadline for the submission of the final plans in June 2024.
+
+The Commission’s assessment reveals that Member States are on the right track, but ambition gaps remain to achieve the recently agreed increased targets and objectives for 2030 in climate and energy policies. This is not surprising in view of the short time between the finalisation of the Fit for 55 package and the submission of the draft updated NECPs. The lessons learnt in the constructive and iterative process of Member States and the Commission in preparing the draft NECPs will be helpful in identifying best practices, and where further action is needed.
+
+Along with this Communication, the Commission publishes individual assessments and country specific recommendations
+[4](#footnote5)
+ for 21 Member States. These recommendations address the missing elements that should be addressed in the final NECPs to help Member States deliver on the most recent climate and energy goals resulting from the ‘Fit for 55’ package and REPowerEU.
+
+In line with the European Climate Law, the Commission also assessed the collective ambition and progress made by the 27 Member States in meeting the EU’s objective to achieve climate neutrality by 2050, and on the collective progress made on adaptation to climate change. The Commission’s assessment of the consistency of national measures with these objectives underpins a set of recommendations issued to the Member States as part of this policy package.
+
+Box 1. Main findings from the assessment of the draft updated plans.
+
+·Despite a substantial reduction in recent years, net greenhouse gas (GHG) emissions in 2030 are estimated to be 51% lower than in 1990, 4% percentage points short of the 55% target set in the Climate Law. Whilst Union actions assist Member States in reaching these targets, enabling measures from Member States are needed to put in place sufficient policies and measures in transport, buildings, agriculture waste, and to enhance carbon removals. This extra effort is needed to fill the gaps in reaching the targets under the Effort Sharing and LULUCF Regulations
+[5](#footnote6)
+.
+
+·The share of renewable energy in final energy consumption could reach between 38.6% and 39.3% in 2030 at Union level. This is significantly higher than the 32% set in REDII, yet lower than the binding target of 42.5% with the collective endeavour to achieve a target of 45% set in the 2023 revised REDII. Very few Member States
+[6](#footnote7)
+ have submitted a contribution that is in line with their expected national contribution under the Governance Regulation and the revised RED II.
+
+·In energy efficiency, the 2030 final energy consumption at Union level could reach 814.3 Mtoe, corresponding to a reduction of 5.8% compared to the 2030 projections. This is lower than the 956 Mtoe final energy consumption level set in the 2018 EED; yet higher than the 763 Mtoe, corresponding to a reduction of 11.7% compared to the 2030 projections, set in the 2023 EED recast. Only a handful of Member States propose a sufficient level of ambition on either primary energy consumption, final energy consumption or both
+[7](#footnote8)
+.
+
+·Energy security is addressed very differently across the draft plans. EU energy imports from Russia have decreased significantly, with for instance Russian natural gas imports decreasing from a share of around 45% of EU imports in 2021 to 15% during the first ten months of 2023. However, only some Member States provide detailed plans for diversified access to gas or low carbon energy sources. Going forward, the demand side of the electricity sector and energy storage are insufficiently covered despite the growing importance of flexibility. Few Member States have set out how they plan for the gradual decline in oil use and its implications for energy security and oil infrastructure.
+
+·All Member States have started to phase out fossil fuels for energy generation, notably solid fossil fuels, but only a few are already coal free, and not all plan to become coal free before 2030. Some Member States appear to be backtracking on previous commitments in the Territorial Just Transition Plans approved by the Commission in 2022. On fossil fuel subsidies, a collective effort by Member States is necessary to set a clear and credible timeline for their phase out.
+
+·Most of the Member States identify the uptake of flexibility and demand response as a key feature of the internal energy market to ensure a rapid penetration of renewable energy and some Member States have put forward clear national objectives to support the uptake of such services. Nevertheless, clear objectives and a comprehensive regulatory framework to reinforce electricity grids to integrate renewables and technological innovations to encourage the uptake of flexibility assets are still missing in a number of plans.
+
+·To address energy poverty, a vast majority of Member States still need to set out clear objectives and a method for the definition and assessment of vulnerable households. Synergies with structural energy policies, and in particular energy efficiency measures and a stronger framework for consumer empowerment to alleviate energy poverty, are equally not sufficiently explored.
+
+·Given all these challenges, the Commission will put a renewed and stronger focus on research, innovation and competitiveness, including on preparing a skilled workforce. The Commission will work with Member States to prepare their national and energy climate plans towards reforms that aim to keep clean energy prices affordable for citizens and households. Extra focus on competitiveness and innovation in these plans, in a simplified regulatory environment, is needed so that EU business can conceive, develop and expand production capacities for clean technologies, and secure the supply of components and materials across the entire value chain, in line with the Net Zero Industrial Act and the Critical Raw Materials Act.
+
+·A solid assessment of investment needs backed by concrete measures to attract private finance, as the bulk of investment necessary to reach the Union’s climate and energy targets must come from private sources, is still mainly absent from the plans.
+
+·To support the just transition, Member States have only provided a partial assessment of the socio-economic impacts of the climate and energy transition on individuals, households and companies, and the related policies and measures often lack a strategic and forward-looking vision.
+
+·Securing the Energy Union pillars also requires resilience to physical climate impacts. More needs to be done in the final plans to analyse the relevant climate vulnerabilities and risks, to include adaptation goals across the Energy Union dimensions and to match these with solid policies and measures.
+
+2ASSESSMENT OF THE DRAFT UPDATED INTEGRATED NATIONAL ENERGY AND CLIMATE PLANS
+
+2.1EU-wide assessment of the draft updated NECPs in relation to the 2030 energy and climate targets and objectives across the five dimensions of the Energy Union
+
+2.1.1Decarbonisation
+
+The draft updated NECPs are bringing us closer to meeting the EU’s 2030 55% GHG emission reduction target. However, there is a clear need for extra efforts from Member States to complement EU actions with sufficient policies to close the remaining gap. Based on the information provided in the draft updated NECPs, net GHG emissions in 2030 are estimated to be 51% lower than in 1990
+[8](#footnote9)
+, 4% percentage points short of the 55% target set in the Climate Law
+[9](#footnote10)
+. When considering the whole Land Use, Land-Use Change, and Forestry (LULUCF) contribution above the limit of 225 Mt CO2-eq., the reductions would reach -51.7%. The trajectory identified in the draft updated NECPs is expected to fall short of reaching climate neutrality in 2050
+[10](#footnote11)
+. While GHG emissions in the EU have fallen by 32.5%
+[11](#footnote12)
+ since 1990, the analysis of the projected GHG emissions in the draft updated NECPs highlights the need for a change of pace. The emissions reduction until 2030 now needs to proceed at almost triple the average annual reduction achieved over the last decade.
+
+The draft updated NECPs are a step in the right direction to reach the increased ambition under the Effort Sharing Regulation (ESR), but a significant gap remains to be addressed in the final NECPs. Under the ESR, emissions from domestic transport (excluding aviation), buildings, agriculture, small industry and waste must be reduced by 40% by 2030 compared to 2005. The aggregation of the available projections shows that emissions would decrease by 33.8% in 2030 (compared to 2005 levels), 6.2 percentage points short of the EU target
+[12](#footnote13)
+. Only Croatia, Greece, Hungary, Luxembourg, Portugal, Slovenia, Spain and Sweden do not expect a gap to their national 2030 ESR target, without considering the flexibilities they could use under the ESR
+[13](#footnote14)
+. At the same time, only few Member States consider the new emissions trading system (ETS2) in their plans and projection scenarios (Cyprus, Czechia, Estonia, France, Hungary, Lithuania, Romania). The ETS2, covering especially fuels used for combustion in the buildings and road transport sectors, will provide further incentive to reach the ESR targets.
+
+The majority of the draft updated NECPs do not show sufficient ambition and action on land. Very few Member States show a concrete pathway to reach their national net removal targets
+[14](#footnote15)
+, or sufficient actions to assist farmers, foresters and other stakeholders in building sustainable business models in line with these targets. The aggregation of the LULUCF projections shows that the overall net removals would still lead to a gap of around -40 to -50 Mt CO2 eq. compared to the 2030 target of -310 Mt CO2 eq
+[15](#footnote16)
+. Particular concern continues to exist for Czechia, Estonia, Finland and France, where the overall declining trend of net removals until 2025 may impact the achievement of the 2030 targets, both at national and EU level. Other plans show instead the right ambition in terms of quantification of the climate mitigation impacts of various policies and measures (Lithuania), and valuable policies such as rewetting or restoration targets on peatlands (Denmark, Spain, the Netherlands and Germany). Almost all Member States need to improve their monitoring, reporting and verification to ensure the robustness and policy integration enhancements of the revised legislation. Finally, biodiversity, nature restoration and nature-based solutions should be better integrated in the plans, to enhance carbon sinks and resilience. The effective implementation of the EU Regulation on deforestation-free products will also contribute to counter this trend
+[16](#footnote17)
+.
+
+The lack of emission reduction in the field of transport calls for further dedicated action. Only few plans included an overall target for GHG emissions in the transport sector (Estonia, Netherlands, Sweden). Still, most Member States have included a wide range of measures, ranging the electrification of transport and the introduction of zero-emission infrastructure for roads, rail, ports and airports as well as measures to promote modal shifts including towards public transport and soft mobility. By reducing exhaust emissions, such measures will also bring direct benefits through improving air quality. All Member States included measures on the uptake of e-mobility, with some (e.g., Spain and the Netherlands), including dedicated targets for electric vehicles (EV) by 2030. However, some Member States (e.g., Italy, France, Germany) still have support schemes for fossil-fuelled vehicles. Moreover, several plans did not include specific measures to support the production and deployment of sustainable aviation fuels (SAF) to contribute to the ReFuelEU Aviation Regulation
+[17](#footnote18)
+. The Member States REPowerEU chapters under national Recovery and Resilience Plans also contribute to sustainable mobility, and the final NECPs should be consistent with such investments and reforms.
+
+On the action for non-CO2 emissions, accounting for 30% of ESR emissions in 2021
+[18](#footnote19)
+, the effort shown in the draft NECPs is mixed. The plans of Croatia, Denmark, France, Germany, Lithuania and the Netherlands tackle a relatively complete range of non-CO2 sources. Lithuania also identifies clear objectives for non-CO2 emissions in waste management and agricultural emissions. However, others, such as Estonia, Hungary, Slovenia and Romania, would need additional action to reduce non-CO2 emissions.
+
+At EU level, overall agriculture emissions are stagnating, even if the national plans show a more diversified picture. Even when the plans include a comprehensive set of policies and measures, and in several cases also specific targets on reducing agricultural emissions, the projected emissions seem to decrease very slowly, also considering their stagnation in the last decade. This calls for additional measures to address agricultural emissions and for the quantification of their expected impact. In finalising the NECPs, Member States should better describe synergies with their national common agricultural policy strategic plans (CSPs) and explain the integrated national approach to increase the effort.
+
+Exploring further the benefits of environmental policies can strengthen the final NECPs, notably on air pollution, water and the circular economy. Over half of the draft plans do not include the required information on the impact of policies on projected emissions of the main air pollutants regulated under the National Emissions Reduction Commitments Directive
+[19](#footnote20)
+, nor on the alignment of National Air Pollution Control Programme (NAPCP) with energy and climate programmes. Similarly, most plans would benefit from the integration of the principles and practices of water and circular economy policies, for their potential to reduce GHG emissions and foster strategic autonomy and climate change adaptation. The plans should also consider other circular economy practices than waste management, including eco-design and circular business models, to prevent and decrease more effectively GHG emissions.
+
+While their plans show some commitment to supporting the competitiveness of industry throughout the decarbonisation process, Member States do not take full advantage of the NECP framework to lay out a comprehensive integrated strategy. Roughly half of the plans, however, at least outline such a strategy. The majority of Member States included measures for the deployment of hydrogen, and to improve energy efficiency of energy intensive industries, in some cases linked to their Recovery and Resilience Plans (RRPs).
+
+Carbon Capture Usage and Storage (CCS) will necessarily contribute to reaching climate neutrality, especially for emissions from hard to abate industrial processes, where it can support the competitiveness of industry. Eight Member States provided projections of CO2 volumes to capture (Belgium, Czechia, Denmark, France, Greece, Italy, Lithuania and Netherlands), starting from as early as 2025 (aggregated to 15.2 Mt CO2 annually). In total, Member States plan to capture 34.1 Mt CO2 annually by 2030, of which 5.1 Mt CO2 from biogenic sources. This compares with an overall injection capacity estimated by Member States of 39.3 Mt per year in 2030. Several updated plans reflect the need to develop a CO2 pipeline network.
+
+COP 28
+[20](#footnote21)
+, building on the Glasgow Climate Pact
+[21](#footnote22)
+, gave a powerful momentum to the transition away from fossil fuels, to phasing out fossil fuel subsidies, and endorsing the decision to triple renewable energy capacity globally and double the global average of annual rate of energy efficiency improvements by 2030. The draft updated NECPs confirm that all Member States have started to phase out the use of solid fossil fuels, notably for energy generation. Some Member States are already coal free and several have committed to phase out coal by 2030. However, some Member States (such as Croatia, Germany and Romania) plan to use solid fossil fuels well beyond 2030.
+
+Fossil fuel subsidies remain a major obstacle to the clean energy transition and a drag on the EU’s ability to meet its climate objectives. As other environmentally harmful subsidies, they contradict the application of the polluter pays principle and distort market mechanisms. Based on the Commission analysis, a collective effort by all Member States is necessary to explain how they plan to phase out fossil fuel subsidies and to set a clear and credible timeline for their swift phase out, while adopting the ancillary measures needed to protect vulnerable households and safeguard competitiveness.
+
+More needs to be done in the final plans to analyse the relevant climate vulnerabilities and risks and to include adaptation goals across the Energy Union dimensions, and match these with solid policies and measures. Only Finland, Luxembourg and Spain analysed the most relevant climate vulnerabilities and risks and proposed related policies and measures. Furthermore, only Greece, Luxembourg and Spain properly outlined the link between the Energy Union objectives and adaptation to climate change. Only five Member States (Finland, France, Greece, Luxembourg and Portugal) covered sufficient ground through their adaptation policies and measures to meet their national strategic objectives. Most Member States did not lay out in sufficient detail their policies and measures related to water management and to the impacts of seasonal water scarcity, heat, drought or weather events on energy production and disruptions.
+
+Disaster risk reduction elements should be strengthened in the final plans. Most Member States reported some information on links between the NECPs and their disaster risk management frameworks, for example referring to risk preparedness plans for the electricity sector, consideration of cybersecurity risks, and the inclusion of risks to security of supply. Cyprus, Estonia, Slovakia and the Netherlands did not cover this aspect.
+
+2.1.2Renewable energy
+
+The Union has in place all the necessary conditions to ensure it remains a competitive global player and already leads the world’s efforts in renewable energy deployment. The Union is now committed to increase its overall renewable energy target to at least 42,5% with an endeavour to reach 45% by 2030.
+
+The level of ambition put forward by Member States
+[22](#footnote23)
+ amount to a renewable energy share (RES) of between 38.6% and 39.3% in 2030 at Union level. This is significantly higher than the 32% in the Renewables Energy Directive (RED II)
+[23](#footnote24)
+; yet it is lower than the 42.5% binding share set in the revised RED II
+[24](#footnote25)
+. The efforts of certain Member States that are going beyond what is required are not enough to offset the contributions of those that have not submitted plans, or those that are falling short of their required level of ambition. As a result, there is an ambition gap for the EU27 and Member States need to raise their contributions in their final updated NECPs in order to collectively achieve the 2030 binding EU renewable energy target.
+
+Large differences exist between Member States’ contributions towards the EU’s RES target as submitted and the RES-share resulting from the formula in Annex II of the Governance Regulation
+[25](#footnote26)
+. Only seven Member States (Denmark, Spain, Estonia, Greece, Italy, Lithuania and Luxembourg) have submitted a contribution that is in line with or above its expected national contribution.
+
+Almost all Member States have indicated trajectories for renewable energy technologies up to 2030 and in some cases up to 2040 and 2050 with many putting a strong focus on the increased uptake of renewable electricity generation, notably for wind and solar power. For example, Lithuania and Estonia project to reach 100% renewable energy share in their electricity sector in 2030 and Denmark expects to even exceed this with a 117%. Many Member States consider the importance of solar energy and have plans to promote its uptake mostly in the residential sector through incentives and simplified permitting procedures. This is an important contribution to the objectives of the EU Solar Energy Strategy
+[26](#footnote27)
+. Only Portugal provides an indicative target of 0.2GW for the development of ocean energy to contribute to the objective of 1GW of ocean energy by 2030.
+[27](#footnote28)
+ Member States are encouraged to include the missing trajectories, thorough planning and targeted installed capacities for deployment of renewable technologies for the next 10 years, with an outlook to 2040, in their final NECPs. This is especially important for wind power in the context of the objectives of the Wind Power Action Plan
+[28](#footnote29)
+.
+
+Member States detail policies and measures to different degrees in their draft updated NECPs. The removal of barriers for power purchasing agreements (PPAs) is essential to ensure market-based deployment of renewable energy. For example, Estonia and Spain aim to promote private investments to deploy renewable energy via such agreements.
+
+On facilitation of permitting for renewables, several Member States have included measures to streamline permit-granting procedures by setting up a digital single contact point (e.g., Cyprus), merging individual permits into a single one (e.g., the Netherlands) and increasing the allocation of resources to permit-granting authorities (e.g., Finland). Moreover, some Member States have strong draft plans to support the designation of renewables acceleration areas (e.g., Estonia, Croatia, Italy and Portugal). Some Member States have also provided information on the mapping for specific technologies (e.g., wind power by Sweden).
+
+About half of the draft plans include targets or projections
+[29](#footnote30)
+ for the increase of RES share in heating and cooling that are clearly in line with the binding increase
+[30](#footnote31)
+. In addition, only six plans include appropriate targets for district heating and cooling, six provide a target for buildings and only five put forward a target for the share of renewable energy in industry. Heat pumps are highlighted in several plans as the main contribution to the share of renewables of heating and cooling, while more information is needed on enabling integration between electricity and heating and cooling networks. Geothermal energy sources are mentioned in several draft plans in various sections, in particular for heating and cooling (e.g., France, Germany, Hungary, Slovakia), but with no significant detail on measures to deploy them.
+
+Most Member States include trajectories for the share of renewable energy in transport, while only a few (e.g., Czechia, France) provide information on the trajectory for the GHG intensity reduction in transport. Very few Member States (e.g., Italy) have aligned their plans with the new targets set out in the revised REDII and the changes in the target structure.
+
+Moreover, there is a still a large unexplored potential to further promote electrolyser capacity for renewable hydrogen
+[31](#footnote32)
+ and related products in demand sectors, including through international partnerships for hydrogen imports in line with the objectives of REPowerEU Plan. However, several Member States have planned to take further steps on this front. For example, Germany has already reached an agreement with Norway to allow the long-term import of renewable hydrogen. Denmark, Germany, Netherlands, Spain and Portugal alone aim to develop in total between 38 and 40 GW of electrolyser capacity to promote renewable hydrogen.
+
+Most Member States do not explicitly mention the national measures that ensure sustainability of bioenergy covering the sustainability criteria of the recast RED II. In their projections, most of the draft plans cover the supply of biomass demand per sector until 2030 or even until 2040, and biomass supply by feedstocks and origin. The cascading principle has however been referenced by very few Member States. Most of the draft updated NECPs do not include the domestic supply of forest biomass for energy purposes in 2021-2030, nor the projected use of forest biomass for energy production under the revised LULUCF Regulation, particularly for 2026-2030. Nearly all Member States mention biomethane, but only less than half of the Member States have quantified the national biomethane objectives for 2030 and this adds up to only approximately 15 bcm
+[32](#footnote33)
+. France presents the fastest growing biomethane market with a well-rounded biomethane development framework. Both Italy and Denmark have report amounts totalling more than one third of the EU’s total enabling a further reduction of fossil gas imports by 2030.
+
+2.1.3Energy efficiency
+
+Under the ‘Fit for 55’ package and the REPowerEU Plan, the EU set a target to reduce energy consumption by 11.7% by 2030 compared to the projections of the 2020 EU Reference Scenario, as enshrined in the recently adopted Energy Efficiency Directive (EED recast)
+[33](#footnote34)
+. Against this new level of ambition, in 2021 EU energy consumption was 31.9% higher than the 2030 indicative target for primary energy consumption and 26.9% higher than the 2030 binding target for final energy consumption.
+
+Most Member States submit national contributions to the EU’s 2030 energy efficiency targets in their draft updated NECPs, but only a handful of Member States propose a sufficient level of ambition on either primary energy consumption (i.e., Germany and the Netherlands) or final energy consumption (e.g., Estonia and Romania), or both (i.e., Czechia, France, Italy, Lithuania) in line with the EED recast.
+
+Based on Member States’ submitted national contributions
+[34](#footnote35)
+, the EU is expected to achieve a level of final energy consumption amounting to 814.3 Mtoe in 2030 which is lower than the 956 Mtoe final energy consumption level set in the 2018 EED
+[35](#footnote36)
+; yet higher than the 763 Mtoe of the EED recast. This corresponds to a reduction of 5.8% against the 2030 projections which is significantly lower than the 11.7% reduction set in the EED recast. The decrease is mainly a result of the efforts of the Member States that have pledged further energy consumption reductions for 2030. However, this effort is not enough to offset the contributions of those Member States that fall short on ambition, or that have not provided national contributions on energy efficiency in their draft updated NECP.
+
+The preliminary aggregated assessment shows a substantial gap towards the achievement of the EU’s 2030 energy efficiency targets for both primary and final energy consumption. For primary energy consumption, there is a gap of 75 Mtoe from the EU’s 2030 indicative target. For final energy consumption, the gap stands at 53.1 Mtoe from the Union’s 2030 binding target.
+
+The final updated NECPs will need to include more ambitious energy efficiency contributions for 2030 and indicate clear trajectories to reduce energy consumption. It is necessary that Member States also define better the overall national policy frameworks underpinning the national contributions to set out a credible plan to reach the EU’s proposed level of ambition. This applies particularly to the implementation of the energy savings obligation, taking into will also need to take account of the revised amount of cumulative end-use energy savings to be achieved by 2030, and the exemplary role of public sector, detailing the relevant information on the planned reductions of energy consumption from all public bodies and the renovation of public buildings.
+
+The Union’s strategy on energy efficiency is based on the ‘energy-efficiency-first principle’
+[36](#footnote37)
+, which makes energy efficiency a top priority in all policymaking. It is important that the final updated NECPs are more explicit in detailing how Member States will implement this principle. The energy-efficiency-principle is reflected in several policy areas in Cyprus's draft updated NECP, while Greece, Spain, Lithuania, Luxembourg and Romania covered the principle it at least in some policy areas in their draft updated NECPs. At the same time, several draft plans did not mention the principle in any form.
+
+In the buildings’ sector, the EU’s climate target plan and the ‘Fit for 55’ package set out the vision for achieving a zero-emission building stock by 2050
+[37](#footnote38)
+. The current cycle to update NECPs is an opportunity for Member States to update their 2020 long-term renovation strategies
+[38](#footnote39)
+. The updated ambition should include setting intermediate milestones for 2030 and 2040 and indicators such as the overall energy use in the building sector, GHG emissions and renovation rates. This ambition should be underpinned by sufficient policies, measures and funding support, taking account of the capacities of the sector and the main barriers.
+
+Only Cyprus, Greece, Luxembourg and the Netherlands have so far updated the level of ambition in their long-term renovation strategies. These countries also reflect the recast Energy Efficiency Directive, the revised Renewable Energy Directive and the upcoming Energy Performance of Buildings Directive in a coherent and systematic manner. The Netherlands increases the level of ambition set in its 2030 and 2050 decarbonisation milestone for buildings. Luxembourg and Greece submit revised energy savings ambition and Cyprus submit new and updated measures. However, most Member States refer only to the main aspects of the 2020 long-term renovation strategies. Therefore, in their final updated NECPs, Member States need to give a clearer description and a quantitative estimation of building-related policies and measures in terms of funding, costs and impacts on energy and emission savings.
+
+2.1.4Energy Security
+
+The last two years have particularly emphasised the importance of strategic planning for the energy security dimension of the Energy Union. Energy security is addressed very differently across the assessed draft plans, which hinders a comprehensive EU level analysis. The final updated NECPs would benefit from the use of more harmonised indicators as also indicated in the Guidance issued by the Commission in December 2022
+[39](#footnote40)
+.
+
+Natural gas still accounted for 24% of the EU’s primary energy mix in 2021
+[40](#footnote41)
+. Russia used to be the EU’s main gas supplier, providing around 45% of EU imports in 2021. Following its invasion war of on Ukraine, Russia accounted for 15% or 32 bcm of all EU gas imports, during the first ten months of 2023
+[41](#footnote42)
+. Based on the draft updated plans, national gas production is set to increase in Croatia, Italy and Slovakia. These countries, along with Romania, also plan to increase underground gas storage capacities or gas interconnections which will strengthen EU security of gas supply.
+
+Only some Member States provide sufficient details in their plans to ensure a diversified portfolio of gas suppliers (e.g., Finland, Italy, Portugal), even if in several cases they set high ambitions for the development of renewable and low-carbon gases (e.g., Denmark, France and Italy for biomethane). As regards risk and crisis preparedness in the gas sector, the European Commission notes that, at the time of writing, some Member States are late on the submission of their Common and National Risk Assessments, their Preventive Action Plans and their Emergency Plans, and encourages them to submit their plans as soon as possible
+[42](#footnote43)
+.
+
+In electricity supply, most Member States need to detail and address the impact of the gradual replacement of fossil-fired power plants (mostly coal and gas) by renewable energy sources (mainly wind and solar) in their final updated plans, particularly on the stability of their electricity system, including the impacts on interconnected Member States. Moreover, most Member States address the electricity generation side, but few assess the demand side sufficiently. Flexibility solutions such as energy storage and demand-side response are key to integrate variable renewables in the energy system. It is positive that some Member States, such as Spain, have set up clear roadmaps and targets for energy storage.
+
+Nuclear power plays a key role in certain Member States to meet decarbonisation targets and ensure energy security. Twelve Member States currently use nuclear energy to produce low carbon electricity with 97GWe of total installed capacity
+[43](#footnote44)
+. According to the draft updated NECPs, nine Member States are considering or planning lifetime extensions of their existing fleet and eleven Member States are considering deployment of new nuclear power. Ten Member States also express potential interest in deploying Small Modular Reactor technologies to support the stability and affordability of their energy mix.
+
+Concerning security of supply, to diversify nuclear supply chain, Czechia, Finland and Slovakia have secured alternative nuclear fuel supplies and significantly reduced their dependency on Russia for nuclear fuel supply and cycle services.
+
+Oil remains the main energy source in the EU, representing 34% of the primary energy mix in 2021. The oil share in the EU’s energy mix is expected to decrease moderately by 2030 and more drastically by 2040. Few plans (e.g., France) contain forecasts on national oil consumption by 2030, and few assess the adequacy of the oil infrastructure beyond 2030 (ports, refineries, pipeline, and oil stocks) for the expected change in oil demand due to decarbonisation.
+
+While several Member States describe digitalisation as an enabler to integrate renewables in the grid, cybersecurity will be key requirement for a secure and robust energy system. It is therefore positive that several Member States (e.g., Spain) included adequate references to the NIS-2 Directive
+[44](#footnote45)
+ in their draft updated plans, or even elaborate on additional measures.
+
+2.1.5Internal energy market
+
+With the EU’s higher ' target on renewable energy, and the need to enable consumers to rapidly reap the benefits it brings, the completion of an EU integrated energy market will be a crucial asset. Reflecting the impetus to accelerate energy system integration
+[45](#footnote46)
+ and the obligations enshrined in the Electricity Directive (EU) 2019/944
+[46](#footnote47)
+, and more recently the revised RED II
+[47](#footnote48)
+, Member States will need to put in place sound policies and ensure the uptake of flexibility sources, such as demand response and storage. Full and unimpeded market access to those services must be accompanied by implementation projects and clear regulatory enabling frameworks.
+
+Several draft updated NECPs include strategies to remove remaining price distortions and overcome market obstacles to promote the non-discriminatory participation of new market entrants, and to cater for different flexibility sources in the energy markets. In particular, most of the draft updated plans emphasise essential measures to increase flexibility through the uptake of demand response, smart grids and aggregators. One such example is in Greece, where the deployment of energy storage is included in the draft plan. In Denmark and Portugal measures put forward are aimed at promoting smart charging for electric vehicles. Sweden also set clear national objectives for flexibility solutions. Several Member States mention digitalisation in their draft plans as an enabler for the further integration of renewable energy and grid expansion.
+
+Nevertheless, clear national objectives for energy system flexibility are still lacking in most Member States’ updated plans. Where they are included, the national objectives vary in terms of adaptability and measurability. Overall, although many Member States have set out measures in their plans to overcome market obstacles, some still lack clear targets and timelines for their objectives, in particular the timeframe by which their electricity market will be fully competitive and liberalised. Specific measures are also needed to roll-out for the deployment of aggregation and flexibility services procured by Transmission System Operators (TSOs) and Distribution System Operators (DSOs).
+
+To put European citizens at the centre of these structural changes, it is essential to empower consumers, and boost their role in the clean energy transition. Notably, Lithuanian DSOs are promoting an enabling framework for active customer
+[48](#footnote49)
+ and Luxembourg is creating an energy data platform to accompany real consumer participation in the energy market. However, most of draft updated plans lack sufficient detail (impacts and quantitative targets) on measures to promote self-consumption and an enabling framework to developing renewable energy communities and energy sharing, as well as the deployment of technological innovations to make energy use more efficient.
+
+In light of the recent energy crisis, the internal energy market must offer sufficient protection to vulnerable consumers and households
+[49](#footnote50)
+. Therefore, all final updated plans must step up action on this aspect. Most of the Member States are still lacking a clear definition of energy poverty or should carry out a proper assessment of the number of households in energy poverty and set a target, when needed, to reduce the number of households in energy poverty. Several good practices can be highlighted in the draft plans such as the definition of energy poverty enshrined by law in France, or the ongoing work in Slovakia to develop a method to define energy poverty.
+
+Most NECPs still lack structural policies and measures to alleviate energy poverty, in particular energy efficiency and decarbonisation measures to support vulnerable groups and funding sources, including from the Social Climate Fund.
+
+Robust and sufficient interconnections are a prerequisite to boost the resilience and integration of the European energy system. To this end, the European framework has proven to be beneficial, and Member States have made good progress in increasing cross-border capacity
+[50](#footnote51)
+. In the draft plans, all Member States recognise the importance of reaching or maintaining the electricity interconnection target of 15%.
+
+On cross-border regional cooperation, only eight bilateral agreements for the security of gas supply between neighbouring Member States out of the forty required have been signed and are included in the assessed draft plans, which reflects a structural vulnerability in the EU security of supply architecture
+[51](#footnote52)
+. The draft updated plans lack details on the status of such agreements and the Member States concerned are encouraged to pursue their efforts to bring these negotiations forward.
+
+Progress to complete several Projects of Common Interest is mentioned in most draft updated NECPs. However, significant actin is still needed to achieve and maintain the interconnectivity level in light of the 2030 objectives. Some Member States (e.g., Croatia, Denmark, Finland, Hungary, Luxembourg, Netherlands, Slovakia and Slovenia) have already met or are exceeding the EU target. Others commit in their draft plans to develop interconnections with neighbouring countries by investing in new transmission capacities and interconnectors, especially in regions that are historically dependent on a single supplier and now aim to improve diversification. Moreover, some Member States (e.g., Estonia, Finland, Italy and Portugal) plan to diversify their energy mix by carrying out joint hydrogen infrastructure projects.
+
+2.1.6Research, innovation, competitiveness and skills
+
+Now more than ever, it is crucial to step up action on research, innovation, and competitiveness in all Member States to meet the EU’s 2030 climate and energy targets and ensure a resilient, circular, and decarbonised European economy. This requires attractive economic opportunities for industry and businesses in a simplified regulatory environment, and the creation of future-proof jobs. Therefore, the final updated NECPs could benefit from a stronger focus on this dimension of our Energy Union.
+
+In their draft updated NECPs, most Member States list national strategies and measures to support research, innovation and competitiveness. However, a vast majority lack objectives and funding targets setting out specific pathways to 2030 and 2050 with a view to accelerating the roll out of specific clean energy technologies and promoting the transition to a net-zero circular economy. With the exceptions of Denmark, Germany, Estonia, France and Lithuania, the draft updated plans lack specific actions to help scale up the manufacturing of clean energy technologies, equipment and components, and ensure the resilience of Member States’ supply chains.
+
+There is also an imperative to explore how national energy and climate can help to deliver a simplified regulatory environment to attract investment into clean technologies, and to facilitate their ramp-up across the Single Market. Importantly, the Union and Member States also need to work together to ensure that in the energy and climate transition, where fossil energy is phased-out, clean energy alternatives come in at affordable prices. The National Energy and Climate Plans are important tools to ensure that, for example with the need for significant investments into the electricity grid ahead of 2030, a dialogue takes place on reforms and other measures to ensure access for businesses and households to clean energy at affordable prices. The Commission intends to use the iterative process with Member States on their National Energy and Climate Plans to start addressing these issues.
+
+Most plans report on regional cooperation in research and innovation under Horizon Europe and the strategic energy technology plan but do not set out measurable objectives to be achieved through joint projects. Nonetheless, good examples include Denmark’s plans to explore cooperation on CCS/CCUs with the Nordic countries, collaboration between Spain and Portugal on a joint research centre on energy storage and Luxembourg’s plan to cooperate with the other BeNeLux countries on research and innovation in hydrogen.
+
+Overall, Member States’ draft updated plans lack measures and funding to implement the EU action plan on the digitalising the energy system
+[52](#footnote53)
+. Nevertheless, there are positive examples, such as Italy’s plans for cyber-security research in the electricity sector, Slovakia and Czechia’s project on common interest (‘ACON Smart Grids’) on the digitalisation of the distribution system and Portugal’s measures to expand smart meters and develop smart grids.
+
+It is becoming increasingly important to tackle the skills shortages for the clean energy transition, as noted in several Commission initiatives including the Pact for Skills and the proposal for a Net Zero Industry Act with its skills academies. Several Member States such as Denmark, Spain, Estonia, Portugal, and Slovakia clearly identify the sectors in which to focus actions on re/upskilling. However, most Member States have not put forward objectives or measures with dedicated funding to tackle the skills’ gaps identified in strategic sectors.
+
+2.2Investments for a competitive European Green Deal
+
+In order to achieve the ambitious 2030 targets, investments will have to increase considerably, while public resources are expected to be limited. In its 2023 Strategic Foresight Report
+[53](#footnote54)
+, the Commission estimated that EUR 620 billion of additional annual investments are necessary to achieve the objectives of the European Green Deal and REPowerEU
+[54](#footnote55)
+.
+
+In their draft updated NECPs, most Member States do not present an overview of the expected total investments needed for the 2020-2030 period. Nine Member States (Cyprus, Spain, France, Hungary, Italy, Lithaunia, Luxembourg, Netherlands and Romania) include at least a partial estimate of the investment needs. No Member State provides an estimate of the gap between these needs and the available funding sources. Yet, several Member States report energy-related investment needs in the building, industrial, and transport sectors. Few report expected investment needs in the agricultural sector, to assist farmers in building sustainable business models. Overall, the level of information provided by the Member States in the draft updated NECPs currently included in the plans does not allow to aggregate investment needs at EU level.
+
+Robust estimates of investment needs and of their macro-economic impacts have become even more important in the context of the proposed reform of the EU’s economic governance rules, where in the Commission’s proposal national medium-term fiscal-structural plans will have to be consistent with the updated NECPs.
+
+The NECPs are an opportunity to explore ways to improve the regulatory environment to attract private investments, and to consider how to use public funds (national and EU funding sources) to leverage private investments. This includes how Member States will use the Recovery and Resilience Facility, the cohesion policy (including the Just Transition Fund), the common agriculture policy, and the Innovation and Modernisation Funds to support the objectives of the NECPs. Furthermore, substantial revenues will be generated through the auctioning of EU ETS allowances that should also support the climate transition.
+
+Information on the financing sources needs to be further completed in the final updated plans, as only few Member States provide information on the type of sources (public vs. private, EU vs. national). In addition, only some Member States explicitly address the issue of attracting private investments. Notable exceptions are Estonia and Italy that include measures to support venture capital development, Luxembourg that plans to use public finance to mobilise private investments and Finland’s testing platforms and innovation ecosystems.
+
+It is vital that Member States fully reflect in their final updated plans the energy and climate reforms and investments included in other relevant EU funding instruments, especially the National Recovery and Resilience plans (RRPs), including REPowerEU chapters. The 27 revised RRPs and 23 REPowerEU chapters will support investments and reforms across the energy union dimensions, for instance devoting more than EUR 46 billion to energy efficiency building renovations, on top of EUR 66 billion in the original RRPs. Other examples include the update of more than 3,000 km transmission and distribution electricity grid lines and more than EUR 2.5 billion in investments to renewable hydrogen production.
+
+Member States should consider if, in the finalisation and/or implementation of the NECPs, they can also benefit from the Technical Support Instrument, which can provide tailored expertise and capacity to support the implementation of policies and measures in the NECPs, also for identifying and mobilising the main sources of financing.
+
+2.3Just transition
+
+Ensuring a just climate and energy transition is crucial to guarantee that benefits from this process are shared in a fair way while negative effects are mitigated. This is necessary to secure a lasting support from the public to implement the ambitious reforms that will affect all areas of the economy.
+
+Member States have so far provided only a partial assessment of the socio-economic impacts of the climate and energy transition on individuals, households and companies. The effects of the transition policies and measures on income distribution, job creation, transformation and destruction, and energy poverty are seldom discussed in the draft plans. Overall, these do not include adequate quantitative analysis nor take into account sufficiently the distributional impacts on the different population groups. Moreover, none of the plans include sufficient information for the preparation of the future Social Climate Plans and on how the consistency between the two plans would be ensured.
+
+The analysis of the plans reveals that most lack a comprehensive set of targeted policies to tackle the social and employment impacts of the transition. In fact, the policies included are mostly patchy and often do not go beyond addressing the negative effects of the transition in coal and carbon-intensive regions. Most plans only partially highlight the synergies between the various instruments and funds supporting the just transition, including the Just Transition Fund (JTF), which is conditional on the effective implementation of the transition.
+
+Seven Member States (Croatia, France Germany, Greece, Hungary, Italy and Slovakia) have postponed while four Member States (Cyprus, Estonia, Finland and Romania) do not refer to their fossil fuel phase-out commitments in their adopted Territorial Just Transition Plans (TJTPs). In some cases, it is not clear how this will impact the planned measures.
+
+Member States are therefore encouraged to enhance the development of comprehensive national just transition strategies supported by evidence in their final NECPs. Additionally, Member States should also provide further information on just transition policies, including notably measures already reported in the context of the first monitoring exercise of the Council Recommendation on ensuring a fair transition towards climate neutrality
+[55](#footnote56)
+.
+
+Research shows that the climate and energy transition affects women differently than men: women are underrepresented in sectors set to gain from the transition (green jobs) and are more likely to experience transport and energy poverty. However, they can also be the driving force of the transition due to behavioural differences with regards to energy consumption and GHG emissions
+[56](#footnote57)
+. This is why it is important to strengthen the gender aspect of the just transition in the NECPs. Only four plans refer to gender equality in energy policy and include related commitments and measures (Czechia, Spain, Malta and Portugal). Three of these also included commitments (Czechia, Spain, Malta), and only Spain included specific policies
+[57](#footnote58)
+.
+
+2.4Public participation, local and regional actors, and the role of cross-border regional cooperation for an encompassing plan for everyone
+
+The Governance Regulation
+[58](#footnote59)
+, and Member States’ obligation under the Aarhus Convention
+[59](#footnote60)
+, require early and inclusive public participation in preparing of the national energy and climate plans, including the draft plans.
+
+Most Member States have organised consultations with the public on the draft plans, but the quality of the consultation processes varies, and many did not cover all the above-mentioned obligations. In particular, the plans contain few details on the communication channels used to reach the public and on the methods used to involve a wide range of interest groups, including social partners
+[60](#footnote61)
+ and ordinary members of the public. Many plans lack reasonable timeframes to enable the public to express their views.
+
+Most draft plans do not include the summary of the public’s views and how they were considered. Furthermore, details on the information provided to the public, and how the consultations contributed to the final content of the draft plans were not very comprehensive. A few Member States (Denmark, Spain, Finland, France, Slovakia, and Sweden) indicate that they had conducted wide public consultations for the key national policies that are included in the draft updated plan, but not on the draft plan as a whole. Lithuania, on the other hand, is a good example of ensuring public participation throughout the preparation of the draft NECP.
+
+Local and regional authorities are important for the implementation of energy and climate policies. However, very few Member States demonstrate concrete evidence of how they involve them in the process of preparing the draft updated NECP, and even fewer are building on an established multilevel dialogue for this process.
+
+Few Member States refer to the steering role and the impact of regional cooperation and the work conducted in the framework of the high-level groups
+[61](#footnote62)
+. Similarly, few Member States mention the possibility to use the renewable based cooperation mechanisms to meet their national’ contributions on renewables. Good examples include Luxembourg with the participation in the Renewable Energy Financing Mechanism, Estonia’s joint projects for offshore and onshore wind that applied for support under the Connecting Europe Facility and Denmark and Germany agreement to develop the Bornholm Energy Island as a joint renewable energy project under Article 9 of REDII.
+
+3ASSESSMENT OF PROGRESS UNDER THE EUROPEAN CLIMATE LAW
+
+The Climate Action Progress Report
+[62](#footnote63)
+ already assessed Union and national measures against the 2050 objectives, as well as the progress on adaptation at EU level. Climate neutrality is briefly discussed here, and also in Section 2 of this document, based on the new information provided by the draft updated NECPs. The progress on adaptation at national level is analysed here and in a dedicated Staff Working Document
+[63](#footnote64)
+. The recommendations on the climate neutrality and adaptation objectives are based on these assessments.
+
+GHG emissions continue to fall steadily, as shown by the most recent data, and there are encouraging signs of action on the ground. However, the assessment shows that progress towards the EU's climate-neutrality objective appears insufficient.
+
+The assessment on Member States’ progress on adaptation reveals that adaptation and the need for enhanced resilience are rising on the political agenda. However, this does not equate to policy readiness.
+
+Significant gaps persist, exposing Member States to climate risks that exceed adaptive capacities, increase vulnerability and compromise resilience.
+
+Most Member States have conducted climate risk assessments: 14 have recently updated their risk assessments and it is expected that other Member States will do it in the future. However, robust comprehensive climate risk assessments across more than five sectors are an exception rather than a rule. All Member States have adopted national adaptation strategies or plans, and many have been recently reviewed or are currently under revision. Governance structures and mechanisms vary across Member States, with a large degree of diversity in institutional arrangements, and some visible gaps in explicitly aligning with environmental governance mechanisms. Appropriate mechanisms for interministerial coordination on adaptation are rarely in place. Eight Member States have embedded adaptation policy elements in national legal frameworks.
+
+Some progress has been made in implementing adaptation measures, but gaps persist in assessing investment needs, and countries lack dedicated budgets. The inclusion of nature-based solutions in sectoral strategies and plans are limited, hampering their systemic use. The assessment of the impact of adaptation measures on reducing vulnerabilities and risks is limited as this task remains conceptually and practically challenging. Monitoring, reporting and evaluation mechanisms are yet to be established in several Member States. Overall progress on adaptive capacity remains unclear. Among the cross-cutting enabling conditions, there is a need to step up financial support, and building administrative competences also with a view to avoiding maladaptation.
+
+Good examples exist among Member States for each element of the adaptation policy cycle, and for concrete structures, approaches and policies. These should be tapped into to accelerate readiness for climate related impacts. Spatial planning and planned relocations may be among the challenges seen as politically hardest to address, and good indicators are among the technically challenging obstacles, but even in these cases there are initiatives that can be and need to be built on.
+
+These findings, together with the upcoming European Climate Risk Assessment, will inform the Commission Communication on managing climate risks in the EU, planned to be adopted in March 2024.
+
+4CONCLUSION AND NEXT STEPS – TOWARDS THE FINAL UPDATED NATIONAL PLANS
+
+The overall aggregate assessment and analysis of the draft updated NECPs is generally positive. The draft updated NECPs show Member States’ firm commitment to work on the basis of sound energy and climate planning and monitoring processes, and their determination to step up action at national and regional level, which is needed to meet the agreed policy goals in the energy and climate agenda.
+
+However, the assessment also identifies several gaps, both in terms of maintaining the EU’s overall ambition and in terms of meeting the specific requirements set under EU legislation. This is a matter of serious concern and a matter of credibility for many Member States.
+
+The Commission therefore expects Member States to take due account of the recommendations when finalising their updated integrated plans, and urges the Member States whose draft updated plans are still pending to submit them without further delay.
+
+The Commission stands ready to support Member States in the transition to climate neutrality, to achieve greater energy autonomy, to adapt to climate change and to continue accelerating the roll-out of no-regret options, in particular energy efficiency and renewable energy technologies. It is ready to support the promotion and financing of clean technologies and to help trigger private investment, including in a skilled workforce. It will be crucial to run timely and well organised public consultations on the plans to ensure they are inclusive and to build acceptance for subsequent action.
+
+To support the finalisation of the plans but also their effective implementation, the Commission will intensify contacts with the Member States on a one-to-one basis and use relevant fora to facilitate exchanges of best practices, including on cross cutting issues such as investments and grid planning following up on the recently adopted Commission EU Plan for Grids
+[64](#footnote65)
+. The Commission will keep a close dialogue with the European Parliament and the Council on the progress achieved by the Energy Union on all dimensions of the energy and climate policies.
+
+:   [(1)](#footnoteref2)
+
+       Regulation (EU) 2018/1999 of the European Parliament and of the Council of 11 December 2018 on the Governance of the Energy Union and Climate Action, amending Regulations (EC) No 663/2009 and (EC) No 715/2009 of the European Parliament and of the Council, Directives 94/22/EC, 98/70/EC, 2009/31/EC, 2009/73/EC, 2010/31/EU, 2012/27/EU and 2013/30/EU of the European Parliament and of the Council, Council Directives 2009/119/EC and (EU) 2015/652 and repealing Regulation (EU) No 525/2013 of the European Parliament and of the Council.
+:   [(2)](#footnoteref3)
+
+       Cyprus, Czechia, Germany, Denmark, Estonia, Greece, France, Spain, Finland, Croatia, Hungary, Italy, Lithuania, Luxembourg, Malta, Netherlands, Portugal, Romania, Sweden, Slovenia and Slovakia. The draft updated NECP of Belgium submitted on 30 November 2023, and the draft updated NECPs of Ireland and Latvia, both submitted on 8 December 2023 have only been partly taken into account in this Communication. The Commission plans to publish the assessment and recommendations for Belgium, Ireland and Latvia in early 2024. Austria, Bulgaria and Poland have not yet submitted their draft updated NECP. Therefore, these six Member States receive today only recommendations based on the Climate Law, without prejudice to further steps from the Commission regarding the one not submitting a draft NECP.
+:   [(3)](#footnoteref4)
+
+       See footnote ibid.
+:   [(4)](#footnoteref5)
+
+       The Commission’s recommendations are without prejudice to the application of Articles 107 and 108 of the TFUE, in particular regarding the obligation for Member States to notify to the Commission measures qualifying as State aid for their approval unless covered by block exemptions.
+:   [(5)](#footnoteref6)
+
+       Regulation (EU) 2018/842 of the European Parliament and of the Council of 30 May 2018 on binding annual greenhouse gas emission reductions by Member States from 2021 to 2030 contributing to climate action to meet commitments under the Paris Agreement and amending Regulation (EU) No 525/2013 and Regulation (EU) 2018/841 of the European Parliament and of the Council of 30 May 2018 on the inclusion of greenhouse gas emissions and removals from land use, land use change and forestry in the 2030 climate and energy framework, and amending Regulation (EU) No 525/2013 and Decision No 529/2013/EU.
+:   [(6)](#footnoteref7)
+
+       See section 2.1.2
+:   [(7)](#footnoteref8)
+
+       See section 2.1.3
+:   [(8)](#footnoteref9)
+
+       Net total GHG emissions, including LULUCF and excluding international transport.
+:   [(9)](#footnoteref10)
+
+       See Annex to this Communication. A more ambitious EU-wide reduction of 52% (with the LULUCF limit) would be calculated by considering the WAM projection provided through the NECPR for Germany and Ireland. Without the LULUCF limit the reduction amounts to 52.6%.
+:   [(10)](#footnoteref11)
+
+       The Climate Action Progress report 2023 estimates that EU Member States still need to take additional mitigation measures to achieve climate neutrality by 2050 to cut around 1 600 million tonnes of CO2 equivalent (or 34 percentage points). Data provided in the NECPs is in line with this finding.
+:   [(11)](#footnoteref12)
+
+       Including LULUCF and excluding international transport.
+:   [(12)](#footnoteref13)
+
+       An EU-wide ESR reduction of 33.8% results from the projections provided in the draft updated NECPs. Gaps were filled with the latest projections reported in March 2023 for the NECPR. A more ambitious EU-wide reduction of 35.4% would be calculated by considering the WAM projection provided through the NECPR for Germany and Ireland, and by assuming the most ambitious WAM projection in the range provided in Italy’s draft NECP.
+:   [(13)](#footnoteref14)
+
+       See Annex to this Communication.
+:   [(14)](#footnoteref15)
+
+       Regulation (EU) 2023/839
+:   [(15)](#footnoteref16)
+
+       See Annex to this Communication.
+:   [(16)](#footnoteref17)
+
+       Regulation (EU) 2023/1115 on the making available on the Union market and the export from the Union of certain commodities and products associated with deforestation and forest degradation and repealing Regulation (EU) No 995/2010.
+:   [(17)](#footnoteref18)
+
+       Regulation (EU) 2023/2405.
+:   [(18)](#footnoteref19)
+
+       Including methane emissions, nitrous oxide, fluorinated gases.
+:   [(19)](#footnoteref20)
+
+       Directive 2016/2284
+:   [(20)](#footnoteref21)
+
+    [https://](https://unfccc.int/news/cop28-agreement-signals-beginning-of-the-end-of-the-fossil-fuel-era)
+    unfccc.int/news/cop28-agreement-signals-beginning-of-the-end-of-the-fossil-fuel-era
+:   [(21)](#footnoteref22)
+
+       https://unfccc.int/sites/default/files/resource/cop26\_auv\_2f\_cover\_decision.pdf
+:   [(22)](#footnoteref23)
+
+       See Annex to this Communication.
+:   [(23)](#footnoteref24)
+
+       Directive (EU) 2001/2018 on the promotion of the use of energy from renewable sources, prior to the amendment by Directive (EU) 2023/2413.
+:   [(24)](#footnoteref25)
+
+       Directive (EU) 2001/2018 on the promotion of the use of energy from renewable sources, as amended by Directive (EU) 2023/2413 of the European Parliament and of the Council of 18 October 2023 amending Directive (EU) 2018/2001, Regulation (EU) 2018/1999 and Directive 98/70/EC as regards the promotion of energy from renewable sources, and repealing Council Directive (EU) 2015/652
+:   [(25)](#footnoteref26)
+
+       See Annex to this Communication.
+:   [(26)](#footnoteref27)
+
+       COM/2022/221 final
+:   [(27)](#footnoteref28)
+
+       European Commission, Communication from the Commission to the European Parliament, the Council, the European Economic and Social Committee and the Committee of the Regions, “Delivering on the EU offshore renewable energy ambitions”, COM(2023) 668 final, from 24 October 2023.
+:   [(28)](#footnoteref29)
+
+       COM(2023) 669 final
+:   [(29)](#footnoteref30)
+
+       Information whether and to what extent they will use waste heat and cold towards the achievement of those targets, and the role of renewable electricity in the accounting also remains unclear.
+:   [(30)](#footnoteref31)
+
+       Requirement to increase the renewable energy share by at least 0.8 pp as an annual average calculated for the period 2021 to 2025 and by at least 1.1 pp as an annual average calculated for the period 2026 to 2030 in line with Article 23 of the revised REDII.
+:   [(31)](#footnoteref32)
+
+       Information on hydrogen production capacity roll-out and its climate-adaptation scenarios, specifically on water availability, was also missing in most draft updated NECPs.
+:   [(32)](#footnoteref33)
+
+       The format for the reported figures was not coherent and consistent on biomethane which does not allow for an accurate aggregation.
+:   [(33)](#footnoteref34)
+
+       Directive (EU) 2023/1791 of the European Parliament and of the Council of 13 September 2023 on energy efficiency and amending Regulation (EU) 2023/955 (recast), OJ L 231, 20.9.2023, p. 1.
+:   [(34)](#footnoteref35)
+
+       See Annex to this Communication.
+:   [(35)](#footnoteref36)
+
+       Directive (EU) 2018/2002 of the European Parliament and of the Council of 11 December 2018 amending Directive 2012/27/EU on energy efficiency.
+:   [(36)](#footnoteref37)
+
+       Article 3(3) (d) of the Regulation (EU) 1999/2018 on the Governance of the Energy Union and Climate Action, and Article 3 of Directive (EU) 2023/1791 (“EED recast”)
+:   [(37)](#footnoteref38)
+
+       Buildings were responsible for more than 23% of the GHG emissions of ESR sectors in 2022 (source EES). Significant renovation efforts are needed to comply with ESR targets and contribute to climate neutrality.
+:   [(38)](#footnoteref39)
+
+       Cf. JRC report on the assessment of the 2020 LTRS (https://publications.jrc.ec.europa.eu/repository/handle/JRC128067) and SWD/2022/375 analysing the national long-term renovation strategies 2020 for all EU countries (https://energy.ec.europa.eu/system/files/2022-12/SWD-Analysis-of-2020-LTRS.PDF)
+:   [(39)](#footnoteref40)
+
+       Targets and projections for energy import dependency on third countries, oil and gas consumption and production, electricity demand, gas and energy storage capacities, fulfilment of N-1 criterium, the expected energy not served and the loss of load expectation indicators, amongst others.
+:   [(40)](#footnoteref41)
+
+       European Commission, Directorate-General for Energy, EU energy in figures – Statistical pocketbook 2023, Publications Office of the European Union, 2023,
+    <https://data.europa.eu/doi/10.2833/502436>
+:   [(41)](#footnoteref42)
+
+       ENER Chief Economist data.
+:   [(42)](#footnoteref43)
+
+       At the time of writing, 5 National Risk Assessments (Bulgaria, France, Croatia, Latvia, Slovakia) and 1 Common Risk Assessment (for the North Eastern regional risk group) have still not been submitted while they were due by 1 October 2022, and neither have 6 Preventive Action Plans (Bulgaria, Germany, Croatia, Hungary, Lithuania, Netherlands) and 4 Emergency Plans (Bulgaria, Croatia, Lithuania, Netherlands) while they were due by 1 March 2023.
+:   [(43)](#footnoteref44)
+
+       In 2021, 25.4% of all electricity produced in the EU was generated by nuclear power plants (Eurostat)
+:   [(44)](#footnoteref45)
+
+       Directive (EU) 2022/2555 of the European Parliament and of the Council of 14 December 2022 on measures for a high common level of cybersecurity across the Union, amending Regulation (EU) No 910/2014 and Directive (EU) 2018/1972, and repealing Directive (EU) 2016/1148 (NIS 2 Directive)
+:   [(45)](#footnoteref46)
+
+       COM/2020/299 final
+:   [(46)](#footnoteref47)
+
+       The Electricity Directive (EU) 2019/944 includes obligations for Member States to enable full and smooth access to the market for flexibility services demand response and storage notably with robust enabling regulatory framework.
+:   [(47)](#footnoteref48)
+
+       Article 20a of Directive (EU) 2018/2001 as amended (“revised RED II”)
+:   [(48)](#footnoteref49)
+
+       Pursuant to Article 2 of Directive (EU) 2019/944 ‘active customer’ means a final customer, or a group of jointly acting final customers, who consumes or stores electricity generated within its premises located within confined boundaries or, where permitted by a Member State, within other premises, or who sells self-generated electricity or participates in flexibility or energy efficiency schemes, provided that those activities do not constitute its primary commercial or professional activity.
+:   [(49)](#footnoteref50)
+
+       Approximately 40 million Europeans across all Member States representing 9.3% of the Union population were unable to keep their home adequately warm in 2022, a sharp increase since 2021 when 6.9% of the population were in the same situation. The share has more than doubled for people in the lower income categories.
+:   [(50)](#footnoteref51)
+
+       Commission Staff Working Document. Assessment of progress towards the objectives of the Energy Union and Climate Action Accompanying the document Report from the Commission to the European Parliament, the Council, the European Economic and Social Committee and the Committee of the Regions State of the Energy Union 2023 Report (pursuant to Regulation (EU) 2018/1999 on the Governance of the Energy Union and Climate Action), SWD/2023/646 final.
+:   [(51)](#footnoteref52)
+
+    <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=COM%3A2023%3A572%3AFIN&qid=1696502521767>
+:   [(52)](#footnoteref53)
+
+       COM(2022) 552 final
+:   [(53)](#footnoteref54)
+
+       COM/2023/376 final
+:   [(54)](#footnoteref55)
+
+       COM(2023) 376 final; based on SWD (2023) 68 final and COM/2022/438 final. In addition, the Net-Zero Industry Act requires in total EUR 92 billion over the period 2023-2030.
+:   [(55)](#footnoteref56)
+
+       As indicated in the key messages for the Council of the EMCO and SPC review of the implementation of the Council Recommendation on ensuring a fair transition towards climate neutrality
+    <https://www.consilium.europa.eu/en/meetings/epsco/2023/11/27-28/>
+    . The monitoring, concluded in October 2023, focussed in particular on: (i) active support to quality employment within the context of the green transition; (ii) tax-and-benefit and social protection systems in the green transition; and (iii) horizontal provisions (whole of society approach; evidence-based policy making, optimal use of funding).
+:   [(56)](#footnoteref57)
+
+       According to a survey run by EIGE, a higher share of women than men choose environmentally friendly options such as recycling, renewable energy, eco-friendly products. Moreover, men have a higher carbon footprint due to leisure activities than women. See EIGE, (2023). Gender Equality Index 2023. Towards a green transition in transport and energy, Publications Office of the European Union.
+:   [(57)](#footnoteref58)
+
+       For comparison, in 2020, 10 NECPs referred to gender equality.
+:   [(58)](#footnoteref59)
+
+       Article 10 of Regulation (EU) 2018/1999 on the Governance of the Energy Union and Climate Action.
+:   [(59)](#footnoteref60)
+
+       Convention on access to information, public participation in decision‐making and access to justice in environmental matters – Declarations. OJ L 124, 17.5.2005, p. 4–20.
+:   [(60)](#footnoteref61)
+
+       According to recital 28 of Regulation (EU) 2018/1999 on the Governance of the Energy Union and Climate Action. and the Council Recommendation of 12 June 2023 on strengthening social dialogue in the European Union
+:   [(61)](#footnoteref62)
+
+       Four high level groups have been set up by the European Commission to provide strategic steering and policy guidance on regulatory and infrastructure development and to monitor progress of projects of common interest in priority regions. They include: The North Seas Energy Cooperation (NSEC); Interconnections for South-West Europe; Baltic Energy Market Interconnection Plan (BEMIP); Central and South Eastern Europe energy connectivity (CESEC).
+:   [(62)](#footnoteref63)
+
+       Climate Action Progress Report 2023, COM(2023) 653 final
+:   [(63)](#footnoteref64)
+
+       Assessment of progress on climate adaptation in the individual Member States according to the European Climate Law, SWD (2023) 932.
+:   [(64)](#footnoteref65)
+
+       Grids, the missing link – an EU Action Plan for Grids. COM (2023) 757 final.
+
+![european flag](./../../../../images/eclogo.jpg)EUROPEAN COMMISSION
+
+Brussels, 18.12.2023
+
+COM(2023) 796 final
+
+ANNEX
+
+to the
+
+COMMUNICATION FROM THE COMMISSION TO THE EUROPEAN PARLIAMENT, THE COUNCIL, THE EUROPEAN ECONOMIC AND SOCIAL COMMITTEE AND THE COMMITTEE OF THE REGIONS
+
+EU wide assessment of the draft updated National Energy and Climate Plans
+
+An important step towards the more ambitious 2030 energy and climate objectives under the European Green Deal and RePowerEU
+
+ANNEX
+
+1METHODOLOGY FOR THE AGGREGATION OF GREENHOUSE GAS (GHG) EMISSIONS ACROSS MEMBER STATES
+
+The EU-wide aggregation of data on GHG emissions is based on the 24 NECPs submitted at the time of publication of this assessment
+[1](#footnote2)
+, complemented where needed with information extracted from the March 2023 first progress reports (NECPR).
+
+The aggregation of data is based on the following rules:
+
+-When available, projections with additional measures (WAM) provided in the NECPs were used.
+
+-If the WAM projections are missing, the projections with existing measures (WEM) provided in the NECP were used instead.
+
+-If neither the WAM nor the WEM projections are available in the NECPs, and for the Member States that did not submit the NECP, the March 2023 WAM projections were used. If March 2023 WAM projections are not available, then March 2023 WEM projections are used.
+
+Table 1: overview of the GHG emission data used to assess progress to the climate targets
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+|  | Total GHG emissions (including LULUCF) | | ESR emissions | |
+|  | 2030 | 2050 | 2005\* | 2030 |
+|  | Mt CO2e | | | |
+| EU-27 | 2,284 | 1,589 | 2,517.1 | 1656.9 |
+|  |  |  |  |  |
+| Austria | 61.8 | 52.3 | 57.0 | 41.7 |
+| Belgium | 82.0 | 61.6 | 81.6 | 46.8 |
+| Bulgaria | 41.9 | 21.3 | 22.3 | 22.8 |
+| Croatia | 19.2 | 11.4 | 18.1 | 15.0 |
+| Cyprus | 6.0\*\* | 4.0\*\* | 4.3 | 3.3\*\* |
+| Czechia | 108.7\*\* | 46.1 | 65.0 | 52.8 |
+| Denmark | 28.9 | 22.6 | 40.4 | 24.4 |
+| Estonia | 10.6\*\* | 4.6\*\* | 6.2 | 5.5 |
+| Finland | 4.7 | -12.5 | 34.4 | 18.5 |
+| France | 252.0\*\* | 256.2 | 401.1 | 215.0\*\* |
+| Germany | 449.0\*\* | 194.0\*\* | 484.7 | 317.0\*\* |
+| Greece | 44.5\*\* | 2.5\*\* | 63.0 | 34.0\*\* |
+| Hungary | 51.7 | 40.4 | 47.8 | 36.4\*\* |
+| Ireland | 62.5\*\* | 55.8\*\* | 47.7 | 42.8\*\* |
+| Italy | 277.0\*\* | 268.7 | 343.1 | 219.5\*\* |
+| Latvia | 12.2 | 11.1 | 8.6 | 7.9 |
+| Lithuania | 8.7 | 7.4 | 13.1 | 10.3 |
+| Luxembourg | 5.1 | 1.0 | 10.1 | 4.3 |
+| Malta | 2.6 | 2.9 | 1.0 | 1.5 |
+| Netherlands | 124.0 | 83.0\*\* | 128.1 | 78.6 |
+| Poland | 340.7 | 276.0 | 192.5 | 178.7 |
+| Portugal | 29.4\*\* | 2.8 | 48.6 | 28.2 |
+| Romania | 49.6\*\* | 3.1\*\* | 78.2 | 81.7 |
+| Slovakia | 28.1 | 19.8 | 23.1 | 20.5 |
+| Slovenia | 6.4\*\* | 0.0 | 11.8 | 8.4\*\* |
+| Spain | 156.1 | 141.0 | 242.0 | 133.8 |
+| Sweden | -12.1 | -24.4 | 43.2 | 16.5 |
+| \*2005 legal base year figures as set in Annex I of Commission Implementing Decision (EU) 2020/2126 [2](#footnote3)    \*\* Data point in the draft updated NECP different than in NECPR | | | | |
+
+For LULUCF, the projections (WAM or, when not available WEM) were used to assess the Member State’s compliance with the 2021-25 “no debit” rule and the trajectory towards the 2030 national target (as per Annex IIa column C of the revised Regulation 2018/841). In addition, the submitted projections were assessed considering the revised inventories. This had, in some cases, significant impact on the overall assessment. The credibility of the proposed policies and measures in the relevant areas was also considered.
+
+For the assessment of the Union 2030 reduction target of -55% of net domestic GHG emissions (including LULUCF) compared to 1990, in accordance with the European Climate Law, the contribution of net removals was limited to 225 million tonnes of CO2 equivalent.
+
+2METHODOLOGY TO CALCULATE THE MEMBER STATES’ AMBITION GAP AT UNION LEVEL IN THE AREA OF RENEWABLE ENERGY
+
+The following criteria were used in the assessment of the ambition gap between the submitted contributions towards the Union-wide share of renewable energy of at least 42.5% and the share of renewable energy that results from applying the formula set out in Annex II of Regulation (EU) 2018/1999 on the Governance of the Energy Union and Climate Action
+[3](#footnote4)
+:
+
+With x referring to the Member State’s renewables shares contribution in the draft updated NECP
+
+x ≤ -4% = significantly below
+
+-4% < x ≤ -2%= below
+
+-2% < x < 0 %= slightly below
+
+x = 0%= in line
+
+0% < x < 2%
+   = slightly above
+
+2% ≤ x < 5%
+   = above
+
+x ≥ 5%= significantly above
+
+The Member States’ renewable energy share in gross final energy consumption (GFEC) and their associated GFEC levels are necessary to establish whether the collective contribution of Member States adds up to at least 42.5% Union wide binding renewable energy share in GFEC.
+
+For those Member States that have not submitted the GFEC values, or that have not submitted a draft updated NECP, the 2019 contributions provided in their respective final NECPs of 2020 or, if applicable, the official data submitted to the Commission via structured dialogue (EU PILOT), were used to fill in the remaining data gaps.
+
+Nineteen Member States (Belgium, Cyprus, Czechia, Germany, Denmark, Estonia, Greece, Spain, Croatia, Hungary, Italy, Ireland, Latvia, Lithuania, Luxembourg, Romania, Portugal, Slovenia, Slovakia) submitted a draft updated NECP including an explicit or implicit contribution to the 42.5% EU binding renewable energy target for 2030.
+
+Five Member States (Finland, France, Malta, Netherlands, Sweden) submitted a draft updated NECP but did not update their contribution to the 42.5% EU binding renewable energy target for 2030. Four Member States out of those five (Finland, Malta, Netherlands, Sweden) indicated that that they will update their contribution in their final NECP.
+
+Two Member States (Bulgaria, Poland) did not submit the updated draft NECP but submitted their contribution via the EU Pilot structured dialogue with the Commission.
+
+One Member State (Austria) did neither submit a draft updated NECP nor a contribution via the EU Pilot structured dialogue exchange.
+
+Table 2: Overview of national contributions and ambition gaps towards the Union target of at least 42.5% of renewable energy consumption
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+|  | RES-shares | | | | |
+|  | 2020 national binding target | 2021 national SHARES value | 2030 national contribution (as per draft updated NECP) | 2030 shares in line with the formula | Ambition gap |
+| AT | 34% | 36.4% | 46%-50% | 57% | Significantly below |
+| BE | 13% | 13.0% | 21.7% | 33% | Significantly below |
+| BG | 16% | 17.0% | 29.9% | 33% | Below |
+| CY | 13% | 18.4% | 26.5% | 33% | Significantly below |
+| CZ | 13% | 17.7% | 30% | 33% | Below |
+| DE | 18% | 19.2% | 40% | 41% | Slightly below |
+| DK | 30% | 34.7% | 70.9% | 60% | Significantly above |
+| EE | 25% | 38.0% | 65% | 50% | Significantly above |
+| EL | 18% | 21.9% | 44% | 39% | Significantly above |
+| ES | 20% | 20.7% | 47.9% | 43% | Above |
+| FI | 38% | 43.1% | 51% | 62% | Significantly below |
+| FR | 23% | 19.3% | 33% | 44% | Significantly below |
+| HR | 20% | 31.3% | 42.5% | 44% | Slightly below |
+| HU | 13% | 14.1% | 29% | 34% | Significantly below |
+| IE | 16% | 12.5% | 31.4%-34.1% | 43% | Significantly below |
+| IT | 17% | 19.0% | 40.5% | 39% | Slightly above |
+| LT | 23% | 28.2% | 55% | 49% | Significantly above |
+| LU | 11% | 11.7% | 37% | 37% | In line |
+| LV | 40% | 42.1% | 57% | 61% | Significantly below |
+| MT | 10% | 12.2% | 11.5% | 28% | Significantly below |
+| NL | 14% | 13.0% | 27% | 39% | Significantly below |
+| PL | 15% | 15.6% | 23%-31% | 32% | Significantly below |
+| PT | 31% | 34.0% | 49% | 51% | Slightly below |
+| RO | 24% | 23.6% | 34% | 41% | Significantly below |
+| SE | 49% | 62.6% | 65% | 76% | Significantly below |
+| SI | 25% | 25.0% | 30%-35% | 46% | Significantly below |
+| SK | 14% | 17.4% | 23% | 35% | Significantly below |
+
+3METHODOLOGY TO CALCULATE THE MEMBER STATES’ AMBITION GAP AT UNION LEVEL IN THE AREA OF ENERGY EFFICIENCY
+
+The calculation of the sum of the national contributions of Member States reported in the draft updated NECPs for both final and primary energy consumption (FEC) is necessary to assess whether the collective contributions of Member States adds up to 763 Mtoe for final energy consumption and 992.5 Mtoe for primary energy consumption.
+
+For those Member States that have not submitted any national contribution for either their final or primary energy consumption, or both, or that have not submitted a draft updated NECP at all, the 2019 contributions provided in their respective final NECPs of 2020 or, if applicable, the official data submitted to the Commission via structured dialogue (EU PILOT), were used to fill in the remaining data gaps.
+
+Twenty-three Member States (Belgium, Cyprus, Czechia, Denmark, Germany, Estonia, Finland, France, Greece, Spain, Croatia, Hungary, Italy, Ireland, Latvia, Lithuania, Luxembourg, Netherlands, Romania, Portugal, Slovenia, Slovakia, Sweden) submitted a draft updated NECP including an explicit or implicit contribution to the 11.7% EU binding final energy consumption target for 2030.
+
+One Member State (Malta) submitted a draft updated NECP but did not update their contribution to the 11.7% EU binding final energy consumption target for 2030.
+
+One Member State (Bulgaria) did not submit the updated draft NECP but submitted their contribution via the EU Pilot structured dialogue with the Commission.
+
+Two Member States (Austria, Poland) did neither submit a draft updated NECP nor a contribution via the EU Pilot structured dialogue exchange.
+
+Table 3: Overview of national contributions towards the 2030 EU energy efficiency target of -11.7%
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+|  | Final Energy Consumption | | | Primary Energy Consumption | | |
+|  | Contributions reported by Member States or assumed | Results of formula Annex I EED recast | Deviation contribution for 2030 to formula result | Contributions reported by Member States or assumed | Results of formula Annex I EED recast | Deviation contribution for 2030 to formula result |
+| AT | 25.6 | 21.4 | 20.10% | 30.8 | 24.9 | 23.60% |
+| BE | 29.9 | 28.8 | 4.00% | 36.5 | 33.8 | 8.15% |
+| BG | 9.9 | 8.8 | 11.30% | 15.3 | 13.7 | 11.30% |
+| CY | 1.9 | 1.8 | 4.04% | 2.3 | 2 | 11.86% |
+| CZ | 20.2 | 20.2 | -0.05% | 28.8 | 28.8 | -0.02% |
+| DE | 160.5 | 156 | 2.94% | 193.6 | 194.2 | -0.31% |
+| DK | 14.2 | 13.7 | 3.41% | 16.7 | 15.5 | 7.58% |
+| EE | 2.6 | 2.6 | 1.35% | 5.1 | 3.9 | 30.63% |
+| EL | 15.4 | 14.6 | 5.20% | 18.2 | 17.1 | 6.27% |
+| ES | 70.2 | 65.4 | 7.37% | 96.7 | 81.8 | 18.24% |
+| FI | 23.2 | 20.6 | 12.62% | 31.1 | 29.8 | 4.43% |
+| FR | 104 | 104 | -0.05% | 157.3 | 157.3 | -0.05% |
+| HR | 6.6 | 5.9 | 11.65% | 8.1 | 6.8 | 19.18% |
+| HU | 17.9 | 16.2 | 10.62% | 30.7 | 23.3 | 31.55% |
+| IE | 12.9 | 9.9 | 30.97% | 15.2 | 11.2 | 35.61% |
+| IT | 94.4 | 92.1 | 2.48% | 115 | 112.2 | 2.53% |
+| LT | 4.2 | 4.2 | -1.14% | 5.2 | 5.2 | 0.83% |
+| LU | 3 | 2.7 | 12.32% | 3.5 | 2.8 | 24.06% |
+| LV | 3.4 | 3.3 | 4.16% | 4.1 | 3.7 | 10.04% |
+| MT | 0.8 | 0.7 | 14.47% | 1.1 | 0.8 | 26.73% |
+| NL | 43.9 | 38.4 | 14.27% | 46.6 | 46.2 | 0.84% |
+| PL | 67 | 57.7 | 16.06% | 91.3 | 77.2 | 18.33% |
+| PT | 14.9 | 13.4 | 11.11% | 20.8 | 15.2 | 37.17% |
+| RO | 23.2 | 22.8 | 1.95% | 31.4 | 30.2 | 4.11% |
+| SE | 29.8 | 25.1 | 18.84% | 40.4 | 35.4 | 14.08% |
+| SI | 4.4 | 4.3 | 3.25% | 6 | 5.8 | 4.13% |
+| SK | 10.3 | 8.5 | 21.38% | 15.7 | 13.6 | 15.26% |
+| Total | 814.3 | 763 |  | 1067.5 | 992.5 |  |
+
+:   [(1)](#footnoteref2)
+
+       Belgium, Croatia, Cyprus, Czechia, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Malta, the Netherland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden. Poland and Bulgaria submitted partial information via the EU Pilot structured dialogue. However, updated trajectories for GHG emissions were not included.
+:   [(2)](#footnoteref3)
+
+    Commission Implementing Regulation (EU) 2020/2126 of 16 December 2020 on setting out the annual emission allocations of the Member States for the period 2021 to 2030 pursuant to Regulation (EU) 2018/842 if the European Parliament and of the Council.
+:   [(3)](#footnoteref4)
+
+       Regulation (EU) 2018/1999 of the European Parliament and of the Council of 11 December 2018 on the Governance of the Energy Union and Climate Action, amending Regulations (EC) No 663/2009 and (EC) No 715/2009 of the European Parliament and of the Council, Directives 94/22/EC, 98/70/EC, 2009/31/EC, 2009/73/EC, 2010/31/EU, 2012/27/EU and 2013/30/EU of the European Parliament and of the Council, Council Directives 2009/119/EC and (EU) 2015/652 and repealing Regulation (EU) No 525/2013 of the European Parliament and of the Council. OJ L 328, 21.12.2018, p. 1–77.
