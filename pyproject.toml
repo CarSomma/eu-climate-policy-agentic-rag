@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-eu-climate-ingest = "eu_climate_policy_rag.collection.ingestion:main"
+eu-climate-ingest = "eu_climate_policy_rag.collection.cleaning.rag_dataset_ingestion:main"
 eu-climate-pipeline = "eu_climate_policy_rag.collection.pipeline:main"
 eu-climate-ask = "eu_climate_policy_rag.qa.rag:app"
 
@@ -33,12 +33,23 @@ where = ["src"]
 dev = [
     "coverage>=7.13.5",
     "pytest>=8.0.0",
+    "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.1.0",
+    "ruff>=0.15.12",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_classes = ["*Tests"]
+addopts = ["--import-mode=importlib"]
+asyncio_mode = "auto"
+asyncio_default_test_loop_scope = "function"
+markers = [
+    "unit: pure logic tests — no I/O, no network, all dependencies in-memory",
+    "integration: tests with file I/O, multi-component wiring, or async external systems",
+]
+
+[tool.ruff]
+extend-exclude = ["notebooks"]
 
 [tool.coverage.run]
 source = ["src"]
