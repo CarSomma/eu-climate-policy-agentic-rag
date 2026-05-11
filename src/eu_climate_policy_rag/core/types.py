@@ -1,4 +1,4 @@
-"""Shared typed dictionaries used across notebook-friendly APIs."""
+"""Core typed dictionaries used across the EU climate policy RAG project."""
 
 from typing import NotRequired, TypedDict
 
