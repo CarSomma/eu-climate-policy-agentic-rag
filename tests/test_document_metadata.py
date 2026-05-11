@@ -1,9 +1,7 @@
-import unittest
-
 from eu_climate_policy_rag.collection.document_metadata import MetadataEnricher
 
 
-class MetadataEnricherTests(unittest.TestCase):
+class MetadataEnricherTests:
     def test_enrich_normalizes_eur_lex_html_links(self) -> None:
         sections = {
             "Documentation": [
@@ -17,12 +15,12 @@ class MetadataEnricherTests(unittest.TestCase):
         enriched = MetadataEnricher().enrich(sections)
         document = enriched["Documentation"][0]
 
-        self.assertIn("/TXT/HTML/", document["url"])
-        self.assertEqual(document["type"], "regulation")
-        self.assertEqual(document["year"], 2040)
-        self.assertEqual(document["identifier"], "52025PC0524")
-        self.assertEqual(document["source"], "eur-lex")
-        self.assertEqual(document["topic"], "climate_law")
+        assert "/TXT/HTML/" in document["url"]
+        assert document["type"] == "regulation"
+        assert document["year"] == 2040
+        assert document["identifier"] == "52025PC0524"
+        assert document["source"] == "eur-lex"
+        assert document["topic"] == "climate_law"
 
     def test_enrich_detects_commission_press_page(self) -> None:
         link = {
@@ -32,11 +30,7 @@ class MetadataEnricherTests(unittest.TestCase):
 
         document = MetadataEnricher().enrich_link(link)
 
-        self.assertEqual(document["type"], "press_release")
-        self.assertEqual(document["format"], "press_page")
-        self.assertEqual(document["source"], "commission")
-        self.assertEqual(document["topic"], "climate_target_2040")
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert document["type"] == "press_release"
+        assert document["format"] == "press_page"
+        assert document["source"] == "commission"
+        assert document["topic"] == "climate_target_2040"
