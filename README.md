@@ -157,10 +157,10 @@ uv run eu-climate-ingest
 ### Read some documents
 
 ```python
-from eu_climate_policy_rag import discover_and_enrich_documents
+from eu_climate_policy_rag import discover_documents
 
 # Run inside an async context or Jupyter cell
-documents = await discover_and_enrich_documents()
+documents = await discover_documents()
 print(documents[:3])
 ```
 
