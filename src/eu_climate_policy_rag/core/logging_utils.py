@@ -1,4 +1,4 @@
-"""Small colored logging wrapper for command-line pipeline output."""
+"""Small colored logging wrapper for command-line output."""
 
 import logging
 import sys
