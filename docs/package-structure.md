@@ -13,7 +13,8 @@ Important modules:
 - `collection/fetch_agent.py`: uses Playwright, MarkItDown, and OpenAI tool calls to fetch and save documents
 - `collection/ingestion.py`: cleans fetched Markdown, deduplicates, filters off-topic files, and writes JSON records
 - `collection/pipeline.py`: command-line pipeline that wires discovery, enrichment, preselection, fetch, and save
-- `qa/rag.py`: agentic RAG with an LLM-driven search loop via `search_documents` tool calls, Minsearch index, `RagAnswerModel` responses, and the `eu-climate-ask` CLI (`ClimatePolicyAgent`)
+- `qa/rag.py`: agentic RAG orchestration with an LLM-driven tool loop, `RagAnswerModel` responses, and the `eu-climate-ask` CLI (`ClimatePolicyAgent`)
+- `qa/tools.py`: class-based RAG tools, including the `search_documents` Minsearch tool and prompt context formatting
 - `core/logging_utils.py`: provides colored project loggers for CLI progress output
 - `core/models.py`: data models that validate links, metadata, configs, results, and cleaned records
 - `core/types.py`: core typed dictionaries
