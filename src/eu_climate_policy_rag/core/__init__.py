@@ -3,7 +3,6 @@
 from eu_climate_policy_rag.core.logging_utils import ColoredLogger
 from eu_climate_policy_rag.core.models import (
     CleanedDocumentRecordModel,
-    DocumentMetadataModel,
     IngestionConfigModel,
     IngestionResultModel,
     LinkModel,
@@ -16,7 +15,6 @@ from eu_climate_policy_rag.core.models import (
 __all__ = [
     "CleanedDocumentRecordModel",
     "ColoredLogger",
-    "DocumentMetadataModel",
     "IngestionConfigModel",
     "IngestionResultModel",
     "LinkModel",
