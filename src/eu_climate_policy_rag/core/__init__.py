@@ -1,5 +1,6 @@
 """Core support code used by collection and RAG modules."""
 
+from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.logging_utils import ColoredLogger
 from eu_climate_policy_rag.core.models import (
     CleanedDocumentRecordModel,
@@ -13,6 +14,7 @@ from eu_climate_policy_rag.core.models import (
 )
 
 __all__ = [
+    "AbstractAgent",
     "CleanedDocumentRecordModel",
     "ColoredLogger",
     "IngestionConfigModel",

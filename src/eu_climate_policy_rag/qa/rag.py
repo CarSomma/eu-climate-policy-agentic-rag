@@ -8,11 +8,21 @@ from typing import Any, Annotated
 import typer
 from openai import OpenAI
 
+from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.logging_utils import get_logger
-from eu_climate_policy_rag.core.models import CleanedDocumentRecordModel, RagAnswerModel, RagConfigModel
-from eu_climate_policy_rag.qa.tools import SearchDocumentsTool, format_context_item
+from eu_climate_policy_rag.core.models import (
+    CleanedDocumentRecordModel,
+    RagAnswerModel,
+    RagConfigModel,
+    SearchDocumentsResultModel,
+)
+from eu_climate_policy_rag.core.tooling import ToolRegistry
+from eu_climate_policy_rag.qa.tools import (
+    SearchDocumentsTool,
+    format_context_item as format_context_item,
+)
 
-logger = get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 DEFAULT_INSTRUCTIONS = """
 You are an expert assistant on EU climate policy.
@@ -31,7 +41,7 @@ Rules:
 """.strip()
 
 
-class ClimatePolicyAgent:
+class ClimatePolicyAgent(AbstractAgent):
     """Answer EU climate policy questions with an LLM-driven search loop."""
 
     def __init__(
@@ -43,22 +53,31 @@ class ClimatePolicyAgent:
         num_results: int = 5,
         max_chars_per_doc: int = 2000,
         max_turns: int = 10,
+        search_tool: SearchDocumentsTool | None = None,
     ) -> None:
-        self.documents = [CleanedDocumentRecordModel.model_validate(d).model_dump() for d in documents]
-        self.openai_client = openai_client or OpenAI()
+        self.documents = [
+            CleanedDocumentRecordModel.model_validate(document).model_dump()
+            for document in documents
+        ]
         self.config = RagConfigModel(
             model=model,
             num_results=num_results,
             instructions=instructions,
             max_chars_per_doc=max_chars_per_doc,
         )
-        self.max_turns = max_turns
-        self.search_tool = SearchDocumentsTool(
+        self.search_tool = search_tool or SearchDocumentsTool(
             documents=self.documents,
             num_results=self.config.num_results,
             max_chars_per_doc=self.config.max_chars_per_doc,
         )
-        self.tools = {self.search_tool.name: self.search_tool}
+        super().__init__(
+            openai_client=openai_client,
+            model=self.config.model,
+            instructions=self.config.instructions,
+            tools=ToolRegistry([self.search_tool.function_tool]),
+            max_turns=max_turns,
+        )
+        self._current_run_sources: list[str] = []
 
     @classmethod
     def from_json(
@@ -90,60 +109,39 @@ class ClimatePolicyAgent:
 
         return self.search_tool.search(query)
 
-    def _execute_tool_call(self, tool_call: Any) -> tuple[dict[str, Any], list[str]]:
-        """Dispatch a function_call message to the matching tool and return its output."""
+    def _execute_tool_call(self, tool_call: Any) -> dict[str, Any]:
+        """Dispatch a function_call to the search tool and collect sources as a side-effect."""
+
         arguments = json.loads(tool_call.arguments)
-        tool = self.tools.get(tool_call.name)
-        sources: list[str] = []
-        if tool:
-            query = arguments["query"]
-            logger.info("Searching: %s", query)
-            result = tool.run(query)
+        if self.tools.get(tool_call.name) is None:
+            LOGGER.error("Unknown RAG tool requested: %s", tool_call.name)
+        elif tool_call.name == self.search_tool.name:
+            LOGGER.info("Searching: %s", arguments["query"])
+
+        result = self.tools.run_sync(tool_call.name, arguments)
+        if isinstance(result, SearchDocumentsResultModel):
             output = result.context
-            sources = result.sources
+            self._current_run_sources.extend(result.sources)
         else:
-            output = f"Unknown tool: {tool_call.name}"
+            output = str(result.get("error", result)) if isinstance(result, dict) else str(result)
 
         return {
             "type": "function_call_output",
             "call_id": tool_call.call_id,
             "output": output,
-        }, sources
+        }
+
+    def run(self, query: str) -> RagAnswerModel:
+        """Implement the abstract ``run`` method; delegates to ``answer``."""
+
+        return self.answer(query)
 
     def answer(self, query: str) -> RagAnswerModel:
         """Answer a user question using iterative document search."""
 
-        message_history: list[Any] = [
-            {"role": "system", "content": self.config.instructions},
-            {"role": "user", "content": query},
-        ]
-
-        all_sources: list[str] = []
-        final_answer = ""
-
-        for turn in range(1, self.max_turns + 1):
-            logger.info("Agent turn %d", turn)
-            response = self.openai_client.responses.create(
-                model=self.config.model,
-                input=message_history,
-                tools=[tool.schema for tool in self.tools.values()],
-            )
-            message_history.extend(response.output)
-
-            has_tool_call = False
-            for message in response.output:
-                if message.type == "function_call":
-                    has_tool_call = True
-                    tool_output, sources = self._execute_tool_call(message)
-                    all_sources.extend(sources)
-                    message_history.append(tool_output)
-                elif message.type == "message":
-                    final_answer = message.content[0].text
-
-            if not has_tool_call:
-                break
-
-        sources = list(dict.fromkeys(s for s in all_sources if s))
+        self._current_run_sources = []
+        final_answer, _ = self._run_loop(query)
+        sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
         return RagAnswerModel(query=query, answer=final_answer, sources=sources)
 
 
@@ -152,14 +150,30 @@ app = typer.Typer(add_completion=False)
 
 @app.command()
 def main(
-    question: Annotated[str, typer.Argument(help="The question to ask the RAG assistant.")],
-    data: Annotated[str, typer.Option(help="Path to the JSON data file.")] = "data/eu_climate_policy.json",
+    question: Annotated[
+        str,
+        typer.Argument(help="The question to ask the RAG assistant."),
+    ],
+    data: Annotated[
+        str,
+        typer.Option(help="Path to the JSON data file."),
+    ] = "data/eu_climate_policy.json",
     model: Annotated[str, typer.Option(help="OpenAI model to use.")] = "gpt-4o-mini",
-    num_results: Annotated[int, typer.Option(help="Number of documents to retrieve.")] = 5,
-    max_chars_per_doc: Annotated[int, typer.Option(help="Max characters per retrieved document.")] = 2000,
-    max_turns: Annotated[int, typer.Option(help="Max agent turns before stopping.")] = 10,
+    num_results: Annotated[
+        int,
+        typer.Option(help="Number of documents to retrieve."),
+    ] = 5,
+    max_chars_per_doc: Annotated[
+        int,
+        typer.Option(help="Max characters per retrieved document."),
+    ] = 2000,
+    max_turns: Annotated[
+        int,
+        typer.Option(help="Max agent turns before stopping."),
+    ] = 10,
 ) -> None:
     """Ask a question about EU climate policy and get a cited answer."""
+
     rag = ClimatePolicyAgent.from_json(
         data,
         model=model,

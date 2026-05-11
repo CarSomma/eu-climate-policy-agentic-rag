@@ -4,6 +4,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
+from eu_climate_policy_rag.core.types import PipelineFetchResult
+
 
 class ProjectModel(BaseModel):
     """Base model configuration shared by project models."""
@@ -46,19 +48,6 @@ class ButtonModel(ProjectModel):
         return value
 
 
-class DocumentMetadataModel(ProjectModel):
-    """Validated metadata for one candidate source document."""
-
-    title: str = Field(min_length=1)
-    url: str = Field(min_length=1)
-    type: str = Field(min_length=1)
-    year: int | None = None
-    identifier: str | None = None
-    source: str = Field(min_length=1)
-    format: str = Field(min_length=1)
-    topic: str = Field(min_length=1)
-
-
 class PageSnapshotModel(ProjectModel):
     """Validated snapshot returned by the browser inspection tool."""
 
@@ -88,7 +77,7 @@ class PipelineResultModel(ProjectModel):
     selected_count: int = Field(ge=0)
     fetched_count: int = Field(ge=0)
     skipped_count: int = Field(ge=0)
-    results: list[dict[str, str]]
+    results: list[PipelineFetchResult]
 
 
 class IngestionResultModel(ProjectModel):
@@ -106,9 +95,10 @@ class CleanedDocumentRecordModel(ProjectModel):
     """One cleaned document record written to the RAG JSON dataset."""
 
     source: str = Field(min_length=1)
+    title: str | None = None
     topic: str = Field(min_length=1)
+    article: str = Field(default="document", min_length=1)
     file_path: str
-    article: str = "document"
     text: str = Field(min_length=1)
     content_hash: str = Field(min_length=1)
 
@@ -118,17 +108,18 @@ class PipelineConfigModel(ProjectModel):
 
     source_url: str | HttpUrl
     limit: int | None = Field(default=None, ge=1)
+    model: str = Field(default="gpt-5.4-mini", min_length=1)
     max_turns: int = Field(default=12, ge=1)
     output_directory: Path = Path("climate_policy_docs")
     fetch_all: bool = False
 
 
 class IngestionConfigModel(ProjectModel):
-    """Runtime configuration for deterministic or agentic ingestion."""
+    """Runtime configuration for cleaning-agent ingestion."""
 
     input_directory: Path = Path("climate_policy_docs")
     output_path: Path = Path("data/eu_climate_policy.json")
-    agentic: bool = False
+    model: str = Field(default="gpt-5.4-mini", min_length=1)
     max_turns: int = Field(default=50, ge=1)
 
 
@@ -176,3 +167,56 @@ class SearchDocumentsResultModel(ProjectModel):
     context: str = Field(min_length=1)
     sources: list[str]
     documents: list[dict[str, object]]
+
+
+class EmptyToolInputModel(ProjectModel):
+    """Validated empty argument object for tools without inputs."""
+
+    pass
+
+
+class GetPageSnapshotInputModel(ProjectModel):
+    """Arguments for the page snapshot fetch tool."""
+
+    url: str = Field(min_length=1)
+
+
+class ClickAndCaptureInputModel(ProjectModel):
+    """Arguments for fetching or clicking a document link."""
+
+    url: str = Field(min_length=1)
+    link_href: str = Field(min_length=1)
+
+
+class ClickDownloadButtonInputModel(ProjectModel):
+    """Arguments for clicking a visible download button."""
+
+    url: str = Field(min_length=1)
+    button_text: str = Field(min_length=1)
+
+
+class ConvertToMarkdownInputModel(ProjectModel):
+    """Arguments for converting cached content to Markdown."""
+
+    content_id: str = Field(min_length=1)
+
+
+class SaveContentToFileInputModel(ProjectModel):
+    """Arguments for saving cached Markdown to disk."""
+
+    markdown_id: str = Field(min_length=1)
+    filename: str = Field(min_length=1)
+    directory: str = Field(default="climate_policy_docs", min_length=1)
+
+
+class DocumentPathInputModel(ProjectModel):
+    """Arguments for tools that operate on one document path."""
+
+    path: str = Field(min_length=1)
+
+
+class SkipDocumentInputModel(ProjectModel):
+    """Arguments for recording a skipped document."""
+
+    path: str = Field(min_length=1)
+    reason: str = Field(min_length=1)
