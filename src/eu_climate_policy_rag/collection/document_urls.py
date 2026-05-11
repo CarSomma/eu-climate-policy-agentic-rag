@@ -1,7 +1,7 @@
 """URL and filename helpers for EU climate policy document fetching."""
 
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 DOCUMENT_EXTENSIONS = (
     ".pdf",
@@ -34,6 +34,50 @@ class UrlNormalizer:
         if "eur-lex" in url and "/TXT/" in url and "/TXT/HTML/" not in url:
             return url.replace("/TXT/", "/TXT/HTML/")
         return url
+
+
+def canonical_document_key(url: str) -> str:
+    """Return a stable identity key for URLs that may have multiple public forms."""
+
+    parsed_url = urlparse(url)
+    if "eur-lex.europa.eu" not in parsed_url.netloc.lower():
+        return url
+
+    celex_id = _celex_from_query(parsed_url.query) or _celex_from_eli_path(
+        parsed_url.path
+    )
+    if celex_id:
+        return f"eur-lex:celex:{celex_id}"
+
+    return UrlNormalizer().normalize(url)
+
+
+def _celex_from_query(query: str) -> str | None:
+    for values in parse_qs(query).values():
+        for value in values:
+            normalized = unquote(value).upper()
+            if "CELEX:" in normalized:
+                return normalized.split("CELEX:", 1)[1].split("&", 1)[0]
+    return None
+
+
+def _celex_from_eli_path(path: str) -> str | None:
+    parts = [part for part in path.strip("/").split("/") if part]
+    if len(parts) < 4 or parts[0].lower() != "eli":
+        return None
+
+    document_type = parts[1].lower()
+    year = parts[2]
+    number = parts[3]
+    celex_type = {
+        "reg": "R",
+        "dir": "L",
+        "dec": "D",
+    }.get(document_type)
+    if celex_type is None or not year.isdigit() or not number.isdigit():
+        return None
+
+    return f"3{year}{celex_type}{int(number):04d}"
 
 
 def is_pdf_url(url: str) -> bool:

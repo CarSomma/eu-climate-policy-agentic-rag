@@ -6,6 +6,7 @@ from typing import Any
 from minsearch import Index
 
 from eu_climate_policy_rag.core.models import SearchDocumentsInputModel, SearchDocumentsResultModel
+from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
 
 
 class SearchDocumentsTool:
@@ -28,17 +29,18 @@ class SearchDocumentsTool:
         self.num_results = num_results
         self.max_chars_per_doc = max_chars_per_doc
         self.index = self._build_index(self.documents)
+        self.function_tool = OpenAIFunctionTool(
+            name=self.name,
+            description=self.description,
+            input_model=SearchDocumentsInputModel,
+            handler=self.run,
+        )
 
     @property
     def schema(self) -> dict[str, Any]:
         """OpenAI Responses API tool schema."""
 
-        return {
-            "type": "function",
-            "name": self.name,
-            "description": self.description,
-            "parameters": SearchDocumentsInputModel.model_json_schema(),
-        }
+        return self.function_tool.schema
 
     def search(self, query: str) -> list[dict[str, Any]]:
         """Return ranked local documents for a query."""

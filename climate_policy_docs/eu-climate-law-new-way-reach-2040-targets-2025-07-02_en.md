@@ -15,12 +15,6 @@ All official European Union website addresses are in the **europa.eu** domain.
 
 [See all EU institutions and bodies](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies_en)
 
-9 MAY 2026
-
-EUROPE DAY
-
-[Celebrate with us](https://commission.europa.eu/get-involved/visit-european-commission/europe-day_en?bar)
-
 [![European Commission logo](/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg)](https://commission.europa.eu/index_en)
 
 [enen](https://commission.europa.eu/news-and-media/news/eu-climate-law-new-way-reach-2040-targets-2025-07-02_en)

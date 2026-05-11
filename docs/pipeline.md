@@ -2,7 +2,7 @@
 
 ## Run the document pipeline
 
-The pipeline discovers document links from the European Climate Law documentation page, enriches their metadata, preselects likely climate-policy documents, fetches them, converts them to Markdown, and saves them.
+The pipeline discovers document links from the European Climate Law documentation page, preselects likely climate-policy documents by title, fetches them, converts them to Markdown, and saves them.
 
 Run a small smoke test first:
 
@@ -21,7 +21,7 @@ Useful options:
 - `--limit 3`: fetch only the first three selected documents
 - `--max-turns 20`: allow more LLM tool-loop turns per document
 - `--output-directory climate_policy_docs`: choose where fetched Markdown is saved
-- `--fetch-all`: disable metadata preselection and attempt every discovered document
+- `--fetch-all`: disable title preselection and attempt every discovered document
 
 By default, fetched Markdown is saved to `climate_policy_docs/`. The fetch agent also performs save-time preselection to reject duplicate content, very short content, off-topic content, and navigation-heavy pages.
 

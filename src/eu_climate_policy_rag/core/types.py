@@ -11,17 +11,21 @@ class Link(TypedDict):
     index: NotRequired[int]
 
 
-class DocumentMetadata(TypedDict):
-    """Metadata inferred for one candidate EU climate policy document."""
+class DocumentCandidate(TypedDict):
+    """Document candidate selected from discovered links."""
 
     title: str
     url: str
-    type: str
-    year: int | None
-    identifier: str | None
-    source: str
-    format: str
-    topic: str
+    section: NotRequired[str]
+
+
+class PipelineFetchResult(TypedDict):
+    """Fetch status for one pipeline document candidate."""
+
+    title: str
+    url: str
+    status: str
+    message: str
 
 
 class PageSnapshot(TypedDict):
@@ -46,3 +50,4 @@ class CachedContent(TypedDict, total=False):
     tmp_path: str
     title: str
     markdown: str
+    content_hash: str
