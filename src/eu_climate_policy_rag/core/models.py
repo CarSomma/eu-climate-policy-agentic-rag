@@ -148,3 +148,31 @@ class RagAnswerModel(ProjectModel):
     query: str = Field(min_length=1)
     answer: str = Field(min_length=1)
     sources: list[str]
+
+
+class SearchDocumentsInputModel(ProjectModel):
+    """Validated arguments for the local document search tool."""
+
+    query: str = Field(
+        min_length=1,
+        description="A concise search query, e.g. '2030 emissions reduction target'.",
+    )
+
+    @field_validator("query")
+    @classmethod
+    def strip_query(cls, value: str) -> str:
+        """Trim search text and reject blank queries."""
+
+        value = value.strip()
+        if not value:
+            raise ValueError("query cannot be blank")
+        return value
+
+
+class SearchDocumentsResultModel(ProjectModel):
+    """Structured output produced by the local document search tool."""
+
+    query: str = Field(min_length=1)
+    context: str = Field(min_length=1)
+    sources: list[str]
+    documents: list[dict[str, object]]
