@@ -135,8 +135,10 @@ from eu_climate_policy_rag import ClimatePolicyAgent
 
 rag = ClimatePolicyAgent.from_json("data/eu_climate_policy.json")
 result = rag.answer("How does the EU's 2030 climate target relate to the 2040 goal?")
-print(result.answer)   # the cited answer text
-print(result.sources)  # list of source document names used
+# the cited answer text
+print(result.answer)
+# list of source document names used
+print(result.sources) 
 ```
 
 ### Run the document pipeline (fetch + ingest)
