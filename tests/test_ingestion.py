@@ -1,6 +1,5 @@
 import json
 import tempfile
-import unittest
 from pathlib import Path
 
 from eu_climate_policy_rag.collection.ingestion import (
@@ -12,7 +11,7 @@ from eu_climate_policy_rag.collection.ingestion import (
 )
 
 
-class IngestionTests(unittest.TestCase):
+class IngestionTests:
     def test_clean_markdown_removes_common_pdf_and_web_artifacts(self) -> None:
         markdown = """
         EN
@@ -27,16 +26,16 @@ class IngestionTests(unittest.TestCase):
 
         cleaned = clean_markdown(markdown)
 
-        self.assertNotIn("Accept all cookies", cleaned)
-        self.assertNotIn("Press contacts", cleaned)
-        self.assertNotIn("\n12\n", cleaned)
-        self.assertIn("European Climate Law", cleaned)
+        assert "Accept all cookies" not in cleaned
+        assert "Press contacts" not in cleaned
+        assert "\n12\n" not in cleaned
+        assert "European Climate Law" in cleaned
 
     def test_should_drop_line_identifies_artifacts(self) -> None:
-        self.assertTrue(should_drop_line("EN"))
-        self.assertTrue(should_drop_line("42"))
-        self.assertTrue(should_drop_line("Select your language"))
-        self.assertFalse(should_drop_line("The 2040 climate target matters."))
+        assert should_drop_line("EN")
+        assert should_drop_line("42")
+        assert should_drop_line("Select your language")
+        assert not should_drop_line("The 2040 climate target matters.")
 
     def test_ingest_directory_filters_duplicates_and_off_topic_files(self) -> None:
         climate_text = (
@@ -61,13 +60,13 @@ class IngestionTests(unittest.TestCase):
             )
             records = json.loads(output_path.read_text(encoding="utf-8"))
 
-            self.assertEqual(result.input_count, 3)
-            self.assertEqual(result.kept_count, 1)
-            self.assertEqual(result.skipped_count, 2)
-            self.assertEqual(result.record_count, 1)
-            self.assertEqual(len(records), result.record_count)
-            self.assertEqual(records[0]["topic"], "climate_law")
-            self.assertEqual(records[0]["article"], "document")
+            assert result.input_count == 3
+            assert result.kept_count == 1
+            assert result.skipped_count == 2
+            assert result.record_count == 1
+            assert len(records) == result.record_count
+            assert records[0]["topic"] == "climate_law"
+            assert records[0]["article"] == "document"
 
     def test_cleaning_toolbox_inspects_saves_skips_and_finalizes(self) -> None:
         climate_text = (
@@ -84,27 +83,24 @@ class IngestionTests(unittest.TestCase):
 
             toolbox = CleaningToolbox(input_directory, output_path)
 
-            self.assertEqual(toolbox.list_documents()["count"], 1)
+            assert toolbox.list_documents()["count"] == 1
             inspection = toolbox.inspect_document(str(climate_path))
-            self.assertIsNone(inspection["deterministic_skip_reason"])
+            assert inspection["deterministic_skip_reason"] is None
 
             save_result = toolbox.save_cleaned_document(str(climate_path))
-            self.assertTrue(save_result["saved"])
+            assert save_result["saved"]
 
             skip_result = toolbox.skip_document("off-topic.md", "not climate policy")
-            self.assertTrue(skip_result["skipped"])
+            assert skip_result["skipped"]
 
             final_result = toolbox.finalize()
             records = json.loads(output_path.read_text(encoding="utf-8"))
 
-            self.assertEqual(final_result["record_count"], 1)
-            self.assertEqual(final_result["skipped_count"], 1)
-            self.assertEqual(records[0]["article"], "document")
+            assert final_result["record_count"] == 1
+            assert final_result["skipped_count"] == 1
+            assert records[0]["article"] == "document"
 
     def test_infer_topic(self) -> None:
-        self.assertEqual(infer_topic("2040 climate target"), "climate_target_2040")
-        self.assertEqual(infer_topic("climate law regulation"), "climate_law")
+        assert infer_topic("2040 climate target") == "climate_target_2040"
+        assert infer_topic("climate law regulation") == "climate_law"
 
-
-if __name__ == "__main__":
-    unittest.main()
