@@ -1,6 +1,6 @@
-import unittest
 from pathlib import Path
 
+import pytest
 from pydantic import ValidationError
 
 from eu_climate_policy_rag.core.models import (
@@ -11,18 +11,18 @@ from eu_climate_policy_rag.core.models import (
 )
 
 
-class CoreModelTests(unittest.TestCase):
+class CoreModelTests:
     def test_link_model_strips_text_and_rejects_blank_href(self) -> None:
         link = LinkModel(text=" Climate Law ", href=" https://example.test/doc ")
 
-        self.assertEqual(link.text, "Climate Law")
-        self.assertEqual(link.href, "https://example.test/doc")
+        assert link.text == "Climate Law"
+        assert link.href == "https://example.test/doc"
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             LinkModel(text="Climate Law", href=" ")
 
     def test_document_metadata_model_rejects_missing_required_fields(self) -> None:
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             DocumentMetadataModel(
                 title="European Climate Law",
                 url="https://example.test",
@@ -40,9 +40,9 @@ class CoreModelTests(unittest.TestCase):
             content_hash="abc123",
         )
 
-        self.assertEqual(record.article, "document")
+        assert record.article == "document"
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             CleanedDocumentRecordModel(
                 source="European Climate Law",
                 topic="climate_law",
@@ -59,14 +59,10 @@ class CoreModelTests(unittest.TestCase):
             output_directory=Path("docs"),
         )
 
-        self.assertEqual(config.output_directory, Path("docs"))
+        assert config.output_directory == Path("docs")
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             PipelineConfigModel(
                 source_url="https://example.test/docs",
                 limit=0,
             )
-
-
-if __name__ == "__main__":
-    unittest.main()
