@@ -1,5 +1,4 @@
 import tempfile
-import unittest
 from pathlib import Path
 
 from eu_climate_policy_rag.collection.fetch_agent import (
@@ -9,7 +8,7 @@ from eu_climate_policy_rag.collection.fetch_agent import (
 )
 
 
-class DocumentPreselectorTests(unittest.TestCase):
+class DocumentPreselectorTests:
     def test_accepts_substantive_climate_policy_content(self) -> None:
         markdown = (
             "The European Climate Law sets a binding climate neutrality objective. "
@@ -19,8 +18,8 @@ class DocumentPreselectorTests(unittest.TestCase):
 
         result = DocumentPreselector().assess("2040 climate target", markdown)
 
-        self.assertTrue(result.accepted)
-        self.assertEqual(result.reason, "accepted")
+        assert result.accepted
+        assert result.reason == "accepted"
 
     def test_rejects_off_topic_content(self) -> None:
         markdown = (
@@ -30,8 +29,8 @@ class DocumentPreselectorTests(unittest.TestCase):
 
         result = DocumentPreselector().assess("Single market focus areas", markdown)
 
-        self.assertFalse(result.accepted)
-        self.assertEqual(result.reason, "content is not clearly about EU climate policy")
+        assert not result.accepted
+        assert result.reason == "content is not clearly about EU climate policy"
 
     def test_rejects_navigation_heavy_content_with_weak_climate_signal(self) -> None:
         markdown = """
@@ -49,11 +48,11 @@ class DocumentPreselectorTests(unittest.TestCase):
 
         result = DocumentPreselector().assess("Commission page", markdown)
 
-        self.assertFalse(result.accepted)
-        self.assertEqual(result.reason, "content appears to be mostly page navigation")
+        assert not result.accepted
+        assert result.reason == "content appears to be mostly page navigation"
 
 
-class DocumentFetchAgentPreselectionTests(unittest.TestCase):
+class DocumentFetchAgentPreselectionTests:
     def test_save_content_to_file_rejects_duplicate_markdown(self) -> None:
         markdown = (
             "The European Climate Law and 2040 climate target concern greenhouse "
@@ -74,9 +73,9 @@ class DocumentFetchAgentPreselectionTests(unittest.TestCase):
                 directory=directory,
             )
 
-            self.assertTrue(result["rejected"])
-            self.assertEqual(result["reason"], "duplicate content already exists")
-            self.assertFalse((Path(directory) / "duplicate.md").exists())
+            assert result["rejected"]
+            assert result["reason"] == "duplicate content already exists"
+            assert not (Path(directory) / "duplicate.md").exists()
 
     def test_run_tool_forces_agent_output_directory(self) -> None:
         markdown = (
@@ -107,10 +106,6 @@ class DocumentFetchAgentPreselectionTests(unittest.TestCase):
             )
             payload = json.loads(result)
 
-            self.assertTrue(payload["saved"])
-            self.assertTrue((Path(output_directory) / "saved.md").exists())
-            self.assertEqual(payload["path"], str(Path(output_directory) / "saved.md"))
-
-
-if __name__ == "__main__":
-    unittest.main()
+            assert payload["saved"]
+            assert (Path(output_directory) / "saved.md").exists()
+            assert payload["path"] == str(Path(output_directory) / "saved.md")
