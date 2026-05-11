@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Any, Annotated
 
 import typer
-from minsearch import Index
 from openai import OpenAI
 
 from eu_climate_policy_rag.core.logging_utils import get_logger
 from eu_climate_policy_rag.core.models import CleanedDocumentRecordModel, RagAnswerModel, RagConfigModel
+from eu_climate_policy_rag.qa.tools import SearchDocumentsTool, format_context_item
 
 logger = get_logger(__name__)
 
@@ -29,26 +29,6 @@ Rules:
 - If the retrieved documents do not contain enough information to answer, say so explicitly. Do not guess.
 - Be concise and accurate. Connect related targets or policies when the context supports it.
 """.strip()
-
-SEARCH_TOOL_SCHEMA = {
-    "type": "function",
-    "name": "search_documents",
-    "description": (
-        "Search the EU climate policy document index for passages relevant to a query. "
-        "Call this tool whenever you need to look up facts, targets, articles, or definitions. "
-        "You may call it multiple times with different queries to gather enough context."
-    ),
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "query": {
-                "type": "string",
-                "description": "A concise search query, e.g. '2030 emissions reduction target'.",
-            }
-        },
-        "required": ["query"],
-    },
-}
 
 
 class ClimatePolicyAgent:
@@ -73,7 +53,12 @@ class ClimatePolicyAgent:
             max_chars_per_doc=max_chars_per_doc,
         )
         self.max_turns = max_turns
-        self.index = self._build_index(self.documents)
+        self.search_tool = SearchDocumentsTool(
+            documents=self.documents,
+            num_results=self.config.num_results,
+            max_chars_per_doc=self.config.max_chars_per_doc,
+        )
+        self.tools = {self.search_tool.name: self.search_tool}
 
     @classmethod
     def from_json(
@@ -103,19 +88,19 @@ class ClimatePolicyAgent:
     def search(self, query: str) -> list[dict[str, Any]]:
         """Search the local document index for relevant records."""
 
-        return self.index.search(query, num_results=self.config.num_results)
+        return self.search_tool.search(query)
 
-    def _execute_tool_call(self, tool_call: Any) -> dict[str, Any]:
+    def _execute_tool_call(self, tool_call: Any) -> tuple[dict[str, Any], list[str]]:
         """Dispatch a function_call message to the matching tool and return its output."""
         arguments = json.loads(tool_call.arguments)
-        if tool_call.name == "search_documents":
+        tool = self.tools.get(tool_call.name)
+        sources: list[str] = []
+        if tool:
             query = arguments["query"]
             logger.info("Searching: %s", query)
-            results = self.search(query)
-            context = "\n\n".join(
-                format_context_item(doc, self.config.max_chars_per_doc) for doc in results
-            )
-            output = context or "No results found."
+            result = tool.run(query)
+            output = result.context
+            sources = result.sources
         else:
             output = f"Unknown tool: {tool_call.name}"
 
@@ -123,7 +108,7 @@ class ClimatePolicyAgent:
             "type": "function_call_output",
             "call_id": tool_call.call_id,
             "output": output,
-        }
+        }, sources
 
     def answer(self, query: str) -> RagAnswerModel:
         """Answer a user question using iterative document search."""
@@ -141,7 +126,7 @@ class ClimatePolicyAgent:
             response = self.openai_client.responses.create(
                 model=self.config.model,
                 input=message_history,
-                tools=[SEARCH_TOOL_SCHEMA],
+                tools=[tool.schema for tool in self.tools.values()],
             )
             message_history.extend(response.output)
 
@@ -149,12 +134,8 @@ class ClimatePolicyAgent:
             for message in response.output:
                 if message.type == "function_call":
                     has_tool_call = True
-                    tool_output = self._execute_tool_call(message)
-                    # collect sources from the search results
-                    results = self.search(json.loads(message.arguments)["query"])
-                    all_sources.extend(
-                        r.get("source", "") for r in results if r.get("source")
-                    )
+                    tool_output, sources = self._execute_tool_call(message)
+                    all_sources.extend(sources)
                     message_history.append(tool_output)
                 elif message.type == "message":
                     final_answer = message.content[0].text
@@ -164,29 +145,6 @@ class ClimatePolicyAgent:
 
         sources = list(dict.fromkeys(s for s in all_sources if s))
         return RagAnswerModel(query=query, answer=final_answer, sources=sources)
-
-    @staticmethod
-    def _build_index(documents: Sequence[dict[str, Any]]) -> Index:
-        """Build the Minsearch index used by the RAG assistant."""
-
-        index = Index(
-            text_fields=["text", "source", "topic"],
-            keyword_fields=["article"],
-        )
-        index.fit(documents)
-        return index
-
-
-def format_context_item(document: dict[str, Any], max_chars: int = 2000) -> str:
-    """Format one retrieved document chunk for inclusion in the LLM prompt."""
-
-    source = document.get("source", "unknown source")
-    article = document.get("article", "unknown article")
-    topic = document.get("topic", "general")
-    text = document.get("text", "")
-    if len(text) > max_chars:
-        text = text[:max_chars] + "…"
-    return f"[{source} | {article} | topic: {topic}]\n{text}"
 
 
 app = typer.Typer(add_completion=False)
