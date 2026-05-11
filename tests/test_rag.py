@@ -1,10 +1,8 @@
-import unittest
-
 from eu_climate_policy_rag.qa.rag import format_context_item
 from eu_climate_policy_rag.qa.tools import SearchDocumentsTool
 
 
-class RagTests(unittest.TestCase):
+class RagTests:
     def test_format_context_item(self) -> None:
         document = {
             "source": "European Climate Law",
@@ -13,10 +11,9 @@ class RagTests(unittest.TestCase):
             "text": "The Union-wide 2030 climate target is binding.",
         }
 
-        self.assertEqual(
-            format_context_item(document),
+        assert format_context_item(document) == (
             "[European Climate Law | Article 4 | topic: climate_law]\n"
-            "The Union-wide 2030 climate target is binding.",
+            "The Union-wide 2030 climate target is binding."
         )
 
     def test_search_documents_tool(self) -> None:
@@ -34,11 +31,7 @@ class RagTests(unittest.TestCase):
         tool = SearchDocumentsTool(documents, num_results=1)
         result = tool.run(" 2030 target ")
 
-        self.assertEqual(result.query, "2030 target")
-        self.assertEqual(result.sources, ["European Climate Law"])
-        self.assertIn("Article 4", result.context)
-        self.assertEqual(tool.schema["name"], "search_documents")
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert result.query == "2030 target"
+        assert result.sources == ["European Climate Law"]
+        assert "Article 4" in result.context
+        assert tool.schema["name"] == "search_documents"
