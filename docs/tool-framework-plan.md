@@ -161,10 +161,19 @@ Completed in the seventh TDD slice:
   middleware retains the correct sink
 - added integration coverage proving registry dispatch collects RAG sources
 
+Completed in the eighth TDD slice:
+
+- added executor-level async timeout support through `timeout_seconds`
+- wrapped async handler execution in `asyncio.timeout`
+- returned structured `ToolExecutionError` timeout results in return-error mode
+- raised `ToolExecutionError` timeout exceptions in raise-error mode
+- added timeout pass-through on the legacy `core.tooling.ToolRegistry` facade
+- expanded `tests/unit/test_tool_executor.py`
+
 Not done yet:
 
-- async timeout, retry, cancellation, and concurrency controls beyond basic
-  awaitable execution
+- retry, cancellation, and concurrency controls beyond basic awaitable execution
+- per-tool timeout configuration
 - agent-loop migration
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
