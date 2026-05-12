@@ -1,5 +1,7 @@
 """Unit tests for ToolRegistry and OpenAIFunctionTool."""
 
+from pathlib import Path
+
 import pytest
 from pydantic import BaseModel, Field
 
@@ -16,6 +18,40 @@ class MockSearchInput(BaseModel):
 def mock_search_handler(query: str) -> str:
     """Mock search function."""
     return f"Results for: {query}"
+
+
+def test_legacy_openai_function_tool_emits_deprecation_warning() -> None:
+    """OpenAIFunctionTool should remain available but visibly transitional."""
+
+    with pytest.warns(DeprecationWarning, match="core.tools.FunctionTool"):
+        OpenAIFunctionTool(
+            name="search_documents",
+            description="Search local documents",
+            input_model=MockSearchInput,
+            handler=mock_search_handler,
+        )
+
+
+def test_legacy_tool_registry_emits_deprecation_warning() -> None:
+    """Legacy ToolRegistry should point callers at the provider-neutral registry."""
+
+    with pytest.warns(DeprecationWarning, match="core.tools.ToolRegistry"):
+        ToolRegistry([])
+
+
+def test_internal_source_no_longer_imports_core_tooling() -> None:
+    """Repo implementation should not depend on the legacy facade internally."""
+
+    src_root = Path("src/eu_climate_policy_rag")
+    offenders = []
+    for path in src_root.rglob("*.py"):
+        if path == src_root / "core" / "tooling.py":
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "core.tooling" in text or "OpenAIFunctionTool" in text:
+            offenders.append(str(path))
+
+    assert offenders == []
 
 
 def test_tool_registry_accepts_builtin_tools() -> None:
