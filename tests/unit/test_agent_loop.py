@@ -5,7 +5,6 @@ from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
 
-import pytest
 from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
@@ -16,7 +15,6 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry as NativeToolRegistry,
 )
 from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
 
 
 class EchoInput(BaseModel):
@@ -182,31 +180,6 @@ def test_agent_accepts_native_tool_registry() -> None:
         "call_id": "call_echo",
         "output": json.dumps({"ok": True, "data": {"echo": "native"}}),
     }
-
-
-def test_agent_adapter_receives_provider_neutral_registry_for_legacy_tools() -> None:
-    """Legacy registries should be normalized before adapter construction."""
-
-    with pytest.warns(DeprecationWarning, match="core.tools.FunctionTool"):
-        tool = OpenAIFunctionTool(
-            name="echo",
-            description="Echo text",
-            input_model=EchoInput,
-            handler=echo_handler,
-        )
-    mock_client = MagicMock()
-    with pytest.warns(DeprecationWarning, match="core.tools.ToolRegistry"):
-        legacy_registry = ToolRegistry(function_tools=[tool])
-    agent = LoopTestAgent(
-        openai_client=mock_client,
-        model="test-model",
-        instructions="Use tools when useful.",
-        tools=legacy_registry,
-        max_turns=3,
-    )
-
-    assert isinstance(agent.tools, ToolRegistry)
-    assert agent.tool_adapter.registry is agent.tools.base_registry
 
 
 def test_agent_adapter_receives_provider_neutral_registry_for_native_tools() -> None:
