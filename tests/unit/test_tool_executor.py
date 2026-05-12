@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from eu_climate_policy_rag.core.tools import (
     FunctionTool,
     PydanticSchemaProvider,
+    ToolExecutionConfig,
     ToolExecutor,
     ToolRegistry,
 )
@@ -184,6 +185,34 @@ async def test_tool_executor_run_retries_async_handler_failures() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tool_executor_run_uses_per_tool_retry_configuration() -> None:
+    """Per-tool retry configuration should override the executor default."""
+
+    state = {"attempts": 0}
+
+    async def flaky_add_handler(left: int, right: int) -> dict[str, int]:
+        state["attempts"] += 1
+        if state["attempts"] == 1:
+            raise TransientToolFailure("temporary failure")
+        return {"sum": left + right}
+
+    tool = FunctionTool(
+        name="flaky_add_numbers",
+        description="Flakily add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=flaky_add_handler,
+        execution=ToolExecutionConfig(max_retries=1),
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), max_retries=0)
+
+    result = await executor.run("flaky_add_numbers", {"left": 5, "right": 6})
+
+    assert result.ok is True
+    assert result.value == {"sum": 11}
+    assert state["attempts"] == 2
+
+
+@pytest.mark.asyncio
 async def test_tool_executor_run_returns_error_after_retry_exhaustion() -> None:
     """Async execution should return a structured error after retries are exhausted."""
 
@@ -332,6 +361,27 @@ async def test_tool_executor_run_returns_timeout_error() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tool_executor_run_uses_per_tool_timeout_configuration() -> None:
+    """Per-tool timeout configuration should override the executor default."""
+
+    tool = FunctionTool(
+        name="slow_add_numbers",
+        description="Slowly add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=slow_add_handler,
+        execution=ToolExecutionConfig(timeout_seconds=0.001),
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), timeout_seconds=1)
+
+    result = await executor.run("slow_add_numbers", {"left": 1, "right": 2})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolExecutionError"
+    assert "timed out" in result.error.message
+
+
+@pytest.mark.asyncio
 async def test_tool_executor_run_can_raise_timeout_errors() -> None:
     """Async execution should raise timeout errors in raise-error mode."""
 
@@ -374,6 +424,37 @@ async def test_tool_executor_run_honors_async_concurrency_limit() -> None:
         ToolRegistry(function_tools=[tool]),
         max_concurrency=1,
     )
+
+    results = await asyncio.gather(
+        executor.run("tracked_add_numbers", {"left": 1, "right": 2}),
+        executor.run("tracked_add_numbers", {"left": 3, "right": 4}),
+    )
+
+    assert [result.value for result in results] == [{"sum": 3}, {"sum": 7}]
+    assert state["max_active"] == 1
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_honors_per_tool_concurrency_limit() -> None:
+    """Per-tool concurrency configuration should serialize calls to that tool."""
+
+    state = {"active": 0, "max_active": 0}
+
+    async def tracked_add_handler(left: int, right: int) -> dict[str, int]:
+        state["active"] += 1
+        state["max_active"] = max(state["max_active"], state["active"])
+        await asyncio.sleep(0.01)
+        state["active"] -= 1
+        return {"sum": left + right}
+
+    tool = FunctionTool(
+        name="tracked_add_numbers",
+        description="Track concurrent arithmetic calls",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=tracked_add_handler,
+        execution=ToolExecutionConfig(max_concurrency=1),
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]))
 
     results = await asyncio.gather(
         executor.run("tracked_add_numbers", {"left": 1, "right": 2}),
