@@ -8,8 +8,12 @@ from openai import OpenAI
 
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.logging_utils import get_logger
+from eu_climate_policy_rag.core.tools import (
+    ToolExecutor,
+    ToolRegistry as BaseToolRegistry,
+)
 from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
-from eu_climate_policy_rag.core.tooling import ToolRegistry
+from eu_climate_policy_rag.core.tooling import ToolRegistry as LegacyToolRegistry
 
 LOGGER = get_logger(__name__)
 
@@ -30,24 +34,40 @@ class AbstractAgent(ABC):
         openai_client: OpenAI | None = None,
         model: str = "gpt-4o-mini",
         instructions: str = "",
-        tools: ToolRegistry | None = None,
+        tools: LegacyToolRegistry | BaseToolRegistry | None = None,
         max_turns: int = 10,
     ) -> None:
         self.openai_client = openai_client or OpenAI()
         self.model = model
         self.instructions = instructions
-        self.tools = tools or ToolRegistry([])
-        self.tool_adapter = OpenAIResponsesToolAdapter(self.tools.base_registry)
+        self.tools = tools or LegacyToolRegistry([])
+        self.tool_registry = self._normalize_tool_registry(self.tools)
+        self._tool_executor = ToolExecutor(self.tool_registry)
+        self.tool_adapter = OpenAIResponsesToolAdapter(self.tool_registry)
         self.max_turns = max_turns
 
         # Log available tools for visibility
-        function_tools = [s["name"] for s in self.tools.schemas if s.get("type") == "function"]
-        builtin_tools = [s["type"] for s in self.tools.schemas if s.get("type") != "function"]
+        schemas = self.tool_adapter.tools
+        function_tools = [s["name"] for s in schemas if s.get("type") == "function"]
+        builtin_tools = [s["type"] for s in schemas if s.get("type") != "function"]
 
         if function_tools:
             LOGGER.info("Custom function tools: %s", ", ".join(function_tools))
         if builtin_tools:
             LOGGER.info("Built-in tools: %s", ", ".join(builtin_tools))
+
+    @staticmethod
+    def _normalize_tool_registry(
+        tools: LegacyToolRegistry | BaseToolRegistry,
+    ) -> BaseToolRegistry:
+        """Return the provider-neutral registry behind the agent boundary."""
+
+        if isinstance(tools, LegacyToolRegistry):
+            return tools.base_registry
+        if isinstance(tools, BaseToolRegistry):
+            return tools
+        msg = "tools must be a core.tools.ToolRegistry or core.tooling.ToolRegistry."
+        raise TypeError(msg)
 
     def _execute_tool_call(self, tool_call: Any) -> dict[str, Any]:
         """Dispatch a ``function_call`` message to the tool registry.
@@ -57,15 +77,22 @@ class AbstractAgent(ABC):
         dispatch logic (e.g. collecting sources, custom serialisation).
         """
         arguments = json.loads(tool_call.arguments)
-        if self.tools.get(tool_call.name) is None:
+        if self.tool_registry.get(tool_call.name) is None:
             LOGGER.error("Unknown tool requested: %s", tool_call.name)
-        result = self.tools.run_sync(tool_call.name, arguments)
-        output = json.dumps(result) if not isinstance(result, str) else result
-        return {
-            "type": "function_call_output",
-            "call_id": tool_call.call_id,
-            "output": output,
-        }
+        if isinstance(self.tools, LegacyToolRegistry):
+            result = self.tools.run_sync(tool_call.name, arguments)
+            output = json.dumps(result) if not isinstance(result, str) else result
+            return {
+                "type": "function_call_output",
+                "call_id": tool_call.call_id,
+                "output": output,
+            }
+        result = self._tool_executor.run_sync(
+            tool_call.name,
+            arguments,
+            call_id=tool_call.call_id,
+        )
+        return self.tool_adapter.to_function_call_output(result)
 
     def _create_response(self, message_history: list[Any]) -> Any:
         """Call the OpenAI Responses API with current tool schemas."""
@@ -111,15 +138,22 @@ class AbstractAgent(ABC):
         ``tools.run_sync()``.  Override in subclasses as needed.
         """
         arguments = json.loads(tool_call.arguments)
-        if self.tools.get(tool_call.name) is None:
+        if self.tool_registry.get(tool_call.name) is None:
             LOGGER.error("Unknown tool requested: %s", tool_call.name)
-        result = await self.tools.run(tool_call.name, arguments)
-        output = json.dumps(result) if not isinstance(result, str) else result
-        return {
-            "type": "function_call_output",
-            "call_id": tool_call.call_id,
-            "output": output,
-        }
+        if isinstance(self.tools, LegacyToolRegistry):
+            result = await self.tools.run(tool_call.name, arguments)
+            output = json.dumps(result) if not isinstance(result, str) else result
+            return {
+                "type": "function_call_output",
+                "call_id": tool_call.call_id,
+                "output": output,
+            }
+        result = await self._tool_executor.run(
+            tool_call.name,
+            arguments,
+            call_id=tool_call.call_id,
+        )
+        return self.tool_adapter.to_function_call_output(result)
 
     async def _run_loop_async(self, query: str) -> tuple[str, list[Any]]:
         """Async version of ``_run_loop`` for agents with async tools.
