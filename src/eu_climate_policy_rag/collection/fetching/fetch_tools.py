@@ -1,5 +1,6 @@
 """Tool builders for document fetching workflows."""
 
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from eu_climate_policy_rag.core.models import (
@@ -9,7 +10,28 @@ from eu_climate_policy_rag.core.models import (
     GetPageSnapshotInputModel,
     SaveContentToFileInputModel,
 )
+from eu_climate_policy_rag.core.tools import ToolContext, ToolMiddleware
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
+
+
+class SaveContentDirectoryMiddleware(ToolMiddleware):
+    """Force save operations to use the agent/toolbox output directory."""
+
+    def __init__(self, output_directory: Callable[[], str]) -> None:
+        self.output_directory = output_directory
+
+    def before_validate(
+        self,
+        context: ToolContext,
+        args: Mapping[str, object],
+    ) -> Mapping[str, object]:
+        """Override model-provided save directories before validation."""
+
+        if context.tool_name != "save_content_to_file":
+            return args
+        updated = dict(args)
+        updated["directory"] = self.output_directory()
+        return updated
 
 
 def build_fetch_tools(toolbox: Any) -> ToolRegistry:
@@ -50,5 +72,10 @@ def build_fetch_tools(toolbox: Any) -> ToolRegistry:
                 input_model=SaveContentToFileInputModel,
                 handler=toolbox.save_content_to_file,
             ),
-        ]
+        ],
+        middleware=[
+            SaveContentDirectoryMiddleware(
+                output_directory=lambda: str(toolbox.output_directory),
+            )
+        ],
     )
