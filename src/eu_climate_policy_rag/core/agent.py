@@ -8,6 +8,7 @@ from openai import OpenAI
 
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.logging_utils import get_logger
+from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
 from eu_climate_policy_rag.core.tooling import ToolRegistry
 
 LOGGER = get_logger(__name__)
@@ -36,6 +37,7 @@ class AbstractAgent(ABC):
         self.model = model
         self.instructions = instructions
         self.tools = tools or ToolRegistry([])
+        self.tool_adapter = OpenAIResponsesToolAdapter(self.tools.base_registry)
         self.max_turns = max_turns
 
         # Log available tools for visibility
@@ -71,7 +73,7 @@ class AbstractAgent(ABC):
         return self.openai_client.responses.create(
             model=self.model,
             input=message_history,
-            tools=self.tools.schemas,
+            tools=self.tool_adapter.tools,
         )
 
     def _build_loop(self, *, async_tools: bool = False) -> OpenAIResponsesToolLoop:
