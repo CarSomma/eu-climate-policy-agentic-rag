@@ -1,7 +1,6 @@
 import json
 from unittest.mock import MagicMock
 
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
 from eu_climate_policy_rag.core.tools import FunctionTool
 from eu_climate_policy_rag.qa.rag import ClimatePolicyAgent, format_context_item
 from eu_climate_policy_rag.qa.tools import SearchDocumentsTool
@@ -33,7 +32,7 @@ def test_search_documents_tool_uses_native_function_tool(
     tool = SearchDocumentsTool([sample_document], num_results=1)
 
     assert isinstance(tool.function_tool, FunctionTool)
-    assert not isinstance(tool.function_tool, OpenAIFunctionTool)
+    assert type(tool.function_tool) is FunctionTool
 
 
 def test_climate_policy_agent_uses_shared_tool_registry(
