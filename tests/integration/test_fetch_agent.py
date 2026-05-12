@@ -6,6 +6,8 @@ from unittest.mock import AsyncMock, MagicMock
 from eu_climate_policy_rag.collection.fetching.content_cache import ContentCache
 from eu_climate_policy_rag.collection.fetching.fetch_agent import DocumentFetchAgent
 from eu_climate_policy_rag.collection.fetching.fetch_tools import build_fetch_tools
+from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
+from eu_climate_policy_rag.core.tools import FunctionTool
 
 
 async def test_run_tool_forces_agent_output_directory(
@@ -60,6 +62,25 @@ async def test_fetch_tools_registry_forces_output_directory_with_middleware(
         markdown_id="md_1",
         filename="saved.md",
         directory=str(tmp_path),
+    )
+
+
+def test_fetch_tools_are_native_function_tools(tmp_path) -> None:
+    mock_toolbox = SimpleNamespace(
+        get_page_snapshot=AsyncMock(),
+        click_and_capture=AsyncMock(),
+        click_download_button=AsyncMock(),
+        convert_to_markdown=MagicMock(),
+        save_content_to_file=MagicMock(),
+        output_directory=tmp_path,
+    )
+    registry = build_fetch_tools(mock_toolbox)
+
+    assert registry.base_registry.function_tools
+    assert all(
+        isinstance(tool, FunctionTool)
+        and not isinstance(tool, OpenAIFunctionTool)
+        for tool in registry.base_registry.function_tools
     )
 
 
