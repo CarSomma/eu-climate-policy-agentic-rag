@@ -1,9 +1,14 @@
 """OpenAI Responses API adapter for provider-neutral tool registries."""
 
+import re
+
+from eu_climate_policy_rag.core.tools.errors import SchemaGenerationError
 from eu_climate_policy_rag.core.tools.function import FunctionTool
 from eu_climate_policy_rag.core.tools.registry import ToolRegistry
 from eu_climate_policy_rag.core.tools.result import ToolResult
 from eu_climate_policy_rag.core.tools.schema import normalize_openai_schema
+
+OPENAI_FUNCTION_NAME_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
 class OpenAIResponsesSchemaCompiler:
@@ -14,6 +19,13 @@ class OpenAIResponsesSchemaCompiler:
         tool: FunctionTool[object, object],
     ) -> dict[str, object]:
         """Return a function tool config in OpenAI Responses API format."""
+
+        if not OPENAI_FUNCTION_NAME_PATTERN.fullmatch(tool.name):
+            msg = (
+                "OpenAI Responses function tool name must contain only letters, "
+                "numbers, underscores, and hyphens, and be 1-64 characters long."
+            )
+            raise SchemaGenerationError(msg, details={"name": tool.name})
 
         parameters = normalize_openai_schema(tool.schema_provider.json_schema())
         return {
