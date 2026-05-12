@@ -58,6 +58,10 @@ async def cancellable_add_handler(left: int, right: int) -> dict[str, int]:
     return {"sum": left + right}
 
 
+class TransientToolFailure(RuntimeError):
+    """Test exception for retryable handler failures."""
+
+
 def build_executor() -> ToolExecutor:
     """Build an executor with one test function tool."""
 
@@ -150,6 +154,85 @@ def test_tool_executor_run_sync_rejects_async_handlers() -> None:
     assert result.ok is False
     assert result.error is not None
     assert result.error.type == "ToolExecutionError"
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_retries_async_handler_failures() -> None:
+    """Async execution should retry opt-in handler failures."""
+
+    state = {"attempts": 0}
+
+    async def flaky_add_handler(left: int, right: int) -> dict[str, int]:
+        state["attempts"] += 1
+        if state["attempts"] == 1:
+            raise TransientToolFailure("temporary failure")
+        return {"sum": left + right}
+
+    tool = FunctionTool(
+        name="flaky_add_numbers",
+        description="Flakily add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=flaky_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), max_retries=1)
+
+    result = await executor.run("flaky_add_numbers", {"left": 5, "right": 6})
+
+    assert result.ok is True
+    assert result.value == {"sum": 11}
+    assert state["attempts"] == 2
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_returns_error_after_retry_exhaustion() -> None:
+    """Async execution should return a structured error after retries are exhausted."""
+
+    state = {"attempts": 0}
+
+    async def always_fails_handler(left: int, right: int) -> dict[str, int]:
+        state["attempts"] += 1
+        raise TransientToolFailure("still failing")
+
+    tool = FunctionTool(
+        name="failing_add_numbers",
+        description="Always fail while adding",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=always_fails_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), max_retries=2)
+
+    result = await executor.run("failing_add_numbers", {"left": 5, "right": 6})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolExecutionError"
+    assert state["attempts"] == 3
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_does_not_retry_validation_errors() -> None:
+    """Validation failures should not consume retry attempts."""
+
+    state = {"attempts": 0}
+
+    async def counted_add_handler(left: int, right: int) -> dict[str, int]:
+        state["attempts"] += 1
+        return {"sum": left + right}
+
+    tool = FunctionTool(
+        name="counted_add_numbers",
+        description="Count attempts while adding",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=counted_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), max_retries=2)
+
+    result = await executor.run("counted_add_numbers", {"left": -1, "right": 6})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolValidationError"
+    assert state["attempts"] == 0
 
 
 def test_tool_executor_serializes_pydantic_result_models() -> None:
