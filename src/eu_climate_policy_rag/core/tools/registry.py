@@ -56,6 +56,12 @@ class ToolRegistry:
 
         return tuple(self._builtin_types)
 
+    @property
+    def builtins(self) -> tuple[BuiltinTool, ...]:
+        """Return normalized provider built-in tool configs."""
+
+        return tuple(self._builtins)
+
     def get_function(self, name: str) -> FunctionTool[object, object] | None:
         """Return a local function tool by name."""
 
