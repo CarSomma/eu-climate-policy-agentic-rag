@@ -13,7 +13,6 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry as BaseToolRegistry,
 )
 from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
-from eu_climate_policy_rag.core.tooling import ToolRegistry as LegacyToolRegistry
 
 LOGGER = get_logger(__name__)
 
@@ -34,13 +33,13 @@ class AbstractAgent(ABC):
         openai_client: OpenAI | None = None,
         model: str = "gpt-4o-mini",
         instructions: str = "",
-        tools: LegacyToolRegistry | BaseToolRegistry | None = None,
+        tools: Any | None = None,
         max_turns: int = 10,
     ) -> None:
         self.openai_client = openai_client or OpenAI()
         self.model = model
         self.instructions = instructions
-        self.tools = tools or LegacyToolRegistry([])
+        self.tools = tools or BaseToolRegistry()
         self.tool_registry = self._normalize_tool_registry(self.tools)
         self._tool_executor = ToolExecutor(self.tool_registry)
         self.tool_adapter = OpenAIResponsesToolAdapter(self.tool_registry)
@@ -58,15 +57,16 @@ class AbstractAgent(ABC):
 
     @staticmethod
     def _normalize_tool_registry(
-        tools: LegacyToolRegistry | BaseToolRegistry,
+        tools: Any,
     ) -> BaseToolRegistry:
         """Return the provider-neutral registry behind the agent boundary."""
 
-        if isinstance(tools, LegacyToolRegistry):
-            return tools.base_registry
         if isinstance(tools, BaseToolRegistry):
             return tools
-        msg = "tools must be a core.tools.ToolRegistry or core.tooling.ToolRegistry."
+        base_registry = getattr(tools, "base_registry", None)
+        if isinstance(base_registry, BaseToolRegistry):
+            return base_registry
+        msg = "tools must be a core.tools.ToolRegistry or legacy registry facade."
         raise TypeError(msg)
 
     def _execute_tool_call(self, tool_call: Any) -> dict[str, Any]:
