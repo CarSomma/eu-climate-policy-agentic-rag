@@ -1,6 +1,7 @@
 """Validated data models crossing module boundaries."""
 
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
@@ -127,7 +128,15 @@ class RagConfigModel(ProjectModel):
     """Runtime configuration for the RAG assistant."""
 
     data_path: Path = Path("data/eu_climate_policy.json")
-    model: str = Field(default="gpt-4o-mini", min_length=1)
+    model: Literal[
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-5.4-mini",
+        "gpt-4-turbo",
+        "gpt-4-turbo-preview",
+        "gpt-4",
+        "gpt-3.5-turbo",
+    ] = "gpt-5.4-mini"
     num_results: int = Field(default=5, ge=1)
     instructions: str = Field(default="", min_length=0)
     max_chars_per_doc: int = Field(default=2000, ge=100)
