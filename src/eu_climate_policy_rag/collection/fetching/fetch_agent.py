@@ -144,16 +144,12 @@ class DocumentFetchAgent(AbstractAgent):
     async def _run_tool_by_name(self, name: str, args: dict[str, Any]) -> Any:
         """Validate and run a registered fetch tool."""
 
-        tool_args = dict(args)
-        if name == "save_content_to_file":
-            tool_args["directory"] = str(self.output_directory)
-
         if self.tools.get(name) is None:
             LOGGER.error("Unknown tool requested: %s", name)
             return {"error": f"Unknown tool: {name}"}
 
-        LOGGER.debug("Running tool %s with args %s", name, preview_args(tool_args))
-        return await self.tools.run(name, tool_args)
+        LOGGER.debug("Running tool %s with args %s", name, preview_args(args))
+        return await self.tools.run(name, args)
 
     async def _execute_tool_call_async(self, tool_call: Any) -> dict[str, Any]:
         """Dispatch a function_call message to the matching fetch tool."""
