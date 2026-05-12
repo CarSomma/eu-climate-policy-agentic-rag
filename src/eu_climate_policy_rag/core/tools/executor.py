@@ -28,9 +28,11 @@ class ToolExecutor:
         registry: ToolRegistry,
         *,
         middleware: list[ToolMiddleware] | None = None,
+        timeout_seconds: float | None = None,
     ) -> None:
         self.registry = registry
         self.middleware = middleware or []
+        self.timeout_seconds = timeout_seconds
 
     async def run(
         self,
@@ -56,14 +58,14 @@ class ToolExecutor:
             return dumped_args
 
         try:
-            call_args = self._before_call(context, dumped_args)
-            if iscoroutinefunction(tool.handler):
-                value = tool.handler(**call_args)
-            else:
-                value = await asyncio.to_thread(tool.handler, **call_args)
-            if isawaitable(value):
-                value = await value
-            value = self._after_call(context, value)
+            value = await self._call_async_tool(tool, dumped_args, context)
+        except TimeoutError as exc:
+            return self._handle_error(
+                ToolExecutionError(f"Tool {name} timed out."),
+                context,
+                error_mode,
+                cause=exc,
+            )
         except Exception as exc:
             return self._handle_error(
                 ToolExecutionError(f"Tool execution failed for {name}."),
@@ -175,6 +177,27 @@ class ToolExecutor:
         for item in self.middleware:
             current_value = item.after_call(context, current_value)
         return current_value
+
+    async def _call_async_tool(
+        self,
+        tool: FunctionTool[object, object],
+        args: Mapping[str, object],
+        context: ToolContext,
+    ) -> object:
+        async def call() -> object:
+            call_args = self._before_call(context, args)
+            if iscoroutinefunction(tool.handler):
+                value = tool.handler(**call_args)
+            else:
+                value = await asyncio.to_thread(tool.handler, **call_args)
+            if isawaitable(value):
+                value = await value
+            return self._after_call(context, value)
+
+        if self.timeout_seconds is None:
+            return await call()
+        async with asyncio.timeout(self.timeout_seconds):
+            return await call()
 
     @staticmethod
     def _handle_error(
