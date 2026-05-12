@@ -1,5 +1,6 @@
 """Unit tests for the OpenAI Responses tool adapter."""
 
+from collections.abc import Mapping
 import json
 from typing import Any
 
@@ -25,6 +26,35 @@ class SearchInput(BaseModel):
     """Input model used by adapter tests."""
 
     query: str = Field(min_length=1)
+
+
+class CountingSchemaProvider:
+    """Schema provider that tracks schema export calls."""
+
+    def __init__(self) -> None:
+        self.call_count = 0
+
+    def json_schema(self) -> Mapping[str, object]:
+        """Return a schema and count the export."""
+
+        self.call_count += 1
+        return {
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+        }
+
+    def validate(self, raw_args: Mapping[str, object]) -> Mapping[str, object]:
+        """Return raw args unchanged."""
+
+        return raw_args
+
+    def dump_validated(
+        self,
+        input_obj: Mapping[str, object],
+    ) -> Mapping[str, object]:
+        """Return validated args unchanged."""
+
+        return input_obj
 
 
 def search_handler(query: str) -> dict[str, str]:
@@ -125,6 +155,70 @@ def test_openai_responses_schema_compiler_compiles_function_tools() -> None:
     assert schema["name"] == "search_documents"
     assert schema["strict"] is True
     assert schema["parameters"]["additionalProperties"] is False
+
+
+def test_openai_responses_schema_compiler_caches_by_tool_instance() -> None:
+    """Compiling the same immutable tool twice should reuse the cached schema."""
+
+    schema_provider = CountingSchemaProvider()
+    tool = FunctionTool(
+        name="cached_search",
+        description="Cached search",
+        schema_provider=schema_provider,
+        handler=search_handler,
+    )
+    compiler = OpenAIResponsesSchemaCompiler()
+
+    first_schema = compiler.compile_function_tool(tool)
+    second_schema = compiler.compile_function_tool(tool)
+
+    assert schema_provider.call_count == 1
+    assert second_schema == first_schema
+    assert second_schema is not first_schema
+
+
+def test_openai_responses_schema_compiler_returns_defensive_cached_copies() -> None:
+    """Caller mutations should not corrupt later cached schema exports."""
+
+    tool = FunctionTool(
+        name="stable_search",
+        description="Stable search",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+    compiler = OpenAIResponsesSchemaCompiler()
+
+    first_schema = compiler.compile_function_tool(tool)
+    first_schema["name"] = "mutated"
+    parameters = first_schema["parameters"]
+    assert isinstance(parameters, dict)
+    parameters["additionalProperties"] = True
+
+    second_schema = compiler.compile_function_tool(tool)
+
+    assert second_schema["name"] == "stable_search"
+    assert second_schema["parameters"]["additionalProperties"] is False
+
+
+def test_openai_responses_adapter_returns_stable_tools_across_calls() -> None:
+    """Adapter exports should stay stable across calls even if callers mutate them."""
+
+    schema_provider = CountingSchemaProvider()
+    function_tool = FunctionTool(
+        name="stable_search",
+        description="Stable search",
+        schema_provider=schema_provider,
+        handler=search_handler,
+    )
+    adapter = OpenAIResponsesToolAdapter(ToolRegistry(function_tools=[function_tool]))
+
+    first_tools = adapter.tools
+    first_tools[0]["name"] = "mutated"
+    second_tools = adapter.tools
+
+    assert schema_provider.call_count == 1
+    assert second_tools[0]["name"] == "stable_search"
+    assert second_tools != first_tools
 
 
 def test_openai_responses_schema_compiler_rejects_open_object_schema() -> None:
