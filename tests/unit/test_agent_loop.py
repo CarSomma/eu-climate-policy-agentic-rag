@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
 
+import pytest
 from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
@@ -67,17 +68,17 @@ def make_response(*output: SimpleNamespace) -> SimpleNamespace:
 def build_agent(mock_client: MagicMock) -> LoopTestAgent:
     """Build a loop test agent with one local function tool."""
 
-    tool = OpenAIFunctionTool(
+    tool = FunctionTool(
         name="echo",
         description="Echo text",
-        input_model=EchoInput,
+        schema_provider=PydanticSchemaProvider(EchoInput),
         handler=echo_handler,
     )
     return LoopTestAgent(
         openai_client=mock_client,
         model="test-model",
         instructions="Use tools when useful.",
-        tools=ToolRegistry(function_tools=[tool]),
+        tools=NativeToolRegistry(function_tools=[tool]),
         max_turns=3,
     )
 
@@ -186,8 +187,23 @@ def test_agent_accepts_native_tool_registry() -> None:
 def test_agent_adapter_receives_provider_neutral_registry_for_legacy_tools() -> None:
     """Legacy registries should be normalized before adapter construction."""
 
+    with pytest.warns(DeprecationWarning, match="core.tools.FunctionTool"):
+        tool = OpenAIFunctionTool(
+            name="echo",
+            description="Echo text",
+            input_model=EchoInput,
+            handler=echo_handler,
+        )
     mock_client = MagicMock()
-    agent = build_agent(mock_client)
+    with pytest.warns(DeprecationWarning, match="core.tools.ToolRegistry"):
+        legacy_registry = ToolRegistry(function_tools=[tool])
+    agent = LoopTestAgent(
+        openai_client=mock_client,
+        model="test-model",
+        instructions="Use tools when useful.",
+        tools=legacy_registry,
+        max_turns=3,
+    )
 
     assert isinstance(agent.tools, ToolRegistry)
     assert agent.tool_adapter.registry is agent.tools.base_registry
