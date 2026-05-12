@@ -69,8 +69,8 @@ class ToolRegistry:
 
     def __init__(
         self,
-        tools: Sequence[OpenAIFunctionTool] | None = None,
-        function_tools: Sequence[OpenAIFunctionTool] | None = None,
+        tools: Sequence[FunctionTool[Any, Any]] | None = None,
+        function_tools: Sequence[FunctionTool[Any, Any]] | None = None,
         builtin_tools: list[dict[str, Any]] | None = None,
         middleware: Sequence[ToolMiddleware] | None = None,
         timeout_seconds: float | None = None,
@@ -118,10 +118,9 @@ class ToolRegistry:
 
         return self._registry
 
-    def get(self, name: str) -> OpenAIFunctionTool | None:
+    def get(self, name: str) -> FunctionTool[Any, Any] | None:
         """Return a custom function tool by name if registered."""
-        tool = self._registry.get(name)
-        return tool if isinstance(tool, OpenAIFunctionTool) else None
+        return self._registry.get(name)
 
     def is_builtin(self, name: str) -> bool:
         """Check if a tool name refers to a built-in tool."""
