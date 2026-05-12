@@ -203,3 +203,15 @@ def test_answer_tracks_sources_from_tool_calls(
 
     assert "European Climate Law" in result.sources
     assert len(result.sources) == 1
+
+
+def test_search_documents_registry_middleware_collects_sources(
+    sample_document: dict[str, str],
+) -> None:
+    agent = ClimatePolicyAgent([sample_document], openai_client=object())
+
+    result = agent.tools.run_sync("search_documents", {"query": "2030 target"})
+
+    assert isinstance(result, str)
+    assert "Article 4" in result
+    assert agent._current_run_sources == ["European Climate Law"]
