@@ -122,7 +122,7 @@ def test_run_loop_appends_function_call_output_and_continues() -> None:
         {
             "type": "function_call_output",
             "call_id": "call_echo",
-            "output": json.dumps({"echo": "hello"}),
+            "output": json.dumps({"ok": True, "data": {"echo": "hello"}}),
         },
         make_message("final answer"),
     ]
@@ -141,6 +141,25 @@ def test_agent_create_response_uses_openai_responses_adapter_tools() -> None:
 
     _, kwargs = mock_client.responses.create.call_args
     assert kwargs["tools"] == agent.tool_adapter.tools
+
+
+def test_base_agent_converts_tool_result_through_responses_adapter() -> None:
+    """Base agent dispatch should let the adapter build function_call_output."""
+
+    tool_call = make_tool_call("echo", {"text": "hello"}, "call_echo")
+    mock_client = MagicMock()
+    agent = build_agent(mock_client)
+    original_converter = agent.tool_adapter.to_function_call_output
+    agent.tool_adapter.to_function_call_output = MagicMock(wraps=original_converter)
+
+    output = agent._execute_tool_call(tool_call)
+
+    agent.tool_adapter.to_function_call_output.assert_called_once()
+    assert output == {
+        "type": "function_call_output",
+        "call_id": "call_echo",
+        "output": json.dumps({"ok": True, "data": {"echo": "hello"}}),
+    }
 
 
 def test_agent_accepts_native_tool_registry() -> None:
@@ -204,15 +223,32 @@ def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> No
         {
             "type": "function_call_output",
             "call_id": "call_one",
-            "output": json.dumps({"echo": "one"}),
+            "output": json.dumps({"ok": True, "data": {"echo": "one"}}),
         },
         {
             "type": "function_call_output",
             "call_id": "call_two",
-            "output": json.dumps({"echo": "two"}),
+            "output": json.dumps({"ok": True, "data": {"echo": "two"}}),
         },
         make_message("done"),
     ]
+
+
+def test_base_agent_unknown_tool_returns_structured_model_visible_error() -> None:
+    """Unknown tools should become structured function_call_output failures."""
+
+    tool_call = make_tool_call("missing_tool", {}, "call_missing")
+    mock_client = MagicMock()
+    agent = build_agent(mock_client)
+
+    output = agent._execute_tool_call(tool_call)
+
+    payload = json.loads(output["output"])
+    assert output["type"] == "function_call_output"
+    assert output["call_id"] == "call_missing"
+    assert payload["ok"] is False
+    assert payload["error"]["type"] == "UnknownToolError"
+    assert payload["error"]["message"] == "Unknown tool: missing_tool"
 
 
 def test_responses_tool_loop_runs_with_callbacks() -> None:
