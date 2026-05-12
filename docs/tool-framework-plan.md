@@ -116,9 +116,20 @@ Completed in the third TDD slice:
 - added sync-mode guard for async handlers
 - expanded `tests/unit/test_tool_executor.py`
 
+Completed in the fourth TDD slice:
+
+- migrated `core.tooling.OpenAIFunctionTool` to delegate to `FunctionTool`
+- migrated `core.tooling.ToolRegistry` to delegate to the new registry and
+  executor
+- preserved legacy raw handler return values from `run` and `run_sync`
+- preserved legacy unknown-tool return shape
+- added `openai_tools` alias on the compatibility registry
+- upgraded compatibility schemas to strict Responses-style export
+- added Pydantic result-model serialization in `ToolResult`
+- verified RAG, web-search, cleaning-agent, and fetch-agent integration paths
+
 Not done yet:
 
-- compatibility migration from `core.tooling.py` to `core.tools`
 - middleware
 - async timeout, retry, cancellation, and concurrency controls beyond basic
   awaitable execution
