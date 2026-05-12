@@ -139,12 +139,23 @@ Completed in the fifth TDD slice:
 - propagated context metadata into `ToolResult`
 - added tests in `tests/unit/test_tool_middleware.py`
 
+Completed in the sixth TDD slice:
+
+- added middleware support to the legacy `core.tooling.ToolRegistry` facade
+- added `SaveContentDirectoryMiddleware` for fetch tools
+- moved fetch `save_content_to_file` directory override from agent dispatch into
+  middleware
+- simplified `DocumentFetchAgent._run_tool_by_name`
+- added integration coverage proving direct registry dispatch applies the fetch
+  output directory middleware
+
 Not done yet:
 
 - async timeout, retry, cancellation, and concurrency controls beyond basic
   awaitable execution
 - agent-loop migration
-- RAG/fetch/cleaning middleware replacement
+- RAG source collection middleware replacement
+- cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
 - provider adapter modules beyond the initial OpenAI-shaped export methods
 
