@@ -105,11 +105,23 @@ Completed in the second TDD slice:
 - added Responses `function_call_output` conversion on `ToolResult`
 - added tests in `tests/unit/test_tool_executor.py`
 
+Completed in the third TDD slice:
+
+- added async `ToolExecutor.run`
+- added support for async function handlers
+- added async execution support for existing sync handlers through
+  `asyncio.to_thread`
+- added async structured validation error handling
+- added async unknown-tool raise/return behavior
+- added sync-mode guard for async handlers
+- expanded `tests/unit/test_tool_executor.py`
+
 Not done yet:
 
 - compatibility migration from `core.tooling.py` to `core.tools`
 - middleware
-- async timeout, retry, cancellation, and concurrency controls
+- async timeout, retry, cancellation, and concurrency controls beyond basic
+  awaitable execution
 - agent-loop migration
 - RAG/fetch/cleaning middleware replacement
 - broader OpenAI strict schema edge-case handling
