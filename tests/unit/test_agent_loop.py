@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
+from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
 
 
@@ -102,6 +103,21 @@ def test_run_loop_appends_function_call_output_and_continues() -> None:
         },
         make_message("final answer"),
     ]
+
+
+def test_agent_create_response_uses_openai_responses_adapter_tools() -> None:
+    """Agents should export model-visible tools through the provider adapter."""
+
+    mock_client = MagicMock()
+    mock_client.responses.create.return_value = make_response(make_message("done"))
+    agent = build_agent(mock_client)
+
+    assert isinstance(agent.tool_adapter, OpenAIResponsesToolAdapter)
+
+    agent.run("Say hello")
+
+    _, kwargs = mock_client.responses.create.call_args
+    assert kwargs["tools"] == agent.tool_adapter.tools
 
 
 def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> None:
