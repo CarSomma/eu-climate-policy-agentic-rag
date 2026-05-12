@@ -254,11 +254,23 @@ Completed in the fifteenth TDD slice:
 - added coverage in `tests/unit/test_openai_responses_adapter.py` and expanded
   `tests/unit/test_agent_loop.py`
 
+Completed in the sixteenth TDD slice:
+
+- added `OpenAIResponsesSchemaCompiler`
+- moved OpenAI Responses function-tool envelope construction and strict schema
+  normalization into the compiler
+- updated `OpenAIResponsesToolAdapter` to compile function tools through the
+  compiler instead of calling `FunctionTool.to_openai_tool()`
+- kept `FunctionTool.to_openai_tool()` as a compatibility method that delegates
+  to the OpenAI Responses compiler
+- added coverage proving the adapter does not depend on direct
+  `FunctionTool.to_openai_tool()` export
+- expanded `tests/unit/test_openai_responses_adapter.py`
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
-- move strict schema compilation fully into the OpenAI Responses adapter/compiler
 - provider adapter modules beyond OpenAI Responses
 
 ## Goals
