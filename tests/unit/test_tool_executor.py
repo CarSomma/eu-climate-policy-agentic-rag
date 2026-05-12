@@ -30,6 +30,12 @@ def add_handler(left: int, right: int) -> dict[str, int]:
     return {"sum": left + right}
 
 
+async def async_add_handler(left: int, right: int) -> dict[str, int]:
+    """Async variant of the arithmetic tool."""
+
+    return {"sum": left + right}
+
+
 def build_executor() -> ToolExecutor:
     """Build an executor with one test function tool."""
 
@@ -105,3 +111,78 @@ def test_tool_executor_can_raise_validation_errors() -> None:
     with pytest.raises(ToolValidationError):
         executor.run_sync("add_numbers", {"left": -1, "right": 3}, error_mode="raise")
 
+
+def test_tool_executor_run_sync_rejects_async_handlers() -> None:
+    """Sync execution should not silently run async handlers."""
+
+    tool = FunctionTool(
+        name="async_add_numbers",
+        description="Add two non-negative integers asynchronously",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=async_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]))
+
+    result = executor.run_sync("async_add_numbers", {"left": 2, "right": 3})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolExecutionError"
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_awaits_async_handlers() -> None:
+    """Async execution should await async tool handlers."""
+
+    tool = FunctionTool(
+        name="async_add_numbers",
+        description="Add two non-negative integers asynchronously",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=async_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]))
+
+    result = await executor.run(
+        "async_add_numbers",
+        {"left": 2, "right": 4},
+        call_id="call_async",
+    )
+
+    assert result.ok is True
+    assert result.value == {"sum": 6}
+    assert result.to_responses_output()["call_id"] == "call_async"
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_supports_sync_handlers() -> None:
+    """Async execution should support existing synchronous handlers."""
+
+    executor = build_executor()
+
+    result = await executor.run("add_numbers", {"left": 4, "right": 5})
+
+    assert result.ok is True
+    assert result.value == {"sum": 9}
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_returns_validation_errors() -> None:
+    """Async execution should preserve structured validation errors."""
+
+    executor = build_executor()
+
+    result = await executor.run("add_numbers", {"left": -1, "right": 5})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolValidationError"
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_can_raise_unknown_tool_errors() -> None:
+    """Async execution should support raise-error mode."""
+
+    executor = build_executor()
+
+    with pytest.raises(UnknownToolError):
+        await executor.run("missing_tool", {}, error_mode="raise")
