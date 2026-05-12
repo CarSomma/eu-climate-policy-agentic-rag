@@ -267,10 +267,25 @@ Completed in the sixteenth TDD slice:
   `FunctionTool.to_openai_tool()` export
 - expanded `tests/unit/test_openai_responses_adapter.py`
 
+Completed in the seventeenth TDD slice:
+
+- added explicit OpenAI Responses strict schema failures for unsupported
+  object/map schemas that rely on open `additionalProperties`
+- changed unsupported JSON Schema composition and conditional keywords such as
+  `allOf`, `if`, `then`, and `else` from silent stripping to
+  `SchemaGenerationError`
+- added recursive and unresolved `$ref` detection so schema export fails
+  locally with actionable errors instead of recursing or sending invalid
+  schemas downstream
+- added OpenAI Responses function tool name validation in
+  `OpenAIResponsesSchemaCompiler`
+- preserved existing strict schema normalization for supported Pydantic schemas
+- expanded `tests/unit/test_openai_responses_adapter.py`
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
-- broader OpenAI strict schema edge-case handling
+- schema caching for OpenAI Responses export
 - provider adapter modules beyond OpenAI Responses
 
 ## Goals
