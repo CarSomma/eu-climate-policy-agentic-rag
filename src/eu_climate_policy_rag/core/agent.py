@@ -79,14 +79,6 @@ class AbstractAgent(ABC):
         arguments = json.loads(tool_call.arguments)
         if self.tool_registry.get(tool_call.name) is None:
             LOGGER.error("Unknown tool requested: %s", tool_call.name)
-        if isinstance(self.tools, LegacyToolRegistry):
-            result = self.tools.run_sync(tool_call.name, arguments)
-            output = json.dumps(result) if not isinstance(result, str) else result
-            return {
-                "type": "function_call_output",
-                "call_id": tool_call.call_id,
-                "output": output,
-            }
         result = self._tool_executor.run_sync(
             tool_call.name,
             arguments,
@@ -140,14 +132,6 @@ class AbstractAgent(ABC):
         arguments = json.loads(tool_call.arguments)
         if self.tool_registry.get(tool_call.name) is None:
             LOGGER.error("Unknown tool requested: %s", tool_call.name)
-        if isinstance(self.tools, LegacyToolRegistry):
-            result = await self.tools.run(tool_call.name, arguments)
-            output = json.dumps(result) if not isinstance(result, str) else result
-            return {
-                "type": "function_call_output",
-                "call_id": tool_call.call_id,
-                "output": output,
-            }
         result = await self._tool_executor.run(
             tool_call.name,
             arguments,
