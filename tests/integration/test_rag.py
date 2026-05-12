@@ -221,8 +221,12 @@ def test_search_documents_registry_middleware_collects_sources(
 ) -> None:
     agent = ClimatePolicyAgent([sample_document], openai_client=object())
 
-    result = agent.tools.run_sync("search_documents", {"query": "2030 target"})
+    result = agent._tool_executor.run_sync(
+        "search_documents",
+        {"query": "2030 target"},
+        error_mode="raise",
+    )
 
-    assert isinstance(result, str)
-    assert "Article 4" in result
+    assert isinstance(result.value, str)
+    assert "Article 4" in result.value
     assert agent._current_run_sources == ["European Climate Law"]
