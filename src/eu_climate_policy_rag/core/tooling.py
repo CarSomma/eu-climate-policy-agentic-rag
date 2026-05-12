@@ -112,6 +112,12 @@ class ToolRegistry:
 
         return self._registry.openai_tools
 
+    @property
+    def base_registry(self) -> BaseToolRegistry:
+        """Return the provider-neutral registry backing this compatibility facade."""
+
+        return self._registry
+
     def get(self, name: str) -> OpenAIFunctionTool | None:
         """Return a custom function tool by name if registered."""
         tool = self._registry.get(name)
