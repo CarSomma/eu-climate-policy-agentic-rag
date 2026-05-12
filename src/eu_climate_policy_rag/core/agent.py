@@ -64,6 +64,66 @@ class AbstractAgent(ABC):
             "output": output,
         }
 
+    def _create_response(self, message_history: list[Any]) -> Any:
+        """Call the OpenAI Responses API with current tool schemas."""
+
+        return self.openai_client.responses.create(
+            model=self.model,
+            input=message_history,
+            tools=self.tools.schemas,
+        )
+
+    def _append_response_output(
+        self,
+        response: Any,
+        message_history: list[Any],
+    ) -> tuple[bool, str, bool]:
+        """Append one Responses output batch and execute requested function calls."""
+
+        message_history.extend(response.output)
+        has_tool_call = False
+        final_answer = ""
+        has_builtin_tool_result = False
+
+        for message in response.output:
+            if message.type == "function_call":
+                has_tool_call = True
+                LOGGER.info("Executing tool: %s", message.name)
+                tool_output = self._execute_tool_call(message)
+                message_history.append(tool_output)
+            elif message.type == "message":
+                self._on_message(message)
+                final_answer = message.content[0].text
+
+                # Check if web search was likely used (heuristic: citations with utm_source=openai)
+                if hasattr(message.content[0], "text") and "?utm_source=openai" in message.content[0].text:
+                    has_builtin_tool_result = True
+
+        return has_tool_call, final_answer, has_builtin_tool_result
+
+    async def _append_response_output_async(
+        self,
+        response: Any,
+        message_history: list[Any],
+    ) -> tuple[bool, str]:
+        """Async variant of ``_append_response_output``."""
+
+        message_history.extend(response.output)
+        has_tool_call = False
+        final_answer = ""
+
+        for message in response.output:
+            if message.type == "function_call":
+                has_tool_call = True
+                LOGGER.info("Executing tool: %s", message.name)
+                tool_output = await self._execute_tool_call_async(message)
+                message_history.append(tool_output)
+            elif message.type == "message":
+                self._on_message(message)
+                final_answer = message.content[0].text
+
+        return has_tool_call, final_answer
+
     def _run_loop(self, query: str) -> tuple[str, list[Any]]:
         """Run the agentic tool-call loop and return ``(final_answer, message_history)``.
 
@@ -80,29 +140,11 @@ class AbstractAgent(ABC):
 
         for turn in range(1, self.max_turns + 1):
             LOGGER.info("Agent turn %d", turn)
-            response = self.openai_client.responses.create(
-                model=self.model,
-                input=message_history,
-                tools=self.tools.schemas,
+            response = self._create_response(message_history)
+            has_tool_call, turn_answer, has_builtin_tool_result = (
+                self._append_response_output(response, message_history)
             )
-            message_history.extend(response.output)
-
-            has_tool_call = False
-            has_builtin_tool_result = False
-
-            for message in response.output:
-                if message.type == "function_call":
-                    has_tool_call = True
-                    LOGGER.info("Executing tool: %s", message.name)
-                    tool_output = self._execute_tool_call(message)
-                    message_history.append(tool_output)
-                elif message.type == "message":
-                    self._on_message(message)
-                    final_answer = message.content[0].text
-
-                    # Check if web search was likely used (heuristic: citations with utm_source=openai)
-                    if hasattr(message.content[0], 'text') and '?utm_source=openai' in message.content[0].text:
-                        has_builtin_tool_result = True
+            final_answer = turn_answer or final_answer
 
             if has_builtin_tool_result and not has_tool_call:
                 LOGGER.info("Built-in tool(s) appear to have been used (detected web search citations)")
@@ -144,23 +186,12 @@ class AbstractAgent(ABC):
 
         for turn in range(1, self.max_turns + 1):
             LOGGER.info("Agent turn %d", turn)
-            response = self.openai_client.responses.create(
-                model=self.model,
-                input=message_history,
-                tools=self.tools.schemas,
+            response = self._create_response(message_history)
+            has_tool_call, turn_answer = await self._append_response_output_async(
+                response,
+                message_history,
             )
-            message_history.extend(response.output)
-
-            has_tool_call = False
-            for message in response.output:
-                if message.type == "function_call":
-                    has_tool_call = True
-                    LOGGER.info("Executing tool: %s", message.name)
-                    tool_output = await self._execute_tool_call_async(message)
-                    message_history.append(tool_output)
-                elif message.type == "message":
-                    self._on_message(message)
-                    final_answer = message.content[0].text
+            final_answer = turn_answer or final_answer
 
             if not has_tool_call:
                 break
