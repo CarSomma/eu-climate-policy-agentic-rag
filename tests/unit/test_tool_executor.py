@@ -24,6 +24,12 @@ class AddInput(BaseModel):
     right: int = Field(ge=0)
 
 
+class AddResult(BaseModel):
+    """Pydantic result model for serialization tests."""
+
+    total: int
+
+
 def add_handler(left: int, right: int) -> dict[str, int]:
     """Add two integers."""
 
@@ -128,6 +134,24 @@ def test_tool_executor_run_sync_rejects_async_handlers() -> None:
     assert result.ok is False
     assert result.error is not None
     assert result.error.type == "ToolExecutionError"
+
+
+def test_tool_executor_serializes_pydantic_result_models() -> None:
+    """ToolResult should serialize Pydantic handler results safely."""
+
+    tool = FunctionTool(
+        name="add_model",
+        description="Add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=lambda left, right: AddResult(total=left + right),
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]))
+
+    result = executor.run_sync("add_model", {"left": 2, "right": 8})
+
+    assert result.ok is True
+    assert isinstance(result.value, AddResult)
+    assert json.loads(result.output) == {"ok": True, "data": {"total": 10}}
 
 
 @pytest.mark.asyncio
