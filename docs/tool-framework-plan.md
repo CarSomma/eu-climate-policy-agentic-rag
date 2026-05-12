@@ -149,12 +149,23 @@ Completed in the sixth TDD slice:
 - added integration coverage proving direct registry dispatch applies the fetch
   output directory middleware
 
+Completed in the seventh TDD slice:
+
+- added `SearchDocumentsResultMiddleware` for RAG search tools
+- moved RAG source collection from `ClimatePolicyAgent._execute_tool_call` into
+  middleware
+- converted `SearchDocumentsResultModel` into model-facing context text through
+  middleware
+- simplified `ClimatePolicyAgent._execute_tool_call`
+- changed per-answer source reset to clear the existing source list so
+  middleware retains the correct sink
+- added integration coverage proving registry dispatch collects RAG sources
+
 Not done yet:
 
 - async timeout, retry, cancellation, and concurrency controls beyond basic
   awaitable execution
 - agent-loop migration
-- RAG source collection middleware replacement
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
 - provider adapter modules beyond the initial OpenAI-shaped export methods
