@@ -198,11 +198,19 @@ Completed in the eleventh TDD slice:
   facade
 - expanded `tests/unit/test_tool_executor.py`
 
+Completed in the twelfth TDD slice:
+
+- added `ToolExecutionConfig` for per-tool execution policy
+- added per-tool async retry configuration
+- added per-tool async timeout configuration
+- added per-tool async concurrency limiting
+- kept per-call async timeout overrides highest precedence
+- kept executor-level timeout, retry, and concurrency defaults as fallbacks
+- added `ToolExecutionConfig` support to legacy `OpenAIFunctionTool`
+- expanded `tests/unit/test_tool_executor.py` and `tests/unit/test_tooling.py`
+
 Not done yet:
 
-- per-tool retry configuration
-- per-tool timeout configuration
-- per-tool concurrency configuration
 - agent-loop migration
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
