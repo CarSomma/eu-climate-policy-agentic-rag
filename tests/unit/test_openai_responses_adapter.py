@@ -1,6 +1,7 @@
 """Unit tests for the OpenAI Responses tool adapter."""
 
 import json
+from typing import Any
 
 import pytest
 from pydantic import BaseModel, Field
@@ -9,6 +10,7 @@ from eu_climate_policy_rag.core.tools import (
     BuiltinTool,
     FunctionTool,
     PydanticSchemaProvider,
+    RawJsonSchemaProvider,
     ToolRegistry,
     ToolResult,
 )
@@ -16,6 +18,7 @@ from eu_climate_policy_rag.core.tools.adapters import (
     OpenAIResponsesSchemaCompiler,
     OpenAIResponsesToolAdapter,
 )
+from eu_climate_policy_rag.core.tools.errors import SchemaGenerationError
 
 
 class SearchInput(BaseModel):
@@ -28,6 +31,12 @@ def search_handler(query: str) -> dict[str, str]:
     """Return a small structured search result."""
 
     return {"query": query}
+
+
+def passthrough_handler(**kwargs: object) -> dict[str, object]:
+    """Return provided keyword arguments."""
+
+    return kwargs
 
 
 def build_registry() -> ToolRegistry:
@@ -116,6 +125,108 @@ def test_openai_responses_schema_compiler_compiles_function_tools() -> None:
     assert schema["name"] == "search_documents"
     assert schema["strict"] is True
     assert schema["parameters"]["additionalProperties"] is False
+
+
+def test_openai_responses_schema_compiler_rejects_open_object_schema() -> None:
+    """Strict Responses schemas should fail locally for open objects."""
+
+    class OpenObjectInput(BaseModel):
+        payload: dict[str, Any]
+
+    tool = FunctionTool(
+        name="inspect_payload",
+        description="Inspect arbitrary payload",
+        schema_provider=PydanticSchemaProvider(OpenObjectInput),
+        handler=passthrough_handler,
+    )
+
+    with pytest.raises(SchemaGenerationError, match="additionalProperties"):
+        OpenAIResponsesSchemaCompiler().compile_function_tool(tool)
+
+
+def test_openai_responses_schema_compiler_rejects_all_of() -> None:
+    """Unsupported composition should raise instead of being stripped."""
+
+    tool = FunctionTool(
+        name="merge_payload",
+        description="Merge payload",
+        schema_provider=RawJsonSchemaProvider(
+            {
+                "type": "object",
+                "allOf": [
+                    {
+                        "type": "object",
+                        "properties": {"query": {"type": "string"}},
+                    },
+                ],
+            },
+        ),
+        handler=passthrough_handler,
+    )
+
+    with pytest.raises(SchemaGenerationError, match="allOf"):
+        OpenAIResponsesSchemaCompiler().compile_function_tool(tool)
+
+
+@pytest.mark.parametrize("keyword", ["if", "then", "else"])
+def test_openai_responses_schema_compiler_rejects_conditionals(keyword: str) -> None:
+    """JSON Schema conditionals are outside the strict Responses subset."""
+
+    tool = FunctionTool(
+        name=f"conditional_{keyword}",
+        description="Conditional schema",
+        schema_provider=RawJsonSchemaProvider(
+            {
+                "type": "object",
+                "properties": {"query": {"type": "string"}},
+                keyword: {"properties": {"query": {"const": "climate"}}},
+            },
+        ),
+        handler=passthrough_handler,
+    )
+
+    with pytest.raises(SchemaGenerationError, match=keyword):
+        OpenAIResponsesSchemaCompiler().compile_function_tool(tool)
+
+
+def test_openai_responses_schema_compiler_rejects_recursive_refs() -> None:
+    """Recursive refs should fail locally instead of recursing forever."""
+
+    tool = FunctionTool(
+        name="walk_tree",
+        description="Walk a tree",
+        schema_provider=RawJsonSchemaProvider(
+            {
+                "$defs": {
+                    "Node": {
+                        "type": "object",
+                        "properties": {
+                            "child": {"$ref": "#/$defs/Node"},
+                        },
+                    },
+                },
+                "$ref": "#/$defs/Node",
+            },
+        ),
+        handler=passthrough_handler,
+    )
+
+    with pytest.raises(SchemaGenerationError, match="recursive"):
+        OpenAIResponsesSchemaCompiler().compile_function_tool(tool)
+
+
+def test_openai_responses_schema_compiler_rejects_invalid_function_name() -> None:
+    """Function tool names should satisfy OpenAI Responses constraints."""
+
+    tool = FunctionTool(
+        name="invalid tool name",
+        description="Invalid name",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+
+    with pytest.raises(SchemaGenerationError, match="name"):
+        OpenAIResponsesSchemaCompiler().compile_function_tool(tool)
 
 
 def test_openai_responses_adapter_converts_tool_results_to_function_call_output() -> None:
