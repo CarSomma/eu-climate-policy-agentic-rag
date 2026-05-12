@@ -1,11 +1,12 @@
 """Tool classes used by the EU climate policy RAG agent."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from minsearch import Index
 
 from eu_climate_policy_rag.core.models import SearchDocumentsInputModel, SearchDocumentsResultModel
+from eu_climate_policy_rag.core.tools import ToolContext, ToolMiddleware
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
 
 
@@ -92,3 +93,21 @@ def format_context_item(document: dict[str, Any], max_chars: int = 2000) -> str:
     if len(text) > max_chars:
         text = text[:max_chars] + "..."
     return f"[{source} | {article} | topic: {topic}]\n{text}"
+
+
+class SearchDocumentsResultMiddleware(ToolMiddleware):
+    """Collect RAG sources and return model-facing context for search results."""
+
+    def __init__(self, collect_sources: Callable[[list[str]], None]) -> None:
+        self.collect_sources = collect_sources
+
+    def after_call(self, context: ToolContext, result: object) -> object:
+        """Collect sources from search results and return plain context text."""
+
+        if (
+            context.tool_name != SearchDocumentsTool.name
+            or not isinstance(result, SearchDocumentsResultModel)
+        ):
+            return result
+        self.collect_sources(result.sources)
+        return result.context
