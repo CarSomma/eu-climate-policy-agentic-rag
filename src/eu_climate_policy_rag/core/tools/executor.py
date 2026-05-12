@@ -45,6 +45,11 @@ class ToolExecutor:
         self._semaphore = (
             asyncio.Semaphore(max_concurrency) if max_concurrency is not None else None
         )
+        self._tool_semaphores = {
+            tool.name: asyncio.Semaphore(tool.execution.max_concurrency)
+            for tool in registry.function_tools
+            if tool.execution.max_concurrency is not None
+        }
 
     async def run(
         self,
@@ -70,7 +75,12 @@ class ToolExecutor:
         if isinstance(dumped_args, ToolResult):
             return dumped_args
 
-        for attempt in range(1, self.max_retries + 2):
+        max_retries = (
+            tool.execution.max_retries
+            if tool.execution.max_retries is not None
+            else self.max_retries
+        )
+        for attempt in range(1, max_retries + 2):
             context.attempt = attempt
             try:
                 value = await self._call_async_tool(
@@ -81,7 +91,7 @@ class ToolExecutor:
                 )
                 break
             except TimeoutError as exc:
-                if attempt > self.max_retries:
+                if attempt > max_retries:
                     return self._handle_error(
                         ToolExecutionError(f"Tool {name} timed out."),
                         context,
@@ -89,7 +99,7 @@ class ToolExecutor:
                         cause=exc,
                     )
             except Exception as exc:
-                if attempt > self.max_retries:
+                if attempt > max_retries:
                     return self._handle_error(
                         ToolExecutionError(f"Tool execution failed for {name}."),
                         context,
@@ -219,20 +229,34 @@ class ToolExecutor:
                 value = await value
             return self._after_call(context, value)
 
-        effective_timeout = timeout_seconds if timeout_seconds is not None else self.timeout_seconds
+        effective_timeout = (
+            timeout_seconds
+            if timeout_seconds is not None
+            else tool.execution.timeout_seconds
+            if tool.execution.timeout_seconds is not None
+            else self.timeout_seconds
+        )
         if effective_timeout is None:
-            return await self._run_with_concurrency_limit(call)
+            return await self._run_with_concurrency_limit(tool.name, call)
         async with asyncio.timeout(effective_timeout):
-            return await self._run_with_concurrency_limit(call)
+            return await self._run_with_concurrency_limit(tool.name, call)
 
     async def _run_with_concurrency_limit(
         self,
+        tool_name: str,
         call: Callable[[], Awaitable[object]],
     ) -> object:
+        async def run_with_tool_limit() -> object:
+            tool_semaphore = self._tool_semaphores.get(tool_name)
+            if tool_semaphore is None:
+                return await call()
+            async with tool_semaphore:
+                return await call()
+
         if self._semaphore is None:
-            return await call()
+            return await run_with_tool_limit()
         async with self._semaphore:
-            return await call()
+            return await run_with_tool_limit()
 
     @staticmethod
     def _handle_error(
