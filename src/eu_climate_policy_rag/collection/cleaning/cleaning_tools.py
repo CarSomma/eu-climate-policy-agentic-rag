@@ -13,8 +13,8 @@ from eu_climate_policy_rag.core.tools import (
     PydanticSchemaProvider,
     ToolContext,
     ToolMiddleware,
+    ToolRegistry,
 )
-from eu_climate_policy_rag.core.tooling import ToolRegistry
 
 OBSERVED_CLEANING_TOOLS = {
     "save_cleaned_document",
@@ -93,5 +93,5 @@ def build_cleaning_tools(
                 handler=toolbox.finalize,
             ),
         ],
-        middleware=middleware,
+        middleware=middleware or [],
     )
