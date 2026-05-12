@@ -1,7 +1,7 @@
 """Tool execution pipeline."""
 
 import asyncio
-from collections.abc import Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from inspect import isawaitable, iscoroutinefunction
 
 from pydantic import ValidationError
@@ -29,10 +29,17 @@ class ToolExecutor:
         *,
         middleware: list[ToolMiddleware] | None = None,
         timeout_seconds: float | None = None,
+        max_concurrency: int | None = None,
     ) -> None:
+        if max_concurrency is not None and max_concurrency < 1:
+            msg = "max_concurrency must be at least 1."
+            raise ValueError(msg)
         self.registry = registry
         self.middleware = middleware or []
         self.timeout_seconds = timeout_seconds
+        self._semaphore = (
+            asyncio.Semaphore(max_concurrency) if max_concurrency is not None else None
+        )
 
     async def run(
         self,
@@ -195,8 +202,17 @@ class ToolExecutor:
             return self._after_call(context, value)
 
         if self.timeout_seconds is None:
-            return await call()
+            return await self._run_with_concurrency_limit(call)
         async with asyncio.timeout(self.timeout_seconds):
+            return await self._run_with_concurrency_limit(call)
+
+    async def _run_with_concurrency_limit(
+        self,
+        call: Callable[[], Awaitable[object]],
+    ) -> object:
+        if self._semaphore is None:
+            return await call()
+        async with self._semaphore:
             return await call()
 
     @staticmethod
