@@ -51,6 +51,13 @@ async def slow_add_handler(left: int, right: int) -> dict[str, int]:
     return {"sum": left + right}
 
 
+async def cancellable_add_handler(left: int, right: int) -> dict[str, int]:
+    """Async tool that can be cancelled while sleeping."""
+
+    await asyncio.sleep(1)
+    return {"sum": left + right}
+
+
 def build_executor() -> ToolExecutor:
     """Build an executor with one test function tool."""
 
@@ -292,3 +299,56 @@ async def test_tool_executor_run_honors_async_concurrency_limit() -> None:
 
     assert [result.value for result in results] == [{"sum": 3}, {"sum": 7}]
     assert state["max_active"] == 1
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_propagates_cancellation() -> None:
+    """Async cancellation should not be converted into a tool error result."""
+
+    tool = FunctionTool(
+        name="cancellable_add_numbers",
+        description="Cancellable arithmetic call",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=cancellable_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]))
+
+    task = asyncio.create_task(
+        executor.run("cancellable_add_numbers", {"left": 1, "right": 2})
+    )
+    await asyncio.sleep(0)
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_releases_concurrency_limit_after_cancellation() -> None:
+    """Cancelled calls should release executor concurrency slots."""
+
+    tool = FunctionTool(
+        name="cancellable_add_numbers",
+        description="Cancellable arithmetic call",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=cancellable_add_handler,
+    )
+    executor = ToolExecutor(
+        ToolRegistry(function_tools=[tool]),
+        max_concurrency=1,
+    )
+
+    task = asyncio.create_task(
+        executor.run("cancellable_add_numbers", {"left": 1, "right": 2})
+    )
+    await asyncio.sleep(0)
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    result = await executor.run("cancellable_add_numbers", {"left": 3, "right": 4}, timeout_seconds=0.001)
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolExecutionError"
