@@ -73,6 +73,48 @@ Existing tests depend on:
 - unknown tools returning `{"error": "..."}`
 - built-in tools appearing in schemas but not in local dispatch
 
+## Implementation Status
+
+Current branch: `tool-framework-tdd`
+
+Completed in the first TDD slice:
+
+- created `docs/tool-framework-plan.md`
+- added provider-neutral `core.tools` package
+- added `FunctionTool`
+- added `BuiltinTool`
+- added `SchemaProvider`
+- added `PydanticSchemaProvider`
+- added `RawJsonSchemaProvider`
+- added initial OpenAI strict schema normalization
+- added provider-neutral `ToolRegistry`
+- added `.openai_tools` and `.schemas` compatibility export
+- added tests in `tests/unit/test_tool_framework.py`
+- verified existing `tests/unit/test_tooling.py` still passes
+
+Completed in the second TDD slice:
+
+- added `ToolExecutor`
+- added `ToolContext`
+- added `ToolResult`
+- added structured framework exceptions
+- added sync execution pipeline for local function tools
+- added structured success serialization
+- added structured unknown-tool error serialization
+- added structured validation error serialization
+- added Responses `function_call_output` conversion on `ToolResult`
+- added tests in `tests/unit/test_tool_executor.py`
+
+Not done yet:
+
+- compatibility migration from `core.tooling.py` to `core.tools`
+- middleware
+- async timeout, retry, cancellation, and concurrency controls
+- agent-loop migration
+- RAG/fetch/cleaning middleware replacement
+- broader OpenAI strict schema edge-case handling
+- provider adapter modules beyond the initial OpenAI-shaped export methods
+
 ## Goals
 
 ### Design Goals
