@@ -6,7 +6,6 @@ from unittest.mock import AsyncMock, MagicMock
 from eu_climate_policy_rag.collection.fetching.content_cache import ContentCache
 from eu_climate_policy_rag.collection.fetching.fetch_agent import DocumentFetchAgent
 from eu_climate_policy_rag.collection.fetching.fetch_tools import build_fetch_tools
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
 from eu_climate_policy_rag.core.tools import FunctionTool, ToolExecutor
 
 
@@ -79,8 +78,7 @@ def test_fetch_tools_are_native_function_tools(tmp_path) -> None:
 
     assert registry.function_tools
     assert all(
-        isinstance(tool, FunctionTool)
-        and not isinstance(tool, OpenAIFunctionTool)
+        type(tool) is FunctionTool
         for tool in registry.function_tools
     )
 
