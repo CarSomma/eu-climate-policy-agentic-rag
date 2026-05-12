@@ -6,8 +6,12 @@ from typing import Any
 from minsearch import Index
 
 from eu_climate_policy_rag.core.models import SearchDocumentsInputModel, SearchDocumentsResultModel
-from eu_climate_policy_rag.core.tools import ToolContext, ToolMiddleware
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
+from eu_climate_policy_rag.core.tools import (
+    FunctionTool,
+    PydanticSchemaProvider,
+    ToolContext,
+    ToolMiddleware,
+)
 
 
 class SearchDocumentsTool:
@@ -30,10 +34,10 @@ class SearchDocumentsTool:
         self.num_results = num_results
         self.max_chars_per_doc = max_chars_per_doc
         self.index = self._build_index(self.documents)
-        self.function_tool = OpenAIFunctionTool(
+        self.function_tool = FunctionTool(
             name=self.name,
             description=self.description,
-            input_model=SearchDocumentsInputModel,
+            schema_provider=PydanticSchemaProvider(SearchDocumentsInputModel),
             handler=self.run,
         )
 
