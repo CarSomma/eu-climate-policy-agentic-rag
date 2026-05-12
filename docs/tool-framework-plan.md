@@ -170,10 +170,21 @@ Completed in the eighth TDD slice:
 - added timeout pass-through on the legacy `core.tooling.ToolRegistry` facade
 - expanded `tests/unit/test_tool_executor.py`
 
+Completed in the ninth TDD slice:
+
+- added executor-level async concurrency limiting through `max_concurrency`
+- wrapped async handler execution in an `asyncio.Semaphore`
+- validated `max_concurrency` configuration
+- added `max_concurrency` pass-through on the legacy
+  `core.tooling.ToolRegistry` facade
+- added unit coverage proving concurrent async calls serialize when
+  `max_concurrency=1`
+
 Not done yet:
 
-- retry, cancellation, and concurrency controls beyond basic awaitable execution
+- retry and cancellation controls beyond basic awaitable execution
 - per-tool timeout configuration
+- per-tool concurrency configuration
 - agent-loop migration
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
