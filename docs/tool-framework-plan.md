@@ -323,6 +323,20 @@ Completed in the twentieth TDD slice:
 - expanded `tests/unit/test_agent_loop.py` to cover native registry acceptance
   and adapter registry normalization for both legacy and native inputs
 
+Completed in the twenty-first TDD slice:
+
+- moved base `AbstractAgent` function-call dispatch fully onto
+  `ToolExecutor`, using the normalized provider-neutral registry for both
+  legacy and native registry inputs
+- converted base agent `ToolResult` values through
+  `OpenAIResponsesToolAdapter.to_function_call_output`
+- changed base unknown-tool handling to return structured model-visible
+  `UnknownToolError` payloads instead of legacy raw `{"error": ...}` output
+- preserved domain-specific overrides for RAG text output, fetch JSON output,
+  cleaning direct dispatch, source collection, and fetch logging
+- expanded `tests/unit/test_agent_loop.py` to cover adapter conversion and
+  structured unknown-tool output in the base path
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
