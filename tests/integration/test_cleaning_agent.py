@@ -4,6 +4,9 @@ from eu_climate_policy_rag.collection.cleaning.cleaning_agent import (
     CleaningCurationAgent,
 )
 from eu_climate_policy_rag.collection.cleaning.cleaning_toolbox import CleaningToolbox
+from eu_climate_policy_rag.collection.cleaning.cleaning_tools import build_cleaning_tools
+from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
+from eu_climate_policy_rag.core.tools import FunctionTool
 
 
 def test_cleaning_agent_exposes_class_backed_tool_schemas() -> None:
@@ -18,6 +21,18 @@ def test_cleaning_agent_exposes_class_backed_tool_schemas() -> None:
         "skip_document",
         "finalize",
     }
+
+
+def test_cleaning_tools_are_native_function_tools(tmp_path) -> None:
+    toolbox = CleaningToolbox(tmp_path, tmp_path / "out.json")
+    registry = build_cleaning_tools(toolbox)
+
+    assert registry.base_registry.function_tools
+    assert all(
+        isinstance(tool, FunctionTool)
+        and not isinstance(tool, OpenAIFunctionTool)
+        for tool in registry.base_registry.function_tools
+    )
 
 
 def test_run_tool_returns_error_for_unknown_tool() -> None:
