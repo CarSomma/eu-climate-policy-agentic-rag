@@ -37,6 +37,15 @@ class AbstractAgent(ABC):
         self.tools = tools or ToolRegistry([])
         self.max_turns = max_turns
 
+        # Log available tools for visibility
+        function_tools = [s["name"] for s in self.tools.schemas if s.get("type") == "function"]
+        builtin_tools = [s["type"] for s in self.tools.schemas if s.get("type") != "function"]
+
+        if function_tools:
+            LOGGER.info("Custom function tools: %s", ", ".join(function_tools))
+        if builtin_tools:
+            LOGGER.info("Built-in tools: %s", ", ".join(builtin_tools))
+
     def _execute_tool_call(self, tool_call: Any) -> dict[str, Any]:
         """Dispatch a ``function_call`` message to the tool registry.
 
@@ -79,6 +88,8 @@ class AbstractAgent(ABC):
             message_history.extend(response.output)
 
             has_tool_call = False
+            has_builtin_tool_result = False
+
             for message in response.output:
                 if message.type == "function_call":
                     has_tool_call = True
@@ -88,6 +99,13 @@ class AbstractAgent(ABC):
                 elif message.type == "message":
                     self._on_message(message)
                     final_answer = message.content[0].text
+
+                    # Check if web search was likely used (heuristic: citations with utm_source=openai)
+                    if hasattr(message.content[0], 'text') and '?utm_source=openai' in message.content[0].text:
+                        has_builtin_tool_result = True
+
+            if has_builtin_tool_result and not has_tool_call:
+                LOGGER.info("Built-in tool(s) appear to have been used (detected web search citations)")
 
             if not has_tool_call:
                 break
