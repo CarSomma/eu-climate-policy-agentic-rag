@@ -30,13 +30,18 @@ class ToolExecutor:
         middleware: list[ToolMiddleware] | None = None,
         timeout_seconds: float | None = None,
         max_concurrency: int | None = None,
+        max_retries: int = 0,
     ) -> None:
         if max_concurrency is not None and max_concurrency < 1:
             msg = "max_concurrency must be at least 1."
             raise ValueError(msg)
+        if max_retries < 0:
+            msg = "max_retries must be at least 0."
+            raise ValueError(msg)
         self.registry = registry
         self.middleware = middleware or []
         self.timeout_seconds = timeout_seconds
+        self.max_retries = max_retries
         self._semaphore = (
             asyncio.Semaphore(max_concurrency) if max_concurrency is not None else None
         )
@@ -65,27 +70,32 @@ class ToolExecutor:
         if isinstance(dumped_args, ToolResult):
             return dumped_args
 
-        try:
-            value = await self._call_async_tool(
-                tool,
-                dumped_args,
-                context,
-                timeout_seconds=timeout_seconds,
-            )
-        except TimeoutError as exc:
-            return self._handle_error(
-                ToolExecutionError(f"Tool {name} timed out."),
-                context,
-                error_mode,
-                cause=exc,
-            )
-        except Exception as exc:
-            return self._handle_error(
-                ToolExecutionError(f"Tool execution failed for {name}."),
-                context,
-                error_mode,
-                cause=exc,
-            )
+        for attempt in range(1, self.max_retries + 2):
+            context.attempt = attempt
+            try:
+                value = await self._call_async_tool(
+                    tool,
+                    dumped_args,
+                    context,
+                    timeout_seconds=timeout_seconds,
+                )
+                break
+            except TimeoutError as exc:
+                if attempt > self.max_retries:
+                    return self._handle_error(
+                        ToolExecutionError(f"Tool {name} timed out."),
+                        context,
+                        error_mode,
+                        cause=exc,
+                    )
+            except Exception as exc:
+                if attempt > self.max_retries:
+                    return self._handle_error(
+                        ToolExecutionError(f"Tool execution failed for {name}."),
+                        context,
+                        error_mode,
+                        cause=exc,
+                    )
 
         return ToolResult.success(
             tool_name=name,

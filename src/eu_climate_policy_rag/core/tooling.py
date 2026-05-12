@@ -72,6 +72,7 @@ class ToolRegistry:
         middleware: Sequence[ToolMiddleware] | None = None,
         timeout_seconds: float | None = None,
         max_concurrency: int | None = None,
+        max_retries: int = 0,
     ) -> None:
         """Initialize with custom function tools and optional built-in tools.
 
@@ -94,6 +95,7 @@ class ToolRegistry:
             middleware=list(middleware or []),
             timeout_seconds=timeout_seconds,
             max_concurrency=max_concurrency,
+            max_retries=max_retries,
         )
 
     @property
