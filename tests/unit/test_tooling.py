@@ -3,6 +3,7 @@
 import pytest
 from pydantic import BaseModel, Field
 
+from eu_climate_policy_rag.core.tools import ToolExecutionConfig
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
 
 
@@ -184,3 +185,17 @@ def test_tool_registry_sync_run_preserves_legacy_result_shape() -> None:
     result = registry.run_sync("search_documents", {"query": "climate"})
 
     assert result == "Results for: climate"
+
+
+def test_openai_function_tool_accepts_execution_configuration() -> None:
+    """Legacy function tools should expose provider-neutral execution policy."""
+
+    tool = OpenAIFunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        input_model=MockSearchInput,
+        handler=mock_search_handler,
+        execution=ToolExecutionConfig(max_retries=1),
+    )
+
+    assert tool.execution.max_retries == 1
