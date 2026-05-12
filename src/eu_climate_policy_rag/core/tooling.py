@@ -9,6 +9,7 @@ from eu_climate_policy_rag.core.tools import (
     FunctionTool,
     PydanticSchemaProvider,
     ToolExecutor,
+    ToolMiddleware,
     ToolRegistry as BaseToolRegistry,
 )
 
@@ -68,6 +69,7 @@ class ToolRegistry:
         tools: Sequence[OpenAIFunctionTool] | None = None,
         function_tools: Sequence[OpenAIFunctionTool] | None = None,
         builtin_tools: list[dict[str, Any]] | None = None,
+        middleware: Sequence[ToolMiddleware] | None = None,
     ) -> None:
         """Initialize with custom function tools and optional built-in tools.
 
@@ -85,7 +87,10 @@ class ToolRegistry:
             function_tools=function_tools,
             builtin_tools=builtin_tools or [],
         )
-        self._executor = ToolExecutor(self._registry)
+        self._executor = ToolExecutor(
+            self._registry,
+            middleware=list(middleware or []),
+        )
 
     @property
     def schemas(self) -> list[dict[str, Any]]:
