@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 from eu_climate_policy_rag.collection.fetching.content_cache import ContentCache
 from eu_climate_policy_rag.collection.fetching.fetch_agent import DocumentFetchAgent
+from eu_climate_policy_rag.collection.fetching.fetch_tools import build_fetch_tools
 
 
 async def test_run_tool_forces_agent_output_directory(
@@ -28,6 +29,38 @@ async def test_run_tool_forces_agent_output_directory(
     assert payload["saved"]
     assert (tmp_path / "saved.md").exists()
     assert payload["path"] == str(tmp_path / "saved.md")
+
+
+async def test_fetch_tools_registry_forces_output_directory_with_middleware(
+    tmp_path,
+) -> None:
+    mock_toolbox = SimpleNamespace(
+        get_page_snapshot=AsyncMock(),
+        click_and_capture=AsyncMock(),
+        click_download_button=AsyncMock(),
+        convert_to_markdown=MagicMock(),
+        output_directory=tmp_path,
+    )
+    mock_toolbox.save_content_to_file = MagicMock(
+        return_value={"directory": str(tmp_path)}
+    )
+    registry = build_fetch_tools(mock_toolbox)
+
+    result = await registry.run(
+        "save_content_to_file",
+        {
+            "markdown_id": "md_1",
+            "filename": "saved.md",
+            "directory": ".",
+        },
+    )
+
+    assert result == {"directory": str(tmp_path)}
+    mock_toolbox.save_content_to_file.assert_called_once_with(
+        markdown_id="md_1",
+        filename="saved.md",
+        directory=str(tmp_path),
+    )
 
 
 def test_fetch_agent_exposes_class_backed_tool_schemas() -> None:
