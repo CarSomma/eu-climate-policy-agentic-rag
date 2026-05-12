@@ -8,7 +8,6 @@ from eu_climate_policy_rag.collection.cleaning.cleaning_tools import (
     CleaningToolMetricsMiddleware,
     build_cleaning_tools,
 )
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
 from eu_climate_policy_rag.core.tools import FunctionTool, ToolExecutor
 
 
@@ -32,8 +31,7 @@ def test_cleaning_tools_are_native_function_tools(tmp_path) -> None:
 
     assert registry.function_tools
     assert all(
-        isinstance(tool, FunctionTool)
-        and not isinstance(tool, OpenAIFunctionTool)
+        type(tool) is FunctionTool
         for tool in registry.function_tools
     )
 
