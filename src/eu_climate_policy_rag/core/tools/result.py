@@ -32,6 +32,7 @@ class ToolResult(Generic[ResultT]):
         tool_name: str,
         value: ResultT,
         call_id: str | None = None,
+        metadata: dict[str, object] | None = None,
     ) -> "ToolResult[ResultT]":
         """Create a successful JSON-mode tool result."""
 
@@ -42,6 +43,7 @@ class ToolResult(Generic[ResultT]):
             call_id=call_id,
             value=value,
             output=output,
+            metadata=metadata or {},
         )
 
     @classmethod
