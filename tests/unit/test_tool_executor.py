@@ -259,3 +259,36 @@ async def test_tool_executor_run_can_raise_timeout_errors() -> None:
             {"left": 1, "right": 2},
             error_mode="raise",
         )
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_honors_async_concurrency_limit() -> None:
+    """Async execution should limit concurrent handler calls."""
+
+    state = {"active": 0, "max_active": 0}
+
+    async def tracked_add_handler(left: int, right: int) -> dict[str, int]:
+        state["active"] += 1
+        state["max_active"] = max(state["max_active"], state["active"])
+        await asyncio.sleep(0.01)
+        state["active"] -= 1
+        return {"sum": left + right}
+
+    tool = FunctionTool(
+        name="tracked_add_numbers",
+        description="Track concurrent arithmetic calls",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=tracked_add_handler,
+    )
+    executor = ToolExecutor(
+        ToolRegistry(function_tools=[tool]),
+        max_concurrency=1,
+    )
+
+    results = await asyncio.gather(
+        executor.run("tracked_add_numbers", {"left": 1, "right": 2}),
+        executor.run("tracked_add_numbers", {"left": 3, "right": 4}),
+    )
+
+    assert [result.value for result in results] == [{"sum": 3}, {"sum": 7}]
+    assert state["max_active"] == 1
