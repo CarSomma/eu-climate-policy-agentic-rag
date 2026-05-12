@@ -29,7 +29,7 @@ A user asks a question like: *"How does the EU's 2030 climate target relate to t
 The codebase has two main workflows:
 
 1. **Document pipeline**: discover and fetch official EU climate policy documents, convert them to Markdown, and save them locally.
-2. **RAG assistant**: load a structured JSON dataset and answer questions with cited responses.
+2. **RAG assistant**: load a structured JSON dataset and answer questions with cited responses (optionally enhanced with web search).
 
 ## Prerequisites
 
@@ -43,7 +43,6 @@ The codebase has two main workflows:
 1. Install `uv` if you do not have it yet:
 
    https://docs.astral.sh/uv/getting-started/installation/
-
 2. Clone this repository, then move into the project folder:
 
    ```bash
@@ -52,7 +51,6 @@ The codebase has two main workflows:
    ```
 
    If you downloaded the project as a zip file, extract it and open a terminal in the extracted folder.
-
 3. Install Python 3.13 with `uv` if it is not already available:
 
    ```bash
@@ -60,7 +58,6 @@ The codebase has two main workflows:
    ```
 
    The project requires Python 3.13 or later, and `uv sync` will use a compatible interpreter.
-
 4. Create a local environment file and add your OpenAI API key:
 
    ```bash
@@ -72,25 +69,21 @@ The codebase has two main workflows:
    ```bash
    OPENAI_API_KEY=your-openai-key-here
    ```
-
 5. Install the project dependencies:
 
    ```bash
    uv sync
    ```
-
 6. Install Playwright browsers if they were not installed automatically:
 
    ```bash
    uv run playwright install
    ```
-
 7. Check that the CLI is available:
 
    ```bash
    uv run eu-climate-ask --help
    ```
-
 8. Start Jupyter if you want to run the notebooks:
 
    ```bash
@@ -121,6 +114,15 @@ uv run eu-climate-ask "How does the EU's 2030 target relate to the 2040 goal?"
 # Use a different model or data file
 uv run eu-climate-ask "What is CBAM?" --model gpt-4o --data data/eu_climate_policy.json
 
+# Enable web search for location-specific or recent queries
+uv run eu-climate-ask "What are climate plans in Turin?" --enable-web-search
+
+# Web search with location context
+uv run eu-climate-ask "What are climate plans in Italy?" \
+  --enable-web-search \
+  --web-search-city "Turin" \
+  --web-search-country "IT"
+
 # Limit agent turns (default 10)
 uv run eu-climate-ask "What is CBAM?" --max-turns 5
 
@@ -133,12 +135,20 @@ uv run eu-climate-ask --help
 ```python
 from eu_climate_policy_rag import ClimatePolicyAgent
 
+# Basic RAG with local documents only
 rag = ClimatePolicyAgent.from_json("data/eu_climate_policy.json")
 result = rag.answer("How does the EU's 2030 climate target relate to the 2040 goal?")
-# the cited answer text
+print(result.answer)   # the cited answer text
+print(result.sources)  # list of source document names used
+
+# RAG with web search enabled
+rag_with_web = ClimatePolicyAgent.from_json(
+    "data/eu_climate_policy.json",
+    enable_web_search=True,
+    web_search_location={"city": "Turin", "country": "IT"}
+)
+result = rag_with_web.answer("What are Turin's climate initiatives?")
 print(result.answer)
-# list of source document names used
-print(result.sources) 
 ```
 
 ### Run the document pipeline (fetch + ingest)
