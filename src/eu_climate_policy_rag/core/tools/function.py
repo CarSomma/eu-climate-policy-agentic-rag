@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from eu_climate_policy_rag.core.tools.providers import SchemaProvider
-from eu_climate_policy_rag.core.tools.schema import normalize_openai_schema
 
 InputT = TypeVar("InputT")
 ResultT = TypeVar("ResultT")
@@ -45,14 +44,11 @@ class FunctionTool(Generic[InputT, ResultT]):
     def to_openai_tool(self) -> dict[str, object]:
         """Return this function tool in OpenAI Responses API format."""
 
-        parameters = normalize_openai_schema(self.schema_provider.json_schema())
-        return {
-            "type": "function",
-            "name": self.name,
-            "description": self.description,
-            "parameters": parameters,
-            "strict": self.strict,
-        }
+        from eu_climate_policy_rag.core.tools.adapters import (  # noqa: PLC0415
+            OpenAIResponsesSchemaCompiler,
+        )
+
+        return OpenAIResponsesSchemaCompiler().compile_function_tool(self)
 
     @property
     def schema(self) -> dict[str, object]:
