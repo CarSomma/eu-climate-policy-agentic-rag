@@ -48,6 +48,7 @@ class ToolExecutor:
         *,
         call_id: str | None = None,
         error_mode: ErrorMode = "return",
+        timeout_seconds: float | None = None,
     ) -> ToolResult[object]:
         """Validate and execute a registered function tool asynchronously."""
 
@@ -65,7 +66,12 @@ class ToolExecutor:
             return dumped_args
 
         try:
-            value = await self._call_async_tool(tool, dumped_args, context)
+            value = await self._call_async_tool(
+                tool,
+                dumped_args,
+                context,
+                timeout_seconds=timeout_seconds,
+            )
         except TimeoutError as exc:
             return self._handle_error(
                 ToolExecutionError(f"Tool {name} timed out."),
@@ -190,6 +196,8 @@ class ToolExecutor:
         tool: FunctionTool[object, object],
         args: Mapping[str, object],
         context: ToolContext,
+        *,
+        timeout_seconds: float | None = None,
     ) -> object:
         async def call() -> object:
             call_args = self._before_call(context, args)
@@ -201,9 +209,10 @@ class ToolExecutor:
                 value = await value
             return self._after_call(context, value)
 
-        if self.timeout_seconds is None:
+        effective_timeout = timeout_seconds if timeout_seconds is not None else self.timeout_seconds
+        if effective_timeout is None:
             return await self._run_with_concurrency_limit(call)
-        async with asyncio.timeout(self.timeout_seconds):
+        async with asyncio.timeout(effective_timeout):
             return await self._run_with_concurrency_limit(call)
 
     async def _run_with_concurrency_limit(

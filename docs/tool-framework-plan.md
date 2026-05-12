@@ -180,9 +180,17 @@ Completed in the ninth TDD slice:
 - added unit coverage proving concurrent async calls serialize when
   `max_concurrency=1`
 
+Completed in the tenth TDD slice:
+
+- added cancellation propagation coverage for async tool execution
+- verified `asyncio.CancelledError` is not converted into a normal tool result
+- verified concurrency slots are released after cancellation
+- added per-call async timeout override on `ToolExecutor.run`
+- expanded `tests/unit/test_tool_executor.py`
+
 Not done yet:
 
-- retry and cancellation controls beyond basic awaitable execution
+- retry controls
 - per-tool timeout configuration
 - per-tool concurrency configuration
 - agent-loop migration
