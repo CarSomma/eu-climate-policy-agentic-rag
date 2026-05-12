@@ -15,8 +15,8 @@ from eu_climate_policy_rag.core.tools import (
     PydanticSchemaProvider,
     ToolContext,
     ToolMiddleware,
+    ToolRegistry,
 )
-from eu_climate_policy_rag.core.tooling import ToolRegistry
 
 
 class SaveContentDirectoryMiddleware(ToolMiddleware):
