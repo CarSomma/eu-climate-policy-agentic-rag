@@ -209,9 +209,24 @@ Completed in the twelfth TDD slice:
 - added `ToolExecutionConfig` support to legacy `OpenAIFunctionTool`
 - expanded `tests/unit/test_tool_executor.py` and `tests/unit/test_tooling.py`
 
+Completed in the thirteenth TDD slice:
+
+- codified the core OpenAI Responses function-calling loop from the official
+  function-calling guide:
+  - preserve `response.output` in the running input/message history
+  - execute every `function_call` item returned by the model
+  - append one `function_call_output` item per tool call using the matching
+    `call_id`
+  - continue the loop with the augmented input until the model returns a
+    message or the turn limit is reached
+- added focused unit coverage in `tests/unit/test_agent_loop.py`
+- centralized sync and async response-output handling in `core.agent`
+- preserved existing domain-specific tool dispatch overrides for RAG, fetch,
+  and cleaning agents
+
 Not done yet:
 
-- agent-loop migration
+- finish agent-loop migration toward a provider adapter / reusable loop object
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
 - provider adapter modules beyond the initial OpenAI-shaped export methods
