@@ -224,9 +224,21 @@ Completed in the thirteenth TDD slice:
 - preserved existing domain-specific tool dispatch overrides for RAG, fetch,
   and cleaning agents
 
+Completed in the fourteenth TDD slice:
+
+- extracted the Responses function-calling loop into `core.agent_loop`
+- added `OpenAIResponsesToolLoop` as a reusable sync/async loop object
+- kept the loop callback-based so agents still own response creation,
+  tool-call execution, message hooks, and built-in-tool logging
+- migrated `AbstractAgent._run_loop` and `_run_loop_async` to delegate to the
+  reusable loop object
+- preserved the existing `(final_answer, message_history)` return shape
+- expanded `tests/unit/test_agent_loop.py`
+- verified existing RAG, fetch, and cleaning agent integrations still pass
+
 Not done yet:
 
-- finish agent-loop migration toward a provider adapter / reusable loop object
+- finish agent-loop migration toward a provider adapter
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
 - provider adapter modules beyond the initial OpenAI-shaped export methods
