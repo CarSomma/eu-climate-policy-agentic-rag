@@ -39,7 +39,8 @@ class ToolExecutor:
             msg = "max_retries must be at least 0."
             raise ValueError(msg)
         self.registry = registry
-        self.middleware = middleware or []
+        registry_middleware = registry.middleware or ()
+        self.middleware = list(registry_middleware if middleware is None else middleware)
         self.timeout_seconds = timeout_seconds
         self.max_retries = max_retries
         self._semaphore = (
