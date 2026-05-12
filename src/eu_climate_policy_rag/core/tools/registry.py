@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 from eu_climate_policy_rag.core.tools.builtin import BuiltinTool
 from eu_climate_policy_rag.core.tools.function import FunctionTool
+from eu_climate_policy_rag.core.tools.middleware import ToolMiddleware
 
 
 @dataclass(frozen=True)
@@ -13,6 +14,7 @@ class ToolRegistry:
 
     function_tools: Sequence[FunctionTool[object, object]] = field(default_factory=tuple)
     builtin_tools: Sequence[BuiltinTool | Mapping[str, object]] = field(default_factory=tuple)
+    middleware: Sequence[ToolMiddleware] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         function_map = {tool.name: tool for tool in self.function_tools}
