@@ -50,25 +50,57 @@ class OpenAIFunctionTool:
 
 
 class ToolRegistry:
-    """Lookup and dispatch a set of named function tools."""
+    """Lookup and dispatch a set of named function tools.
 
-    def __init__(self, tools: Sequence[OpenAIFunctionTool]) -> None:
-        self._tools = {tool.name: tool for tool in tools}
+    Supports both custom function tools and built-in OpenAI tools
+    (web_search, code_interpreter) for the Responses API.
+    """
+
+    def __init__(
+        self,
+        tools: Sequence[OpenAIFunctionTool] | None = None,
+        function_tools: Sequence[OpenAIFunctionTool] | None = None,
+        builtin_tools: list[dict[str, Any]] | None = None,
+    ) -> None:
+        """Initialize with custom function tools and optional built-in tools.
+
+        Args:
+            tools: Legacy parameter for backward compatibility
+            function_tools: Custom OpenAIFunctionTool instances
+            builtin_tools: Built-in tool schemas (web_search, code_interpreter)
+        """
+        # Backward compatibility: support old ToolRegistry([tool1, tool2])
+        if tools is not None and function_tools is None:
+            function_tools = tools
+
+        function_tools = function_tools or []
+        self._tools = {tool.name: tool for tool in function_tools}
+        self._builtin_schemas = builtin_tools or []
+
+        # Extract built-in tool names for quick lookup
+        self._builtin_names = {
+            tool.get("type", tool.get("name", ""))
+            for tool in self._builtin_schemas
+        }
 
     @property
     def schemas(self) -> list[dict[str, Any]]:
-        """Return schemas for every registered tool."""
-
-        return [tool.schema for tool in self._tools.values()]
+        """Return schemas for both function and built-in tools."""
+        return [
+            *[tool.schema for tool in self._tools.values()],
+            *self._builtin_schemas,
+        ]
 
     def get(self, name: str) -> OpenAIFunctionTool | None:
-        """Return a tool by name if registered."""
-
+        """Return a custom function tool by name if registered."""
         return self._tools.get(name)
+
+    def is_builtin(self, name: str) -> bool:
+        """Check if a tool name refers to a built-in tool."""
+        return name in self._builtin_names
 
     async def run(self, name: str, args: dict[str, Any]) -> Any:
         """Run a registered tool by name."""
-
         tool = self.get(name)
         if tool is None:
             return {"error": f"Unknown tool: {name}"}
@@ -76,7 +108,6 @@ class ToolRegistry:
 
     def run_sync(self, name: str, args: dict[str, Any]) -> Any:
         """Run a registered synchronous tool by name."""
-
         tool = self.get(name)
         if tool is None:
             return {"error": f"Unknown tool: {name}"}
