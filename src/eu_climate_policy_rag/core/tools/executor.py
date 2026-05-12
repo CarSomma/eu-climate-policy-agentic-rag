@@ -13,6 +13,7 @@ from eu_climate_policy_rag.core.tools.errors import (
     UnknownToolError,
 )
 from eu_climate_policy_rag.core.tools.function import FunctionTool
+from eu_climate_policy_rag.core.tools.middleware import ToolMiddleware
 from eu_climate_policy_rag.core.tools.registry import ToolRegistry
 from eu_climate_policy_rag.core.tools.result import ToolResult
 
@@ -22,8 +23,14 @@ ErrorMode = str
 class ToolExecutor:
     """Execute registered local function tools."""
 
-    def __init__(self, registry: ToolRegistry) -> None:
+    def __init__(
+        self,
+        registry: ToolRegistry,
+        *,
+        middleware: list[ToolMiddleware] | None = None,
+    ) -> None:
         self.registry = registry
+        self.middleware = middleware or []
 
     async def run(
         self,
@@ -49,12 +56,14 @@ class ToolExecutor:
             return dumped_args
 
         try:
+            call_args = self._before_call(context, dumped_args)
             if iscoroutinefunction(tool.handler):
-                value = tool.handler(**dumped_args)
+                value = tool.handler(**call_args)
             else:
-                value = await asyncio.to_thread(tool.handler, **dumped_args)
+                value = await asyncio.to_thread(tool.handler, **call_args)
             if isawaitable(value):
                 value = await value
+            value = self._after_call(context, value)
         except Exception as exc:
             return self._handle_error(
                 ToolExecutionError(f"Tool execution failed for {name}."),
@@ -67,6 +76,7 @@ class ToolExecutor:
             tool_name=name,
             value=value,
             call_id=call_id,
+            metadata=context.metadata,
         )
 
     def run_sync(
@@ -93,13 +103,15 @@ class ToolExecutor:
             return dumped_args
 
         try:
+            call_args = self._before_call(context, dumped_args)
             if iscoroutinefunction(tool.handler):
                 msg = f"Tool {name} cannot run an async handler in sync execution."
                 raise ToolExecutionError(msg)
-            value = tool.handler(**dumped_args)
+            value = tool.handler(**call_args)
             if isawaitable(value):
                 msg = f"Tool {name} returned an awaitable in sync execution."
                 raise ToolExecutionError(msg)
+            value = self._after_call(context, value)
         except Exception as exc:
             return self._handle_error(
                 ToolExecutionError(f"Tool execution failed for {name}."),
@@ -112,6 +124,7 @@ class ToolExecutor:
             tool_name=name,
             value=value,
             call_id=call_id,
+            metadata=context.metadata,
         )
 
     def _validate_arguments(
@@ -122,8 +135,14 @@ class ToolExecutor:
         error_mode: ErrorMode,
     ) -> Mapping[str, object] | ToolResult[object]:
         try:
-            validated = tool.validate_arguments(args)
-            return tool.schema_provider.dump_validated(validated)
+            current_args = args
+            for item in self.middleware:
+                current_args = item.before_validate(context, current_args)
+            validated = tool.validate_arguments(current_args)
+            current_validated: object = validated
+            for item in self.middleware:
+                current_validated = item.after_validate(context, current_validated)
+            return tool.schema_provider.dump_validated(current_validated)
         except ValidationError as exc:
             return self._handle_error(
                 ToolValidationError(
@@ -140,6 +159,22 @@ class ToolExecutor:
                 error_mode,
                 cause=exc,
             )
+
+    def _before_call(
+        self,
+        context: ToolContext,
+        args: Mapping[str, object],
+    ) -> Mapping[str, object]:
+        current_args = args
+        for item in self.middleware:
+            current_args = item.before_call(context, current_args)
+        return current_args
+
+    def _after_call(self, context: ToolContext, value: object) -> object:
+        current_value = value
+        for item in self.middleware:
+            current_value = item.after_call(context, current_value)
+        return current_value
 
     @staticmethod
     def _handle_error(
