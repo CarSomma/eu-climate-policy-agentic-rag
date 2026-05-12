@@ -349,6 +349,21 @@ Completed in the twenty-second TDD slice:
 - expanded `tests/integration/test_cleaning_agent.py` to prove the middleware
   observes cleaning mutations/finalization and preserves direct tool outputs
 
+Completed in the twenty-third TDD slice:
+
+- marked `core.tooling.OpenAIFunctionTool` and legacy `ToolRegistry` as
+  deprecated with targeted `DeprecationWarning` messages that point callers to
+  `core.tools`
+- migrated internal RAG, fetch, cleaning, and base-agent code away from
+  importing `core.tooling`
+- extended provider-neutral `ToolRegistry` to carry middleware so native
+  registries can preserve fetch output-directory injection, RAG source
+  collection, and cleaning metrics observation through `ToolExecutor`
+- updated domain direct-dispatch paths to use `ToolExecutor` while preserving
+  their existing return shapes and unknown-tool behavior
+- added unit coverage proving the legacy facade still imports and warns, and
+  that implementation modules no longer depend on `core.tooling`
+
 Not done yet:
 
 - provider adapter modules beyond OpenAI Responses
