@@ -310,6 +310,19 @@ Completed in the nineteenth TDD slice:
 - verified internal `OpenAIFunctionTool` usage remains limited to the
   compatibility module
 
+Completed in the twentieth TDD slice:
+
+- updated `AbstractAgent` to accept either the legacy `core.tooling.ToolRegistry`
+  facade or the provider-neutral `core.tools.ToolRegistry`
+- normalized the agent boundary once into `AbstractAgent.tool_registry`, so
+  `OpenAIResponsesToolAdapter` always receives a provider-neutral registry
+- preserved legacy registry dispatch behavior for existing RAG, fetch, cleaning,
+  and compatibility paths
+- added executor-backed base dispatch for agents constructed directly with a
+  native registry
+- expanded `tests/unit/test_agent_loop.py` to cover native registry acceptance
+  and adapter registry normalization for both legacy and native inputs
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
