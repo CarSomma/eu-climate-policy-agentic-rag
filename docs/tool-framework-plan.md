@@ -128,9 +128,19 @@ Completed in the fourth TDD slice:
 - added Pydantic result-model serialization in `ToolResult`
 - verified RAG, web-search, cleaning-agent, and fetch-agent integration paths
 
+Completed in the fifth TDD slice:
+
+- added `ToolMiddleware`
+- added sync middleware hooks around validation and handler calls
+- added async execution coverage for the same middleware lifecycle
+- allowed middleware to mutate arguments before validation
+- allowed middleware to mutate call arguments before handler invocation
+- allowed middleware to mutate/observe handler results after execution
+- propagated context metadata into `ToolResult`
+- added tests in `tests/unit/test_tool_middleware.py`
+
 Not done yet:
 
-- middleware
 - async timeout, retry, cancellation, and concurrency controls beyond basic
   awaitable execution
 - agent-loop migration
