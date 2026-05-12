@@ -71,6 +71,7 @@ class ToolRegistry:
         builtin_tools: list[dict[str, Any]] | None = None,
         middleware: Sequence[ToolMiddleware] | None = None,
         timeout_seconds: float | None = None,
+        max_concurrency: int | None = None,
     ) -> None:
         """Initialize with custom function tools and optional built-in tools.
 
@@ -92,6 +93,7 @@ class ToolRegistry:
             self._registry,
             middleware=list(middleware or []),
             timeout_seconds=timeout_seconds,
+            max_concurrency=max_concurrency,
         )
 
     @property
