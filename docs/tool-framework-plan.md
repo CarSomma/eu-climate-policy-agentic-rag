@@ -2,9 +2,8 @@
 
 ## Purpose
 
-This document is the engineering plan for replacing the current small
-`OpenAIFunctionTool` and `ToolRegistry` helpers with a production-grade tool
-framework for the OpenAI Responses API.
+This document is the engineering plan for the provider-neutral tool framework
+used with the OpenAI Responses API.
 
 The framework should continue to serve the current repository use cases:
 
@@ -31,27 +30,29 @@ the core framework should work with any schema provider that can expose:
 
 Current shared implementation:
 
-- `src/eu_climate_policy_rag/core/tooling.py`
-  - `OpenAIFunctionTool`
-  - `ToolRegistry`
-  - Pydantic validation through `input_model.model_validate`
-  - schema generation through `input_model.model_json_schema`
-  - sync and async dispatch
-  - built-in tool passthrough via raw dictionaries
+- `src/eu_climate_policy_rag/core/tools/`
+  - `FunctionTool`
+  - `BuiltinTool`
+  - `SchemaProvider`, `PydanticSchemaProvider`, and `RawJsonSchemaProvider`
+  - provider-neutral `ToolRegistry`
+  - `ToolExecutor`, `ToolContext`, `ToolResult`, and middleware
+- `src/eu_climate_policy_rag/core/tools/adapters/openai_responses.py`
+  - `OpenAIResponsesToolAdapter`
+  - `OpenAIResponsesSchemaCompiler`
 
 Current active consumers:
 
 - `src/eu_climate_policy_rag/core/agent.py`
-  - sends `self.tools.schemas` to `client.responses.create`
+  - sends adapter-exported tools to `client.responses.create`
   - handles `function_call` messages
-  - appends `function_call_output`
+  - appends executor-generated `function_call_output`
 - `src/eu_climate_policy_rag/qa/rag.py`
   - registers `search_documents`
   - optionally registers built-in `web_search`
   - overrides tool execution to collect RAG sources
   - emits plain text context for search results
 - `src/eu_climate_policy_rag/qa/tools.py`
-  - wraps `SearchDocumentsTool` as `OpenAIFunctionTool`
+  - wraps `SearchDocumentsTool` as a native `FunctionTool`
 - `src/eu_climate_policy_rag/collection/fetching/fetch_tools.py`
   - builds async and sync fetch tools
 - `src/eu_climate_policy_rag/collection/fetching/fetch_agent.py`
@@ -65,12 +66,12 @@ Current active consumers:
 
 Existing tests depend on:
 
-- `OpenAIFunctionTool` import path
-- `ToolRegistry` import path
-- `ToolRegistry([...])` legacy constructor
-- `ToolRegistry(function_tools=[...], builtin_tools=[...])`
-- `registry.schemas`
-- unknown tools returning `{"error": "..."}`
+- native `FunctionTool` registration through `PydanticSchemaProvider`
+- provider-neutral `ToolRegistry(function_tools=[...], builtin_tools=[...])`
+- adapter-exported OpenAI Responses schemas
+- structured `ToolResult` conversion to `function_call_output`
+- domain-specific direct dispatch preserving RAG text, fetch JSON, and cleaning
+  return shapes
 - built-in tools appearing in schemas but not in local dispatch
 
 ## Implementation Status
@@ -364,6 +365,18 @@ Completed in the twenty-third TDD slice:
 - added unit coverage proving the legacy facade still imports and warns, and
   that implementation modules no longer depend on `core.tooling`
 
+Completed in the twenty-fourth TDD slice:
+
+- removed `src/eu_climate_policy_rag/core/tooling.py`
+- removed compatibility tests that depended on the deleted legacy import path
+- rewrote remaining integration and agent-loop tests to use native
+  `FunctionTool`, `ToolRegistry`, and `ToolExecutor` APIs directly
+- verified the deletion gate
+  `rg "core.tooling|OpenAIFunctionTool|from .*tooling import" src tests`
+  returns no matches
+- updated the current repo surface and API guidance in this plan so docs no
+  longer advertise the removed legacy APIs
+
 Not done yet:
 
 - provider adapter modules beyond OpenAI Responses
@@ -413,16 +426,7 @@ The framework should support three levels of ergonomics:
    - future `@tool(...)` helper
    - useful for small internal tools and tests
 
-The current API should remain valid during migration:
-
-- `OpenAIFunctionTool(...)`
-- `ToolRegistry([tool])`
-- `ToolRegistry(function_tools=[...], builtin_tools=[...])`
-- `registry.schemas`
-- `registry.run(...)`
-- `registry.run_sync(...)`
-
-Preferred future API:
+Current API:
 
 - `FunctionTool(...)`
 - `BuiltinTool.web_search(...)`
@@ -824,8 +828,8 @@ Policy:
 
 - Pydantic remains the recommended internal default.
 - Core tool registration accepts any `SchemaProvider`.
-- `OpenAIFunctionTool(input_model=...)` becomes a compatibility wrapper around
-  `PydanticSchemaProvider`.
+- Pydantic-backed tools use `FunctionTool(...)` with
+  `PydanticSchemaProvider(...)`.
 
 ### ToolRegistry
 
@@ -836,16 +840,15 @@ Responsibilities:
 - prevent ambiguous collisions between function names and built-in types when
   they would confuse dispatch
 - expose `openai_tools`
-- keep `.schemas` as an alias for compatibility
+- expose `.schemas` as an OpenAI Responses schema alias
 - expose `get_function(name)`
-- keep `get(name)` as a compatibility alias
+- expose `get(name)` as a local function lookup alias
 - expose `is_builtin(type_or_name)`
 - expose `function_names`
 - expose `builtin_types`
 
-The registry should not execute tools directly in the final architecture.
-During migration, `run` and `run_sync` remain compatibility wrappers around a
-default executor.
+The registry does not execute tools directly. Callers use `ToolExecutor` for
+sync and async dispatch.
 
 ### ToolExecutor
 
@@ -1461,13 +1464,8 @@ src/eu_climate_policy_rag/core/tools/
   decorators.py
 ```
 
-Compatibility module:
-
-```text
-src/eu_climate_policy_rag/core/tooling.py
-```
-
-`tooling.py` should re-export compatibility names and contain minimal shim code.
+The previous compatibility module has been removed; new code imports from
+`core.tools` and provider adapters directly.
 
 ### Module Boundaries
 
