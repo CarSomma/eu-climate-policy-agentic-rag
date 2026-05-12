@@ -9,6 +9,11 @@ from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
+from eu_climate_policy_rag.core.tools import (
+    FunctionTool,
+    PydanticSchemaProvider,
+    ToolRegistry as NativeToolRegistry,
+)
 from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
 
@@ -77,6 +82,24 @@ def build_agent(mock_client: MagicMock) -> LoopTestAgent:
     )
 
 
+def build_native_agent(mock_client: MagicMock) -> LoopTestAgent:
+    """Build a loop test agent with a native provider-neutral registry."""
+
+    tool = FunctionTool(
+        name="echo",
+        description="Echo text",
+        schema_provider=PydanticSchemaProvider(EchoInput),
+        handler=echo_handler,
+    )
+    return LoopTestAgent(
+        openai_client=mock_client,
+        model="test-model",
+        instructions="Use tools when useful.",
+        tools=NativeToolRegistry(function_tools=[tool]),
+        max_turns=3,
+    )
+
+
 def test_run_loop_appends_function_call_output_and_continues() -> None:
     """The loop should send model tool calls and tool outputs back next turn."""
 
@@ -118,6 +141,47 @@ def test_agent_create_response_uses_openai_responses_adapter_tools() -> None:
 
     _, kwargs = mock_client.responses.create.call_args
     assert kwargs["tools"] == agent.tool_adapter.tools
+
+
+def test_agent_accepts_native_tool_registry() -> None:
+    """Agents should accept provider-neutral registries at the boundary."""
+
+    tool_call = make_tool_call("echo", {"text": "native"}, "call_echo")
+    mock_client = MagicMock()
+    mock_client.responses.create.side_effect = [
+        make_response(tool_call),
+        make_response(make_message("done")),
+    ]
+    agent = build_native_agent(mock_client)
+
+    final_answer, history = agent.run("Say hello")
+
+    assert final_answer == "done"
+    assert history[3] == {
+        "type": "function_call_output",
+        "call_id": "call_echo",
+        "output": json.dumps({"ok": True, "data": {"echo": "native"}}),
+    }
+
+
+def test_agent_adapter_receives_provider_neutral_registry_for_legacy_tools() -> None:
+    """Legacy registries should be normalized before adapter construction."""
+
+    mock_client = MagicMock()
+    agent = build_agent(mock_client)
+
+    assert isinstance(agent.tools, ToolRegistry)
+    assert agent.tool_adapter.registry is agent.tools.base_registry
+
+
+def test_agent_adapter_receives_provider_neutral_registry_for_native_tools() -> None:
+    """Native registries should be passed directly to the provider adapter."""
+
+    mock_client = MagicMock()
+    agent = build_native_agent(mock_client)
+
+    assert isinstance(agent.tools, NativeToolRegistry)
+    assert agent.tool_adapter.registry is agent.tools
 
 
 def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> None:
