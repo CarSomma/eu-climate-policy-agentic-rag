@@ -120,3 +120,67 @@ def test_openai_function_tool_schema_format() -> None:
     assert schema["description"] == "Search local documents"
     assert "parameters" in schema
     assert schema["parameters"]["properties"]["query"]["type"] == "string"
+
+
+def test_openai_function_tool_schema_uses_strict_new_framework_export() -> None:
+    """Compatibility wrapper should emit strict Responses API schemas."""
+
+    tool = OpenAIFunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        input_model=MockSearchInput,
+        handler=mock_search_handler,
+    )
+
+    schema = tool.schema
+
+    assert schema["strict"] is True
+    assert schema["parameters"]["additionalProperties"] is False
+    assert schema["parameters"]["required"] == ["query"]
+
+
+def test_tool_registry_exposes_openai_tools_alias() -> None:
+    """Legacy registry should expose the new preferred OpenAI tools property."""
+
+    custom_tool = OpenAIFunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        input_model=MockSearchInput,
+        handler=mock_search_handler,
+    )
+    registry = ToolRegistry(function_tools=[custom_tool])
+
+    assert registry.openai_tools == registry.schemas
+
+
+@pytest.mark.asyncio
+async def test_tool_registry_async_run_preserves_legacy_result_shape() -> None:
+    """Legacy async dispatch should return handler values, not ToolResult objects."""
+
+    custom_tool = OpenAIFunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        input_model=MockSearchInput,
+        handler=mock_search_handler,
+    )
+    registry = ToolRegistry(function_tools=[custom_tool])
+
+    result = await registry.run("search_documents", {"query": "climate"})
+
+    assert result == "Results for: climate"
+
+
+def test_tool_registry_sync_run_preserves_legacy_result_shape() -> None:
+    """Legacy sync dispatch should return handler values, not ToolResult objects."""
+
+    custom_tool = OpenAIFunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        input_model=MockSearchInput,
+        handler=mock_search_handler,
+    )
+    registry = ToolRegistry(function_tools=[custom_tool])
+
+    result = registry.run_sync("search_documents", {"query": "climate"})
+
+    assert result == "Results for: climate"
