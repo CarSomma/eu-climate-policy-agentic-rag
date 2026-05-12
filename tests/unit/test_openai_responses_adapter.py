@@ -12,7 +12,10 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry,
     ToolResult,
 )
-from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
+from eu_climate_policy_rag.core.tools.adapters import (
+    OpenAIResponsesSchemaCompiler,
+    OpenAIResponsesToolAdapter,
+)
 
 
 class SearchInput(BaseModel):
@@ -78,6 +81,41 @@ def test_openai_responses_adapter_preserves_schema_aliases() -> None:
 
     assert adapter.openai_tools == adapter.tools
     assert adapter.schemas == adapter.tools
+
+
+def test_openai_responses_adapter_does_not_depend_on_function_tool_export() -> None:
+    """Adapter should own Responses schema compilation for function tools."""
+
+    class FunctionToolWithoutOpenAIExport(FunctionTool[SearchInput, dict[str, str]]):
+        def to_openai_tool(self) -> dict[str, object]:
+            raise AssertionError("adapter should not call FunctionTool.to_openai_tool")
+
+    function_tool = FunctionToolWithoutOpenAIExport(
+        name="search_documents",
+        description="Search documents",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+    adapter = OpenAIResponsesToolAdapter(
+        ToolRegistry(function_tools=[function_tool]),
+    )
+
+    assert adapter.tools[0]["name"] == "search_documents"
+    assert adapter.tools[0]["strict"] is True
+
+
+def test_openai_responses_schema_compiler_compiles_function_tools() -> None:
+    """Schema compiler should produce Responses function tool configs."""
+
+    function_tool = build_registry().get_function("search_documents")
+    assert function_tool is not None
+
+    schema = OpenAIResponsesSchemaCompiler().compile_function_tool(function_tool)
+
+    assert schema["type"] == "function"
+    assert schema["name"] == "search_documents"
+    assert schema["strict"] is True
+    assert schema["parameters"]["additionalProperties"] is False
 
 
 def test_openai_responses_adapter_converts_tool_results_to_function_call_output() -> None:
