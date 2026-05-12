@@ -1,14 +1,24 @@
-"""Small helpers for OpenAI function-tool definitions."""
+"""Compatibility helpers for OpenAI function-tool definitions."""
 
 from collections.abc import Callable, Sequence
-from inspect import isawaitable
 from typing import Any
 
 from pydantic import BaseModel
 
+from eu_climate_policy_rag.core.tools import (
+    FunctionTool,
+    PydanticSchemaProvider,
+    ToolExecutor,
+    ToolRegistry as BaseToolRegistry,
+)
 
-class OpenAIFunctionTool:
-    """Bind an OpenAI function-tool schema to a Python handler."""
+
+class OpenAIFunctionTool(FunctionTool[BaseModel, Any]):
+    """Bind an OpenAI function-tool schema to a Python handler.
+
+    This class preserves the historical `core.tooling` API while delegating
+    schema export and validation to the provider-neutral tool framework.
+    """
 
     def __init__(
         self,
@@ -17,36 +27,33 @@ class OpenAIFunctionTool:
         input_model: type[BaseModel],
         handler: Callable[..., Any],
     ) -> None:
-        self.name = name
-        self.description = description
+        super().__init__(
+            name=name,
+            description=description,
+            schema_provider=PydanticSchemaProvider(input_model),
+            handler=handler,
+        )
         self.input_model = input_model
-        self.handler = handler
 
     @property
     def schema(self) -> dict[str, Any]:
         """Return the OpenAI Responses API tool schema."""
 
-        return {
-            "type": "function",
-            "name": self.name,
-            "description": self.description,
-            "parameters": self.input_model.model_json_schema(),
-        }
+        return self.to_openai_tool()
 
     async def run(self, args: dict[str, Any]) -> Any:
         """Validate arguments and call the bound handler."""
 
-        validated_args = self.input_model.model_validate(args).model_dump()
-        result = self.handler(**validated_args)
-        if isawaitable(result):
-            return await result
-        return result
+        registry = BaseToolRegistry(function_tools=[self])
+        result = await ToolExecutor(registry).run(self.name, args, error_mode="raise")
+        return result.value
 
     def run_sync(self, args: dict[str, Any]) -> Any:
         """Validate arguments and call a synchronous bound handler."""
 
-        validated_args = self.input_model.model_validate(args).model_dump()
-        return self.handler(**validated_args)
+        registry = BaseToolRegistry(function_tools=[self])
+        result = ToolExecutor(registry).run_sync(self.name, args, error_mode="raise")
+        return result.value
 
 
 class ToolRegistry:
@@ -74,41 +81,42 @@ class ToolRegistry:
             function_tools = tools
 
         function_tools = function_tools or []
-        self._tools = {tool.name: tool for tool in function_tools}
-        self._builtin_schemas = builtin_tools or []
-
-        # Extract built-in tool names for quick lookup
-        self._builtin_names = {
-            tool.get("type", tool.get("name", ""))
-            for tool in self._builtin_schemas
-        }
+        self._registry = BaseToolRegistry(
+            function_tools=function_tools,
+            builtin_tools=builtin_tools or [],
+        )
+        self._executor = ToolExecutor(self._registry)
 
     @property
     def schemas(self) -> list[dict[str, Any]]:
         """Return schemas for both function and built-in tools."""
-        return [
-            *[tool.schema for tool in self._tools.values()],
-            *self._builtin_schemas,
-        ]
+        return self._registry.schemas
+
+    @property
+    def openai_tools(self) -> list[dict[str, Any]]:
+        """Return schemas for both function and built-in tools."""
+
+        return self._registry.openai_tools
 
     def get(self, name: str) -> OpenAIFunctionTool | None:
         """Return a custom function tool by name if registered."""
-        return self._tools.get(name)
+        tool = self._registry.get(name)
+        return tool if isinstance(tool, OpenAIFunctionTool) else None
 
     def is_builtin(self, name: str) -> bool:
         """Check if a tool name refers to a built-in tool."""
-        return name in self._builtin_names
+        return self._registry.is_builtin(name)
 
     async def run(self, name: str, args: dict[str, Any]) -> Any:
         """Run a registered tool by name."""
-        tool = self.get(name)
-        if tool is None:
+        if self.get(name) is None:
             return {"error": f"Unknown tool: {name}"}
-        return await tool.run(args)
+        result = await self._executor.run(name, args, error_mode="raise")
+        return result.value
 
     def run_sync(self, name: str, args: dict[str, Any]) -> Any:
         """Run a registered synchronous tool by name."""
-        tool = self.get(name)
-        if tool is None:
+        if self.get(name) is None:
             return {"error": f"Unknown tool: {name}"}
-        return tool.run_sync(args)
+        result = self._executor.run_sync(name, args, error_mode="raise")
+        return result.value
