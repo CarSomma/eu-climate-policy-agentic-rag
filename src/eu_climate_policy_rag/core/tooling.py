@@ -70,6 +70,7 @@ class ToolRegistry:
         function_tools: Sequence[OpenAIFunctionTool] | None = None,
         builtin_tools: list[dict[str, Any]] | None = None,
         middleware: Sequence[ToolMiddleware] | None = None,
+        timeout_seconds: float | None = None,
     ) -> None:
         """Initialize with custom function tools and optional built-in tools.
 
@@ -90,6 +91,7 @@ class ToolRegistry:
         self._executor = ToolExecutor(
             self._registry,
             middleware=list(middleware or []),
+            timeout_seconds=timeout_seconds,
         )
 
     @property
