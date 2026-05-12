@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
+from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
 
 
@@ -132,3 +133,80 @@ def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> No
         },
         make_message("done"),
     ]
+
+
+def test_responses_tool_loop_runs_with_callbacks() -> None:
+    """The reusable loop should own Responses turn mechanics."""
+
+    tool_call = make_tool_call("echo", {"text": "hello"}, "call_echo")
+    responses = [make_response(tool_call), make_response(make_message("done"))]
+
+    def create_response(history: list[Any]) -> SimpleNamespace:
+        return responses.pop(0)
+
+    def execute_tool_call(call: Any) -> dict[str, str]:
+        assert call is tool_call
+        return {
+            "type": "function_call_output",
+            "call_id": call.call_id,
+            "output": "hello",
+        }
+
+    loop = OpenAIResponsesToolLoop(
+        create_response=create_response,
+        execute_tool_call=execute_tool_call,
+        max_turns=3,
+    )
+
+    final_answer, history = loop.run(
+        query="Say hello",
+        instructions="Use tools when useful.",
+    )
+
+    assert final_answer == "done"
+    assert history == [
+        {"role": "system", "content": "Use tools when useful."},
+        {"role": "user", "content": "Say hello"},
+        tool_call,
+        {
+            "type": "function_call_output",
+            "call_id": "call_echo",
+            "output": "hello",
+        },
+        make_message("done"),
+    ]
+
+
+async def test_responses_tool_loop_runs_async_tool_callbacks() -> None:
+    """The reusable loop should support async tool dispatch callbacks."""
+
+    tool_call = make_tool_call("echo", {"text": "async"}, "call_async")
+    responses = [make_response(tool_call), make_response(make_message("done"))]
+
+    def create_response(history: list[Any]) -> SimpleNamespace:
+        return responses.pop(0)
+
+    async def execute_tool_call(call: Any) -> dict[str, str]:
+        return {
+            "type": "function_call_output",
+            "call_id": call.call_id,
+            "output": "async",
+        }
+
+    loop = OpenAIResponsesToolLoop(
+        create_response=create_response,
+        execute_tool_call=execute_tool_call,
+        max_turns=3,
+    )
+
+    final_answer, history = await loop.run_async(
+        query="Say hello",
+        instructions="Use tools when useful.",
+    )
+
+    assert final_answer == "done"
+    assert history[3] == {
+        "type": "function_call_output",
+        "call_id": "call_async",
+        "output": "async",
+    }
