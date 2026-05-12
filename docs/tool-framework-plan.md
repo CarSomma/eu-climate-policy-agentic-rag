@@ -337,9 +337,20 @@ Completed in the twenty-first TDD slice:
 - expanded `tests/unit/test_agent_loop.py` to cover adapter conversion and
   structured unknown-tool output in the base path
 
+Completed in the twenty-second TDD slice:
+
+- reviewed cleaning middleware opportunities and added
+  `CleaningToolMetricsMiddleware` as a lightweight observer for state-changing
+  cleaning tools
+- recorded compact metrics events for `save_cleaned_document`, `skip_document`,
+  and `finalize` without changing their return values
+- added optional middleware injection to `build_cleaning_tools` while keeping
+  default cleaning-agent behavior unchanged
+- expanded `tests/integration/test_cleaning_agent.py` to prove the middleware
+  observes cleaning mutations/finalization and preserves direct tool outputs
+
 Not done yet:
 
-- cleaning middleware opportunities, if any
 - provider adapter modules beyond OpenAI Responses
 
 ## Goals
