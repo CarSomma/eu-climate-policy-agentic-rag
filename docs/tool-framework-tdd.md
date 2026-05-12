@@ -11,7 +11,7 @@ Use this file as the day-to-day implementation checklist. Use
 ## Current State
 
 The project is on the `tool-framework-tdd` branch. The migration has already
-completed sixteen TDD slices.
+completed twenty-four TDD slices.
 
 The important completed milestones are:
 
@@ -32,17 +32,19 @@ The important completed milestones are:
   `OpenAIResponsesSchemaCompiler`
 - `AbstractAgent` now passes adapter-exported tools to
   `client.responses.create`
-- legacy `core.tooling` still exists as a compatibility facade
+- `AbstractAgent` accepts native `core.tools.ToolRegistry`
+- domain tool builders use native `FunctionTool` and `PydanticSchemaProvider`
+- `core.tooling` has been removed
 
-Core compatibility expectations still in force:
+Current core expectations:
 
-- `OpenAIFunctionTool(...)`
-- `ToolRegistry([tool])`
+- `FunctionTool(...)`
 - `ToolRegistry(function_tools=[...], builtin_tools=[...])`
-- `registry.schemas`
-- `registry.run(...)`
-- `registry.run_sync(...)`
-- unknown local tools returning `{"error": "..."}`
+- `OpenAIResponsesToolAdapter(registry).tools`
+- `ToolExecutor(registry).run(...)`
+- `ToolExecutor(registry).run_sync(...)`
+- base-agent unknown tools return structured model-visible errors
+- domain direct-dispatch methods preserve their existing public return shapes
 
 ## TDD Rules
 
