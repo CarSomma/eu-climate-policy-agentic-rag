@@ -236,12 +236,30 @@ Completed in the fourteenth TDD slice:
 - expanded `tests/unit/test_agent_loop.py`
 - verified existing RAG, fetch, and cleaning agent integrations still pass
 
+Completed in the fifteenth TDD slice:
+
+- added `core.tools.adapters` package
+- added `OpenAIResponsesToolAdapter` as the first provider-specific tool adapter
+- moved model-visible Responses tool export behind
+  `OpenAIResponsesToolAdapter.tools`
+- added adapter compatibility aliases `.openai_tools` and `.schemas`
+- added adapter conversion from `ToolResult` to Responses
+  `function_call_output`
+- added a public `ToolRegistry.builtins` accessor for normalized built-in
+  provider tools
+- added a `base_registry` accessor on the legacy `core.tooling.ToolRegistry`
+  facade
+- updated `AbstractAgent` to pass adapter-exported tools to
+  `client.responses.create`
+- added coverage in `tests/unit/test_openai_responses_adapter.py` and expanded
+  `tests/unit/test_agent_loop.py`
+
 Not done yet:
 
-- finish agent-loop migration toward a provider adapter
 - cleaning middleware opportunities, if any
 - broader OpenAI strict schema edge-case handling
-- provider adapter modules beyond the initial OpenAI-shaped export methods
+- move strict schema compilation fully into the OpenAI Responses adapter/compiler
+- provider adapter modules beyond OpenAI Responses
 
 ## Goals
 
