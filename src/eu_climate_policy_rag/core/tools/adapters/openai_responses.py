@@ -1,5 +1,6 @@
 """OpenAI Responses API adapter for provider-neutral tool registries."""
 
+from copy import deepcopy
 import re
 
 from eu_climate_policy_rag.core.tools.errors import SchemaGenerationError
@@ -14,11 +15,24 @@ OPENAI_FUNCTION_NAME_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 class OpenAIResponsesSchemaCompiler:
     """Compile provider-neutral tools into OpenAI Responses API schemas."""
 
+    def __init__(self) -> None:
+        self._function_tool_cache: dict[
+            int,
+            tuple[FunctionTool[object, object], dict[str, object]],
+        ] = {}
+
     def compile_function_tool(
         self,
         tool: FunctionTool[object, object],
     ) -> dict[str, object]:
         """Return a function tool config in OpenAI Responses API format."""
+
+        cache_key = id(tool)
+        cached = self._function_tool_cache.get(cache_key)
+        if cached is not None:
+            cached_tool, cached_schema = cached
+            if cached_tool is tool:
+                return deepcopy(cached_schema)
 
         if not OPENAI_FUNCTION_NAME_PATTERN.fullmatch(tool.name):
             msg = (
@@ -28,13 +42,15 @@ class OpenAIResponsesSchemaCompiler:
             raise SchemaGenerationError(msg, details={"name": tool.name})
 
         parameters = normalize_openai_schema(tool.schema_provider.json_schema())
-        return {
+        compiled_schema = {
             "type": "function",
             "name": tool.name,
             "description": tool.description,
             "parameters": parameters,
             "strict": tool.strict,
         }
+        self._function_tool_cache[cache_key] = (tool, compiled_schema)
+        return deepcopy(compiled_schema)
 
 
 class OpenAIResponsesToolAdapter:
