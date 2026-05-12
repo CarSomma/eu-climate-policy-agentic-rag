@@ -4,6 +4,11 @@ from eu_climate_policy_rag.collection.cleaning.cleaning_agent import (
     CleaningCurationAgent,
 )
 from eu_climate_policy_rag.collection.cleaning.cleaning_toolbox import CleaningToolbox
+from eu_climate_policy_rag.collection.cleaning.cleaning_tools import (
+    CleaningToolMetricsMiddleware,
+    build_cleaning_tools,
+)
+from eu_climate_policy_rag.core.tools import FunctionTool, ToolExecutor
 
 
 def test_cleaning_agent_exposes_class_backed_tool_schemas() -> None:
@@ -18,6 +23,82 @@ def test_cleaning_agent_exposes_class_backed_tool_schemas() -> None:
         "skip_document",
         "finalize",
     }
+
+
+def test_cleaning_tools_are_native_function_tools(tmp_path) -> None:
+    toolbox = CleaningToolbox(tmp_path, tmp_path / "out.json")
+    registry = build_cleaning_tools(toolbox)
+
+    assert registry.function_tools
+    assert all(
+        type(tool) is FunctionTool
+        for tool in registry.function_tools
+    )
+
+
+def test_cleaning_metrics_middleware_observes_mutating_tools_without_changing_results(
+    tmp_path,
+) -> None:
+    document_path = tmp_path / "climate-law.md"
+    document_path.write_text(
+        (
+            "European Climate Law sets EU climate targets, emissions reductions, "
+            "adaptation policy, and climate neutrality obligations. "
+        )
+        * 8,
+        encoding="utf-8",
+    )
+    toolbox = CleaningToolbox(tmp_path, tmp_path / "out.json")
+    observer = CleaningToolMetricsMiddleware()
+    registry = build_cleaning_tools(toolbox, middleware=[observer])
+
+    executor = ToolExecutor(registry)
+
+    save_result = executor.run_sync(
+        "save_cleaned_document",
+        {"path": str(document_path)},
+        error_mode="raise",
+    )
+    skip_result = executor.run_sync(
+        "skip_document",
+        {"path": "missing.md", "reason": "not relevant"},
+        error_mode="raise",
+    )
+    finalize_result = executor.run_sync("finalize", {}, error_mode="raise")
+
+    assert save_result.value == {
+        "saved": True,
+        "path": str(document_path),
+        "records": 1,
+    }
+    assert skip_result.value == {
+        "skipped": True,
+        "path": "missing.md",
+        "reason": "not relevant",
+    }
+    assert finalize_result.value == {
+        "output_path": str(tmp_path / "out.json"),
+        "record_count": 1,
+        "skipped_count": 1,
+        "skipped": [{"path": "missing.md", "reason": "not relevant"}],
+    }
+    assert observer.events == [
+        {
+            "tool_name": "save_cleaned_document",
+            "path": str(document_path),
+            "saved": True,
+        },
+        {
+            "tool_name": "skip_document",
+            "path": "missing.md",
+            "skipped": True,
+        },
+        {
+            "tool_name": "finalize",
+            "record_count": 1,
+            "skipped_count": 1,
+        },
+    ]
 
 
 def test_run_tool_returns_error_for_unknown_tool() -> None:

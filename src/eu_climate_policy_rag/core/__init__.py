@@ -1,6 +1,7 @@
 """Core support code used by collection and RAG modules."""
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
+from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.logging_utils import ColoredLogger
 from eu_climate_policy_rag.core.models import (
     CleanedDocumentRecordModel,
@@ -20,6 +21,7 @@ __all__ = [
     "IngestionConfigModel",
     "IngestionResultModel",
     "LinkModel",
+    "OpenAIResponsesToolLoop",
     "PageSnapshotModel",
     "PipelineConfigModel",
     "PipelineResultModel",

@@ -51,7 +51,12 @@ class CleaningCurationAgent(AbstractAgent):
     def run_tool(self, name: str, args: dict[str, Any]) -> Any:
         """Dispatch one cleaning tool call by name."""
 
-        return self.tools.run_sync(name, args)
+        result = self._tool_executor.run_sync(name, args)
+        if result.ok:
+            return result.value
+        if result.error is not None:
+            return {"error": result.error.message}
+        return {"error": result.output}
 
     def run(self, query: str = "Clean and curate the fetched Markdown documents.", max_turns: int | None = None) -> str:
         """Run the cleaning tool loop until the model finalizes or stops."""

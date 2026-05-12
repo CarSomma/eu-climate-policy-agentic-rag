@@ -14,10 +14,10 @@ from eu_climate_policy_rag.core.models import (
     CleanedDocumentRecordModel,
     RagAnswerModel,
     RagConfigModel,
-    SearchDocumentsResultModel,
 )
-from eu_climate_policy_rag.core.tooling import ToolRegistry
+from eu_climate_policy_rag.core.tools import ToolRegistry
 from eu_climate_policy_rag.qa.tools import (
+    SearchDocumentsResultMiddleware,
     SearchDocumentsTool,
     format_context_item as format_context_item,
 )
@@ -97,6 +97,7 @@ class ClimatePolicyAgent(AbstractAgent):
             num_results=self.config.num_results,
             max_chars_per_doc=self.config.max_chars_per_doc,
         )
+        self._current_run_sources: list[str] = []
 
         # Build built-in tools list (web_search)
         builtin_tools = []
@@ -116,10 +117,14 @@ class ClimatePolicyAgent(AbstractAgent):
             tools=ToolRegistry(
                 function_tools=[self.search_tool.function_tool],
                 builtin_tools=builtin_tools,
+                middleware=[
+                    SearchDocumentsResultMiddleware(
+                        collect_sources=self._current_run_sources.extend,
+                    )
+                ],
             ),
             max_turns=max_turns,
         )
-        self._current_run_sources: list[str] = []
 
     @classmethod
     def from_json(
@@ -164,12 +169,15 @@ class ClimatePolicyAgent(AbstractAgent):
         elif tool_call.name == self.search_tool.name:
             LOGGER.info("Searching: %s", arguments["query"])
 
-        result = self.tools.run_sync(tool_call.name, arguments)
-        if isinstance(result, SearchDocumentsResultModel):
-            output = result.context
-            self._current_run_sources.extend(result.sources)
+        result = self._tool_executor.run_sync(
+            tool_call.name,
+            arguments,
+            call_id=tool_call.call_id,
+        )
+        if result.ok:
+            output = str(result.value)
         else:
-            output = str(result.get("error", result)) if isinstance(result, dict) else str(result)
+            output = result.error.message if result.error is not None else result.output
 
         return {
             "type": "function_call_output",
@@ -185,7 +193,7 @@ class ClimatePolicyAgent(AbstractAgent):
     def answer(self, query: str) -> RagAnswerModel:
         """Answer a user question using iterative document search."""
 
-        self._current_run_sources = []
+        self._current_run_sources.clear()
         final_answer, _ = self._run_loop(query)
         sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
         return RagAnswerModel(query=query, answer=final_answer, sources=sources)

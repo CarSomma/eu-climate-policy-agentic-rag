@@ -1,5 +1,6 @@
 """Tool builders for document fetching workflows."""
 
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from eu_climate_policy_rag.core.models import (
@@ -9,7 +10,33 @@ from eu_climate_policy_rag.core.models import (
     GetPageSnapshotInputModel,
     SaveContentToFileInputModel,
 )
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
+from eu_climate_policy_rag.core.tools import (
+    FunctionTool,
+    PydanticSchemaProvider,
+    ToolContext,
+    ToolMiddleware,
+    ToolRegistry,
+)
+
+
+class SaveContentDirectoryMiddleware(ToolMiddleware):
+    """Force save operations to use the agent/toolbox output directory."""
+
+    def __init__(self, output_directory: Callable[[], str]) -> None:
+        self.output_directory = output_directory
+
+    def before_validate(
+        self,
+        context: ToolContext,
+        args: Mapping[str, object],
+    ) -> Mapping[str, object]:
+        """Override model-provided save directories before validation."""
+
+        if context.tool_name != "save_content_to_file":
+            return args
+        updated = dict(args)
+        updated["directory"] = self.output_directory()
+        return updated
 
 
 def build_fetch_tools(toolbox: Any) -> ToolRegistry:
@@ -17,38 +44,43 @@ def build_fetch_tools(toolbox: Any) -> ToolRegistry:
 
     return ToolRegistry(
         [
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="get_page_snapshot",
                 description=(
                     "Open a page and return title, visible links, buttons, "
                     "and document candidates."
                 ),
-                input_model=GetPageSnapshotInputModel,
+                schema_provider=PydanticSchemaProvider(GetPageSnapshotInputModel),
                 handler=toolbox.get_page_snapshot,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="click_and_capture",
                 description="Click or fetch a document link and cache the resulting HTML or file.",
-                input_model=ClickAndCaptureInputModel,
+                schema_provider=PydanticSchemaProvider(ClickAndCaptureInputModel),
                 handler=toolbox.click_and_capture,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="click_download_button",
                 description="Click a download button by visible text and cache the downloaded file.",
-                input_model=ClickDownloadButtonInputModel,
+                schema_provider=PydanticSchemaProvider(ClickDownloadButtonInputModel),
                 handler=toolbox.click_download_button,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="convert_to_markdown",
                 description="Convert cached HTML or files to Markdown.",
-                input_model=ConvertToMarkdownInputModel,
+                schema_provider=PydanticSchemaProvider(ConvertToMarkdownInputModel),
                 handler=toolbox.convert_to_markdown,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="save_content_to_file",
                 description="Save cached Markdown to a local .md file.",
-                input_model=SaveContentToFileInputModel,
+                schema_provider=PydanticSchemaProvider(SaveContentToFileInputModel),
                 handler=toolbox.save_content_to_file,
             ),
-        ]
+        ],
+        middleware=[
+            SaveContentDirectoryMiddleware(
+                output_directory=lambda: str(toolbox.output_directory),
+            )
+        ],
     )

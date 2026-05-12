@@ -1,0 +1,278 @@
+"""Tool execution pipeline."""
+
+import asyncio
+from collections.abc import Awaitable, Callable, Mapping
+from inspect import isawaitable, iscoroutinefunction
+
+from pydantic import ValidationError
+
+from eu_climate_policy_rag.core.tools.context import ToolContext
+from eu_climate_policy_rag.core.tools.errors import (
+    ToolExecutionError,
+    ToolValidationError,
+    UnknownToolError,
+)
+from eu_climate_policy_rag.core.tools.function import FunctionTool
+from eu_climate_policy_rag.core.tools.middleware import ToolMiddleware
+from eu_climate_policy_rag.core.tools.registry import ToolRegistry
+from eu_climate_policy_rag.core.tools.result import ToolResult
+
+ErrorMode = str
+
+
+class ToolExecutor:
+    """Execute registered local function tools."""
+
+    def __init__(
+        self,
+        registry: ToolRegistry,
+        *,
+        middleware: list[ToolMiddleware] | None = None,
+        timeout_seconds: float | None = None,
+        max_concurrency: int | None = None,
+        max_retries: int = 0,
+    ) -> None:
+        if max_concurrency is not None and max_concurrency < 1:
+            msg = "max_concurrency must be at least 1."
+            raise ValueError(msg)
+        if max_retries < 0:
+            msg = "max_retries must be at least 0."
+            raise ValueError(msg)
+        self.registry = registry
+        registry_middleware = registry.middleware or ()
+        self.middleware = list(registry_middleware if middleware is None else middleware)
+        self.timeout_seconds = timeout_seconds
+        self.max_retries = max_retries
+        self._semaphore = (
+            asyncio.Semaphore(max_concurrency) if max_concurrency is not None else None
+        )
+        self._tool_semaphores = {
+            tool.name: asyncio.Semaphore(tool.execution.max_concurrency)
+            for tool in registry.function_tools
+            if tool.execution.max_concurrency is not None
+        }
+
+    async def run(
+        self,
+        name: str,
+        args: Mapping[str, object],
+        *,
+        call_id: str | None = None,
+        error_mode: ErrorMode = "return",
+        timeout_seconds: float | None = None,
+    ) -> ToolResult[object]:
+        """Validate and execute a registered function tool asynchronously."""
+
+        context = ToolContext(tool_name=name, raw_arguments=args, call_id=call_id)
+        tool = self.registry.get_function(name)
+        if tool is None:
+            return self._handle_error(
+                UnknownToolError(f"Unknown tool: {name}"),
+                context,
+                error_mode,
+            )
+
+        dumped_args = self._validate_arguments(tool, args, context, error_mode)
+        if isinstance(dumped_args, ToolResult):
+            return dumped_args
+
+        max_retries = (
+            tool.execution.max_retries
+            if tool.execution.max_retries is not None
+            else self.max_retries
+        )
+        for attempt in range(1, max_retries + 2):
+            context.attempt = attempt
+            try:
+                value = await self._call_async_tool(
+                    tool,
+                    dumped_args,
+                    context,
+                    timeout_seconds=timeout_seconds,
+                )
+                break
+            except TimeoutError as exc:
+                if attempt > max_retries:
+                    return self._handle_error(
+                        ToolExecutionError(f"Tool {name} timed out."),
+                        context,
+                        error_mode,
+                        cause=exc,
+                    )
+            except Exception as exc:
+                if attempt > max_retries:
+                    return self._handle_error(
+                        ToolExecutionError(f"Tool execution failed for {name}."),
+                        context,
+                        error_mode,
+                        cause=exc,
+                    )
+
+        return ToolResult.success(
+            tool_name=name,
+            value=value,
+            call_id=call_id,
+            metadata=context.metadata,
+        )
+
+    def run_sync(
+        self,
+        name: str,
+        args: Mapping[str, object],
+        *,
+        call_id: str | None = None,
+        error_mode: ErrorMode = "return",
+    ) -> ToolResult[object]:
+        """Validate and execute a registered function tool synchronously."""
+
+        context = ToolContext(tool_name=name, raw_arguments=args, call_id=call_id)
+        tool = self.registry.get_function(name)
+        if tool is None:
+            return self._handle_error(
+                UnknownToolError(f"Unknown tool: {name}"),
+                context,
+                error_mode,
+            )
+
+        dumped_args = self._validate_arguments(tool, args, context, error_mode)
+        if isinstance(dumped_args, ToolResult):
+            return dumped_args
+
+        try:
+            call_args = self._before_call(context, dumped_args)
+            if iscoroutinefunction(tool.handler):
+                msg = f"Tool {name} cannot run an async handler in sync execution."
+                raise ToolExecutionError(msg)
+            value = tool.handler(**call_args)
+            if isawaitable(value):
+                msg = f"Tool {name} returned an awaitable in sync execution."
+                raise ToolExecutionError(msg)
+            value = self._after_call(context, value)
+        except Exception as exc:
+            return self._handle_error(
+                ToolExecutionError(f"Tool execution failed for {name}."),
+                context,
+                error_mode,
+                cause=exc,
+            )
+
+        return ToolResult.success(
+            tool_name=name,
+            value=value,
+            call_id=call_id,
+            metadata=context.metadata,
+        )
+
+    def _validate_arguments(
+        self,
+        tool: FunctionTool[object, object],
+        args: Mapping[str, object],
+        context: ToolContext,
+        error_mode: ErrorMode,
+    ) -> Mapping[str, object] | ToolResult[object]:
+        try:
+            current_args = args
+            for item in self.middleware:
+                current_args = item.before_validate(context, current_args)
+            validated = tool.validate_arguments(current_args)
+            current_validated: object = validated
+            for item in self.middleware:
+                current_validated = item.after_validate(context, current_validated)
+            return tool.schema_provider.dump_validated(current_validated)
+        except ValidationError as exc:
+            return self._handle_error(
+                ToolValidationError(
+                    f"Invalid arguments for {context.tool_name}.",
+                    details={"errors": exc.errors()},
+                ),
+                context,
+                error_mode,
+            )
+        except Exception as exc:
+            return self._handle_error(
+                ToolValidationError(f"Invalid arguments for {context.tool_name}."),
+                context,
+                error_mode,
+                cause=exc,
+            )
+
+    def _before_call(
+        self,
+        context: ToolContext,
+        args: Mapping[str, object],
+    ) -> Mapping[str, object]:
+        current_args = args
+        for item in self.middleware:
+            current_args = item.before_call(context, current_args)
+        return current_args
+
+    def _after_call(self, context: ToolContext, value: object) -> object:
+        current_value = value
+        for item in self.middleware:
+            current_value = item.after_call(context, current_value)
+        return current_value
+
+    async def _call_async_tool(
+        self,
+        tool: FunctionTool[object, object],
+        args: Mapping[str, object],
+        context: ToolContext,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> object:
+        async def call() -> object:
+            call_args = self._before_call(context, args)
+            if iscoroutinefunction(tool.handler):
+                value = tool.handler(**call_args)
+            else:
+                value = await asyncio.to_thread(tool.handler, **call_args)
+            if isawaitable(value):
+                value = await value
+            return self._after_call(context, value)
+
+        effective_timeout = (
+            timeout_seconds
+            if timeout_seconds is not None
+            else tool.execution.timeout_seconds
+            if tool.execution.timeout_seconds is not None
+            else self.timeout_seconds
+        )
+        if effective_timeout is None:
+            return await self._run_with_concurrency_limit(tool.name, call)
+        async with asyncio.timeout(effective_timeout):
+            return await self._run_with_concurrency_limit(tool.name, call)
+
+    async def _run_with_concurrency_limit(
+        self,
+        tool_name: str,
+        call: Callable[[], Awaitable[object]],
+    ) -> object:
+        async def run_with_tool_limit() -> object:
+            tool_semaphore = self._tool_semaphores.get(tool_name)
+            if tool_semaphore is None:
+                return await call()
+            async with tool_semaphore:
+                return await call()
+
+        if self._semaphore is None:
+            return await run_with_tool_limit()
+        async with self._semaphore:
+            return await run_with_tool_limit()
+
+    @staticmethod
+    def _handle_error(
+        error: Exception,
+        context: ToolContext,
+        error_mode: ErrorMode,
+        *,
+        cause: Exception | None = None,
+    ) -> ToolResult[object]:
+        if error_mode == "raise":
+            if cause is not None:
+                raise error from cause
+            raise error
+        return ToolResult.failure(
+            tool_name=context.tool_name,
+            error=error,
+            call_id=context.call_id,
+        )

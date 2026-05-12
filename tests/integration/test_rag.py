@@ -1,6 +1,7 @@
 import json
 from unittest.mock import MagicMock
 
+from eu_climate_policy_rag.core.tools import FunctionTool
 from eu_climate_policy_rag.qa.rag import ClimatePolicyAgent, format_context_item
 from eu_climate_policy_rag.qa.tools import SearchDocumentsTool
 
@@ -23,6 +24,15 @@ def test_search_documents_tool(sample_document: dict[str, str]) -> None:
     assert "Article 4" in result.context
     assert "binding" in result.context.lower()
     assert tool.schema["name"] == "search_documents"
+
+
+def test_search_documents_tool_uses_native_function_tool(
+    sample_document: dict[str, str],
+) -> None:
+    tool = SearchDocumentsTool([sample_document], num_results=1)
+
+    assert isinstance(tool.function_tool, FunctionTool)
+    assert type(tool.function_tool) is FunctionTool
 
 
 def test_climate_policy_agent_uses_shared_tool_registry(
@@ -203,3 +213,19 @@ def test_answer_tracks_sources_from_tool_calls(
 
     assert "European Climate Law" in result.sources
     assert len(result.sources) == 1
+
+
+def test_search_documents_registry_middleware_collects_sources(
+    sample_document: dict[str, str],
+) -> None:
+    agent = ClimatePolicyAgent([sample_document], openai_client=object())
+
+    result = agent._tool_executor.run_sync(
+        "search_documents",
+        {"query": "2030 target"},
+        error_mode="raise",
+    )
+
+    assert isinstance(result.value, str)
+    assert "Article 4" in result.value
+    assert agent._current_run_sources == ["European Climate Law"]
