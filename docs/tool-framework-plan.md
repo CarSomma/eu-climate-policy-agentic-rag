@@ -282,10 +282,21 @@ Completed in the seventeenth TDD slice:
 - preserved existing strict schema normalization for supported Pydantic schemas
 - expanded `tests/unit/test_openai_responses_adapter.py`
 
+Completed in the eighteenth TDD slice:
+
+- added per-compiler caching for `OpenAIResponsesSchemaCompiler` function-tool
+  exports keyed by immutable `FunctionTool` instance identity
+- avoided repeated provider schema export and strict normalization when the
+  same function tool is compiled more than once
+- returned defensive deep copies from the compiler cache so caller mutations
+  cannot corrupt later OpenAI Responses exports
+- verified `OpenAIResponsesToolAdapter.tools` stays stable across repeated
+  calls while reusing cached function schemas
+- expanded `tests/unit/test_openai_responses_adapter.py`
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
-- schema caching for OpenAI Responses export
 - provider adapter modules beyond OpenAI Responses
 
 ## Goals
