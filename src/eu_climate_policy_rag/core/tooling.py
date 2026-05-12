@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from eu_climate_policy_rag.core.tools import (
     FunctionTool,
     PydanticSchemaProvider,
+    ToolExecutionConfig,
     ToolExecutor,
     ToolMiddleware,
     ToolRegistry as BaseToolRegistry,
@@ -27,12 +28,14 @@ class OpenAIFunctionTool(FunctionTool[BaseModel, Any]):
         description: str,
         input_model: type[BaseModel],
         handler: Callable[..., Any],
+        execution: ToolExecutionConfig | None = None,
     ) -> None:
         super().__init__(
             name=name,
             description=description,
             schema_provider=PydanticSchemaProvider(input_model),
             handler=handler,
+            execution=execution or ToolExecutionConfig(),
         )
         self.input_model = input_model
 
