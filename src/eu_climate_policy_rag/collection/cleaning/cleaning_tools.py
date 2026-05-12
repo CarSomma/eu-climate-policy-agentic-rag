@@ -7,7 +7,8 @@ from eu_climate_policy_rag.core.models import (
     EmptyToolInputModel,
     SkipDocumentInputModel,
 )
-from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool, ToolRegistry
+from eu_climate_policy_rag.core.tools import FunctionTool, PydanticSchemaProvider
+from eu_climate_policy_rag.core.tooling import ToolRegistry
 
 
 def build_cleaning_tools(toolbox: Any) -> ToolRegistry:
@@ -15,34 +16,34 @@ def build_cleaning_tools(toolbox: Any) -> ToolRegistry:
 
     return ToolRegistry(
         [
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="list_documents",
                 description="List fetched Markdown documents available for cleaning.",
-                input_model=EmptyToolInputModel,
+                schema_provider=PydanticSchemaProvider(EmptyToolInputModel),
                 handler=toolbox.list_documents,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="inspect_document",
                 description="Return a cleaning preview and skip recommendation.",
-                input_model=DocumentPathInputModel,
+                schema_provider=PydanticSchemaProvider(DocumentPathInputModel),
                 handler=toolbox.inspect_document,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="save_cleaned_document",
                 description="Save one cleaned JSON record for the document.",
-                input_model=DocumentPathInputModel,
+                schema_provider=PydanticSchemaProvider(DocumentPathInputModel),
                 handler=toolbox.save_cleaned_document,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="skip_document",
                 description="Skip one document with a reason.",
-                input_model=SkipDocumentInputModel,
+                schema_provider=PydanticSchemaProvider(SkipDocumentInputModel),
                 handler=toolbox.skip_document,
             ),
-            OpenAIFunctionTool(
+            FunctionTool(
                 name="finalize",
                 description="Write cleaned records to the output JSON file.",
-                input_model=EmptyToolInputModel,
+                schema_provider=PydanticSchemaProvider(EmptyToolInputModel),
                 handler=toolbox.finalize,
             ),
         ]
