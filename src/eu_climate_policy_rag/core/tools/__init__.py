@@ -3,7 +3,7 @@
 from eu_climate_policy_rag.core.tools.builtin import BuiltinTool
 from eu_climate_policy_rag.core.tools.context import ToolContext
 from eu_climate_policy_rag.core.tools.executor import ToolExecutor
-from eu_climate_policy_rag.core.tools.function import FunctionTool
+from eu_climate_policy_rag.core.tools.function import FunctionTool, ToolExecutionConfig
 from eu_climate_policy_rag.core.tools.middleware import ToolMiddleware
 from eu_climate_policy_rag.core.tools.providers import (
     PydanticSchemaProvider,
@@ -20,6 +20,7 @@ __all__ = [
     "RawJsonSchemaProvider",
     "SchemaProvider",
     "ToolContext",
+    "ToolExecutionConfig",
     "ToolExecutor",
     "ToolMiddleware",
     "ToolRegistry",
