@@ -9,7 +9,7 @@ from eu_climate_policy_rag.collection.cleaning.cleaning_tools import (
     build_cleaning_tools,
 )
 from eu_climate_policy_rag.core.tooling import OpenAIFunctionTool
-from eu_climate_policy_rag.core.tools import FunctionTool
+from eu_climate_policy_rag.core.tools import FunctionTool, ToolExecutor
 
 
 def test_cleaning_agent_exposes_class_backed_tool_schemas() -> None:
@@ -30,11 +30,11 @@ def test_cleaning_tools_are_native_function_tools(tmp_path) -> None:
     toolbox = CleaningToolbox(tmp_path, tmp_path / "out.json")
     registry = build_cleaning_tools(toolbox)
 
-    assert registry.base_registry.function_tools
+    assert registry.function_tools
     assert all(
         isinstance(tool, FunctionTool)
         and not isinstance(tool, OpenAIFunctionTool)
-        for tool in registry.base_registry.function_tools
+        for tool in registry.function_tools
     )
 
 
@@ -54,27 +54,31 @@ def test_cleaning_metrics_middleware_observes_mutating_tools_without_changing_re
     observer = CleaningToolMetricsMiddleware()
     registry = build_cleaning_tools(toolbox, middleware=[observer])
 
-    save_result = registry.run_sync(
+    executor = ToolExecutor(registry)
+
+    save_result = executor.run_sync(
         "save_cleaned_document",
         {"path": str(document_path)},
+        error_mode="raise",
     )
-    skip_result = registry.run_sync(
+    skip_result = executor.run_sync(
         "skip_document",
         {"path": "missing.md", "reason": "not relevant"},
+        error_mode="raise",
     )
-    finalize_result = registry.run_sync("finalize", {})
+    finalize_result = executor.run_sync("finalize", {}, error_mode="raise")
 
-    assert save_result == {
+    assert save_result.value == {
         "saved": True,
         "path": str(document_path),
         "records": 1,
     }
-    assert skip_result == {
+    assert skip_result.value == {
         "skipped": True,
         "path": "missing.md",
         "reason": "not relevant",
     }
-    assert finalize_result == {
+    assert finalize_result.value == {
         "output_path": str(tmp_path / "out.json"),
         "record_count": 1,
         "skipped_count": 1,
