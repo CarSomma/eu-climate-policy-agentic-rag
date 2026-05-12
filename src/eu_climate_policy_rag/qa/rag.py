@@ -15,7 +15,7 @@ from eu_climate_policy_rag.core.models import (
     RagAnswerModel,
     RagConfigModel,
 )
-from eu_climate_policy_rag.core.tooling import ToolRegistry
+from eu_climate_policy_rag.core.tools import ToolRegistry
 from eu_climate_policy_rag.qa.tools import (
     SearchDocumentsResultMiddleware,
     SearchDocumentsTool,
@@ -169,8 +169,15 @@ class ClimatePolicyAgent(AbstractAgent):
         elif tool_call.name == self.search_tool.name:
             LOGGER.info("Searching: %s", arguments["query"])
 
-        result = self.tools.run_sync(tool_call.name, arguments)
-        output = str(result.get("error", result)) if isinstance(result, dict) else str(result)
+        result = self._tool_executor.run_sync(
+            tool_call.name,
+            arguments,
+            call_id=tool_call.call_id,
+        )
+        if result.ok:
+            output = str(result.value)
+        else:
+            output = result.error.message if result.error is not None else result.output
 
         return {
             "type": "function_call_output",
