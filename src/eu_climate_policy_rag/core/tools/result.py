@@ -1,8 +1,11 @@
 """Tool execution results and serialization helpers."""
 
 import json
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar
+
+from pydantic import BaseModel
 
 from eu_climate_policy_rag.core.tools.errors import ToolErrorPayload
 
@@ -32,7 +35,7 @@ class ToolResult(Generic[ResultT]):
     ) -> "ToolResult[ResultT]":
         """Create a successful JSON-mode tool result."""
 
-        output = json.dumps({"ok": True, "data": value})
+        output = json.dumps({"ok": True, "data": _to_jsonable(value)})
         return cls(
             ok=True,
             tool_name=tool_name,
@@ -72,3 +75,15 @@ class ToolResult(Generic[ResultT]):
             "call_id": self.call_id,
             "output": self.output,
         }
+
+
+def _to_jsonable(value: object) -> object:
+    """Convert common structured Python values into JSON-serializable values."""
+
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json")
+    if isinstance(value, Mapping):
+        return {str(key): _to_jsonable(item) for key, item in value.items()}
+    if isinstance(value, Sequence) and not isinstance(value, str | bytes | bytearray):
+        return [_to_jsonable(item) for item in value]
+    return value
