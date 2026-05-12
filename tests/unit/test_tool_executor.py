@@ -1,5 +1,6 @@
 """Unit tests for tool execution, results, and structured errors."""
 
+import asyncio
 import json
 
 import pytest
@@ -12,6 +13,7 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry,
 )
 from eu_climate_policy_rag.core.tools.errors import (
+    ToolExecutionError,
     ToolValidationError,
     UnknownToolError,
 )
@@ -39,6 +41,13 @@ def add_handler(left: int, right: int) -> dict[str, int]:
 async def async_add_handler(left: int, right: int) -> dict[str, int]:
     """Async variant of the arithmetic tool."""
 
+    return {"sum": left + right}
+
+
+async def slow_add_handler(left: int, right: int) -> dict[str, int]:
+    """Async tool that exceeds a tiny timeout."""
+
+    await asyncio.sleep(0.05)
     return {"sum": left + right}
 
 
@@ -210,3 +219,43 @@ async def test_tool_executor_run_can_raise_unknown_tool_errors() -> None:
 
     with pytest.raises(UnknownToolError):
         await executor.run("missing_tool", {}, error_mode="raise")
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_returns_timeout_error() -> None:
+    """Async execution should return structured timeout errors."""
+
+    tool = FunctionTool(
+        name="slow_add_numbers",
+        description="Slowly add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=slow_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), timeout_seconds=0.001)
+
+    result = await executor.run("slow_add_numbers", {"left": 1, "right": 2})
+
+    assert result.ok is False
+    assert result.error is not None
+    assert result.error.type == "ToolExecutionError"
+    assert "timed out" in result.error.message
+
+
+@pytest.mark.asyncio
+async def test_tool_executor_run_can_raise_timeout_errors() -> None:
+    """Async execution should raise timeout errors in raise-error mode."""
+
+    tool = FunctionTool(
+        name="slow_add_numbers",
+        description="Slowly add two non-negative integers",
+        schema_provider=PydanticSchemaProvider(AddInput),
+        handler=slow_add_handler,
+    )
+    executor = ToolExecutor(ToolRegistry(function_tools=[tool]), timeout_seconds=0.001)
+
+    with pytest.raises(ToolExecutionError, match="timed out"):
+        await executor.run(
+            "slow_add_numbers",
+            {"left": 1, "right": 2},
+            error_mode="raise",
+        )
