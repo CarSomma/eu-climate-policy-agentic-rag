@@ -1,5 +1,6 @@
 """Compatibility helpers for OpenAI function-tool definitions."""
 
+import warnings
 from collections.abc import Callable, Sequence
 from typing import Any
 
@@ -30,6 +31,12 @@ class OpenAIFunctionTool(FunctionTool[BaseModel, Any]):
         handler: Callable[..., Any],
         execution: ToolExecutionConfig | None = None,
     ) -> None:
+        warnings.warn(
+            "core.tooling.OpenAIFunctionTool is deprecated; use "
+            "core.tools.FunctionTool with PydanticSchemaProvider instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(
             name=name,
             description=description,
@@ -84,6 +91,12 @@ class ToolRegistry:
             function_tools: Custom OpenAIFunctionTool instances
             builtin_tools: Built-in tool schemas (web_search, code_interpreter)
         """
+        warnings.warn(
+            "core.tooling.ToolRegistry is deprecated; use "
+            "core.tools.ToolRegistry instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         # Backward compatibility: support old ToolRegistry([tool1, tool2])
         if tools is not None and function_tools is None:
             function_tools = tools
@@ -92,6 +105,7 @@ class ToolRegistry:
         self._registry = BaseToolRegistry(
             function_tools=function_tools,
             builtin_tools=builtin_tools or [],
+            middleware=middleware or [],
         )
         self._executor = ToolExecutor(
             self._registry,
