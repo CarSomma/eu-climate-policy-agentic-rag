@@ -188,9 +188,19 @@ Completed in the tenth TDD slice:
 - added per-call async timeout override on `ToolExecutor.run`
 - expanded `tests/unit/test_tool_executor.py`
 
+Completed in the eleventh TDD slice:
+
+- added executor-level async retry support through `max_retries`
+- retried handler execution failures after validation succeeds
+- kept validation failures outside the retry loop
+- returned structured `ToolExecutionError` after retry exhaustion
+- added `max_retries` pass-through on the legacy `core.tooling.ToolRegistry`
+  facade
+- expanded `tests/unit/test_tool_executor.py`
+
 Not done yet:
 
-- retry controls
+- per-tool retry configuration
 - per-tool timeout configuration
 - per-tool concurrency configuration
 - agent-loop migration
