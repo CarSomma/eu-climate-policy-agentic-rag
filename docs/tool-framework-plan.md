@@ -294,6 +294,22 @@ Completed in the eighteenth TDD slice:
   calls while reusing cached function schemas
 - expanded `tests/unit/test_openai_responses_adapter.py`
 
+Completed in the nineteenth TDD slice:
+
+- migrated the RAG `SearchDocumentsTool` wrapper from legacy
+  `OpenAIFunctionTool` construction to native `FunctionTool` plus
+  `PydanticSchemaProvider`
+- migrated fetch and cleaning tool builders to register native
+  `FunctionTool` instances while keeping the legacy `core.tooling.ToolRegistry`
+  facade at the agent boundary
+- relaxed the legacy registry facade to dispatch any provider-neutral
+  `FunctionTool`, preserving compatibility for existing `run`, `run_sync`,
+  `.schemas`, and unknown-tool behavior
+- added integration coverage proving RAG, fetch, and cleaning builders now use
+  native function tools and still preserve direct dispatch behavior
+- verified internal `OpenAIFunctionTool` usage remains limited to the
+  compatibility module
+
 Not done yet:
 
 - cleaning middleware opportunities, if any
