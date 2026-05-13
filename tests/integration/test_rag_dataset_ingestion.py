@@ -1,8 +1,6 @@
 import inspect
 import json
 
-import pytest
-
 from eu_climate_policy_rag.collection.cleaning import rag_dataset_ingestion
 from eu_climate_policy_rag.collection.cleaning.rag_dataset_ingestion import run_cli
 
