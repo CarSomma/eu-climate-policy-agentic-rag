@@ -17,6 +17,7 @@ An agentic retrieval-augmented generation (RAG) system that helps students and e
 - [docs/package-structure.md](docs/package-structure.md): codebase layout and key modules
 - [docs/data.md](docs/data.md): data stages and usage examples
 - [docs/tests.md](docs/tests.md): running the test suite
+- [docs/tools.md](docs/tools.md): provider-neutral tool framework guide
 
 ## The Problem
 
