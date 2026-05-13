@@ -4,7 +4,8 @@ The implementation is split by concern:
 
 - `collection/`: document discovery, fetching, cleaning, and pipeline CLI
 - `qa/`: RAG question-answering code
-- `core/`: shared agent loop, tool registry, validation models, typed dictionaries, and logging utilities
+- `core/`: shared agent loop, provider-neutral tool framework, validation
+  models, typed dictionaries, and logging utilities
 
 Important modules:
 
@@ -16,11 +17,16 @@ Important modules:
 - `collection/content_hashing.py`: Markdown normalization and duplicate-detection hashes
 - `collection/document_quality.py`: quality checks for fetched and cleaned document content
 - `collection/document_urls.py`: URL normalization, document detection, and filename helpers
-- `collection/fetching/fetch_tools.py` and `collection/cleaning/cleaning_tools.py`: collection-specific OpenAI function-tool builders
+- `collection/fetching/fetch_tools.py` and `collection/cleaning/cleaning_tools.py`: collection-specific native function-tool builders
 - `qa/rag.py`: agentic RAG orchestration with an LLM-driven tool loop, `RagAnswerModel` responses, and the `eu-climate-ask` CLI (`ClimatePolicyAgent`)
 - `qa/tools.py`: class-based RAG tools, including the `search_documents` Minsearch tool and prompt context formatting
-- `core/agent.py`: reusable OpenAI Responses API tool-call loop used by collection and QA agents
+- `core/agent.py`: reusable base agent that connects OpenAI Responses calls to the shared tool loop
+- `core/agent_loop.py`: reusable OpenAI Responses function-calling loop
+- `core/tools/`: provider-neutral tool framework, including function tools,
+  built-ins, schema providers, registry, executor, results, errors, and
+  middleware
+- `core/tools/adapters/`: provider-specific adapters, currently OpenAI
+  Responses schema export and result conversion
 - `core/logging_utils.py`: provides colored project loggers for CLI progress output
 - `core/models.py`: data models that validate links, configs, results, and cleaned records
-- `core/tooling.py`: shared OpenAI function-tool schema and dispatch helpers
 - `core/types.py`: core typed dictionaries
