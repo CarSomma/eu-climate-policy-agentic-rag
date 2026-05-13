@@ -20,12 +20,12 @@ LOGGER = get_logger(__name__)
 class AbstractAgent(ABC):
     """Base class implementing the OpenAI agentic tool-call loop.
 
-    Follows the pattern from homework-2: iteratively call the model,
-    dispatch tool calls, and loop until the model stops requesting tools
-    or ``max_turns`` is exceeded.
+    Follows the pattern: 
+    + iteratively call the model, 
+    + dispatch tool calls, 
+    + loop until the model stops requesting tools or ``max_turns`` is exceeded.
 
-    Subclasses must implement ``run()`` and may override
-    ``_execute_tool_call()`` for domain-specific dispatch logic.
+    
     """
 
     def __init__(
