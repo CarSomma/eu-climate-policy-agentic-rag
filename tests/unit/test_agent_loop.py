@@ -1,7 +1,6 @@
 """Unit tests for the shared OpenAI Responses tool-call loop."""
 
 import json
-from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -15,6 +14,13 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry as NativeToolRegistry,
 )
 from eu_climate_policy_rag.core.tools.adapters import OpenAIResponsesToolAdapter
+from tests.helpers.responses_replay import (
+    ResponsesReplay,
+    function_call,
+    function_call_output,
+    message,
+    response,
+)
 
 
 class EchoInput(BaseModel):
@@ -34,33 +40,6 @@ class LoopTestAgent(AbstractAgent):
 
     def run(self, query: str) -> Any:
         return self._run_loop(query)
-
-
-def make_message(text: str) -> SimpleNamespace:
-    """Create a Responses API-like message item."""
-
-    return SimpleNamespace(type="message", content=[SimpleNamespace(text=text)])
-
-
-def make_tool_call(
-    name: str,
-    arguments: dict[str, Any],
-    call_id: str,
-) -> SimpleNamespace:
-    """Create a Responses API-like function_call item."""
-
-    return SimpleNamespace(
-        type="function_call",
-        name=name,
-        arguments=json.dumps(arguments),
-        call_id=call_id,
-    )
-
-
-def make_response(*output: SimpleNamespace) -> SimpleNamespace:
-    """Create a Responses API-like response object."""
-
-    return SimpleNamespace(output=list(output))
 
 
 def build_agent(mock_client: MagicMock) -> LoopTestAgent:
@@ -102,11 +81,11 @@ def build_native_agent(mock_client: MagicMock) -> LoopTestAgent:
 def test_run_loop_appends_function_call_output_and_continues() -> None:
     """The loop should send model tool calls and tool outputs back next turn."""
 
-    tool_call = make_tool_call("echo", {"text": "hello"}, "call_echo")
+    tool_call = function_call("echo", {"text": "hello"}, "call_echo")
     mock_client = MagicMock()
     mock_client.responses.create.side_effect = [
-        make_response(tool_call),
-        make_response(make_message("final answer")),
+        response(tool_call),
+        response(message("final answer")),
     ]
     agent = build_agent(mock_client)
 
@@ -123,7 +102,7 @@ def test_run_loop_appends_function_call_output_and_continues() -> None:
             "call_id": "call_echo",
             "output": json.dumps({"ok": True, "data": {"echo": "hello"}}),
         },
-        make_message("final answer"),
+        message("final answer"),
     ]
 
 
@@ -131,7 +110,7 @@ def test_agent_create_response_uses_openai_responses_adapter_tools() -> None:
     """Agents should export model-visible tools through the provider adapter."""
 
     mock_client = MagicMock()
-    mock_client.responses.create.return_value = make_response(make_message("done"))
+    mock_client.responses.create.return_value = response(message("done"))
     agent = build_agent(mock_client)
 
     assert isinstance(agent.tool_adapter, OpenAIResponsesToolAdapter)
@@ -145,7 +124,7 @@ def test_agent_create_response_uses_openai_responses_adapter_tools() -> None:
 def test_base_agent_converts_tool_result_through_responses_adapter() -> None:
     """Base agent dispatch should let the adapter build function_call_output."""
 
-    tool_call = make_tool_call("echo", {"text": "hello"}, "call_echo")
+    tool_call = function_call("echo", {"text": "hello"}, "call_echo")
     mock_client = MagicMock()
     agent = build_agent(mock_client)
     original_converter = agent.tool_adapter.to_function_call_output
@@ -164,11 +143,11 @@ def test_base_agent_converts_tool_result_through_responses_adapter() -> None:
 def test_agent_accepts_native_tool_registry() -> None:
     """Agents should accept provider-neutral registries at the boundary."""
 
-    tool_call = make_tool_call("echo", {"text": "native"}, "call_echo")
+    tool_call = function_call("echo", {"text": "native"}, "call_echo")
     mock_client = MagicMock()
     mock_client.responses.create.side_effect = [
-        make_response(tool_call),
-        make_response(make_message("done")),
+        response(tool_call),
+        response(message("done")),
     ]
     agent = build_native_agent(mock_client)
 
@@ -195,12 +174,12 @@ def test_agent_adapter_receives_provider_neutral_registry_for_native_tools() -> 
 def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> None:
     """All function calls in one response should receive matching outputs."""
 
-    first_call = make_tool_call("echo", {"text": "one"}, "call_one")
-    second_call = make_tool_call("echo", {"text": "two"}, "call_two")
+    first_call = function_call("echo", {"text": "one"}, "call_one")
+    second_call = function_call("echo", {"text": "two"}, "call_two")
     mock_client = MagicMock()
     mock_client.responses.create.side_effect = [
-        make_response(first_call, second_call),
-        make_response(make_message("done")),
+        response(first_call, second_call),
+        response(message("done")),
     ]
     agent = build_agent(mock_client)
 
@@ -219,14 +198,14 @@ def test_run_loop_handles_multiple_function_calls_before_next_model_turn() -> No
             "call_id": "call_two",
             "output": json.dumps({"ok": True, "data": {"echo": "two"}}),
         },
-        make_message("done"),
+        message("done"),
     ]
 
 
 def test_base_agent_unknown_tool_returns_structured_model_visible_error() -> None:
     """Unknown tools should become structured function_call_output failures."""
 
-    tool_call = make_tool_call("missing_tool", {}, "call_missing")
+    tool_call = function_call("missing_tool", {}, "call_missing")
     mock_client = MagicMock()
     agent = build_agent(mock_client)
 
@@ -243,10 +222,10 @@ def test_base_agent_unknown_tool_returns_structured_model_visible_error() -> Non
 def test_responses_tool_loop_runs_with_callbacks() -> None:
     """The reusable loop should own Responses turn mechanics."""
 
-    tool_call = make_tool_call("echo", {"text": "hello"}, "call_echo")
-    responses = [make_response(tool_call), make_response(make_message("done"))]
+    tool_call = function_call("echo", {"text": "hello"}, "call_echo")
+    responses = [response(tool_call), response(message("done"))]
 
-    def create_response(history: list[Any]) -> SimpleNamespace:
+    def create_response(history: list[Any]) -> Any:
         return responses.pop(0)
 
     def execute_tool_call(call: Any) -> dict[str, str]:
@@ -278,17 +257,17 @@ def test_responses_tool_loop_runs_with_callbacks() -> None:
             "call_id": "call_echo",
             "output": "hello",
         },
-        make_message("done"),
+        message("done"),
     ]
 
 
 async def test_responses_tool_loop_runs_async_tool_callbacks() -> None:
     """The reusable loop should support async tool dispatch callbacks."""
 
-    tool_call = make_tool_call("echo", {"text": "async"}, "call_async")
-    responses = [make_response(tool_call), make_response(make_message("done"))]
+    tool_call = function_call("echo", {"text": "async"}, "call_async")
+    responses = [response(tool_call), response(message("done"))]
 
-    def create_response(history: list[Any]) -> SimpleNamespace:
+    def create_response(history: list[Any]) -> Any:
         return responses.pop(0)
 
     async def execute_tool_call(call: Any) -> dict[str, str]:
@@ -315,3 +294,96 @@ async def test_responses_tool_loop_runs_async_tool_callbacks() -> None:
         "call_id": "call_async",
         "output": "async",
     }
+
+
+def test_responses_replay_fixture_covers_multiple_function_calls() -> None:
+    """Replay helpers should make same-turn tool-call histories easy to assert."""
+
+    first_call = function_call("echo", {"text": "one"}, "call_one")
+    second_call = function_call("echo", {"text": "two"}, "call_two")
+    first_output = function_call_output("call_one", "one")
+    second_output = function_call_output("call_two", "two")
+    replay = ResponsesReplay(
+        [
+            response(first_call, second_call),
+            response(message("done")),
+        ],
+        tool_outputs={
+            "call_one": first_output,
+            "call_two": second_output,
+        },
+    )
+
+    final_answer, history = replay.run(
+        query="Use the tool twice",
+        instructions="Use tools.",
+    )
+
+    assert final_answer == "done"
+    assert history == [
+        {"role": "system", "content": "Use tools."},
+        {"role": "user", "content": "Use the tool twice"},
+        first_call,
+        second_call,
+        first_output,
+        second_output,
+        message("done"),
+    ]
+    assert replay.seen_histories[1] == history[:6]
+
+
+def test_responses_replay_fixture_covers_unknown_tool_output() -> None:
+    """Replay helpers should preserve structured unknown-tool outputs."""
+
+    missing_call = function_call("missing_tool", {}, "call_missing")
+    error_output = function_call_output(
+        "call_missing",
+        json.dumps(
+            {
+                "ok": False,
+                "error": {
+                    "type": "UnknownToolError",
+                    "message": "Unknown tool: missing_tool",
+                },
+            },
+        ),
+    )
+    replay = ResponsesReplay(
+        [
+            response(missing_call),
+            response(message("done")),
+        ],
+        tool_outputs={"call_missing": error_output},
+    )
+
+    _, history = replay.run()
+
+    assert history[2:4] == [missing_call, error_output]
+
+
+def test_responses_replay_fixture_covers_max_turn_behavior() -> None:
+    """Replay helpers should make max-turn regressions straightforward."""
+
+    first_call = function_call("echo", {"text": "again"}, "call_one")
+    second_call = function_call("echo", {"text": "again"}, "call_two")
+    replay = ResponsesReplay(
+        [
+            response(first_call),
+            response(second_call),
+        ],
+        tool_outputs={
+            "call_one": function_call_output("call_one", "one"),
+            "call_two": function_call_output("call_two", "two"),
+        },
+        max_turns=2,
+    )
+
+    final_answer, history = replay.run()
+
+    assert final_answer == "Agent reached max turns without a final answer."
+    assert history[2:] == [
+        first_call,
+        function_call_output("call_one", "one"),
+        second_call,
+        function_call_output("call_two", "two"),
+    ]
