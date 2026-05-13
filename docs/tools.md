@@ -80,6 +80,15 @@ registry = ToolRegistry(
 Built-in tools are model-visible but provider-managed. They are exported to the
 model request, but `ToolExecutor` does not run them locally.
 
+Use `registry.describe()` when you need a serializable provider-neutral summary
+for debugging, docs, or logs.
+
+```python
+summary = registry.describe()
+print(summary["function_tools"])
+print(summary["builtin_tools"])
+```
+
 ## Export To OpenAI Responses
 
 Use `OpenAIResponsesToolAdapter` at the provider boundary. The adapter compiles
