@@ -16,8 +16,9 @@ observability, and RAG quality.
 - Completed: Slice 1, Documentation Alignment
 - Completed: Slice 2, Tool Framework Developer Guide
 - Completed: Slice 3, Registry Introspection
-- Next recommended slice: Slice 4, Tool Call Replay Fixtures
-- Last verification: Slice 3 checks passed on 2026-05-13
+- Completed: Slice 4, Tool Call Replay Fixtures
+- Next recommended slice: Slice 5, Parallel Async Function Calls
+- Last verification: Slice 4 checks passed on 2026-05-13
 
 ## Progress Log
 
@@ -76,6 +77,26 @@ Verification:
 
 ```bash
 uv run pytest tests/unit/test_tool_framework.py
+uv run ruff check src tests
+uv run pytest tests/unit
+```
+
+### 2026-05-13: Slice 4 Completed
+
+Added reusable Responses-style replay fixtures for agent-loop regression tests.
+
+Changed files:
+
+- `tests/helpers/__init__.py`
+- `tests/helpers/responses_replay.py`
+- `tests/unit/test_agent_loop.py`
+- `docs/tdd-improvement-plan.md`
+
+Verification:
+
+```bash
+uv run pytest tests/unit/test_agent_loop.py
+uv run ruff check tests/unit/test_agent_loop.py tests/helpers/responses_replay.py
 uv run ruff check src tests
 uv run pytest tests/unit
 ```
@@ -217,7 +238,7 @@ uv run pytest tests/unit/test_tool_framework.py
 
 ## Slice 4: Tool Call Replay Fixtures
 
-Status: next.
+Status: completed on 2026-05-13.
 
 Goal: make agent-loop regressions easier to test without live API calls.
 
@@ -247,6 +268,8 @@ uv run pytest tests/unit/test_agent_loop.py
 ```
 
 ## Slice 5: Parallel Async Function Calls
+
+Status: next.
 
 Goal: allow the async OpenAI Responses tool loop to execute multiple function
 calls from a single response turn concurrently.
