@@ -1,5 +1,6 @@
 """Unit tests for the shared OpenAI Responses tool-call loop."""
 
+import asyncio
 import json
 from typing import Any
 from unittest.mock import MagicMock
@@ -294,6 +295,48 @@ async def test_responses_tool_loop_runs_async_tool_callbacks() -> None:
         "call_id": "call_async",
         "output": "async",
     }
+
+
+async def test_responses_tool_loop_runs_same_turn_async_tool_calls_concurrently() -> None:
+    """Async loop should execute same-turn function calls concurrently."""
+
+    first_call = function_call("echo", {"text": "one"}, "call_one")
+    second_call = function_call("echo", {"text": "two"}, "call_two")
+    responses = [response(first_call, second_call), response(message("done"))]
+    active_calls = 0
+    max_active_calls = 0
+
+    def create_response(history: list[Any]) -> Any:
+        return responses.pop(0)
+
+    async def execute_tool_call(call: Any) -> dict[str, str]:
+        nonlocal active_calls, max_active_calls
+        active_calls += 1
+        max_active_calls = max(max_active_calls, active_calls)
+        await asyncio.sleep(0.01)
+        active_calls -= 1
+        return function_call_output(call.call_id, call.name)
+
+    loop = OpenAIResponsesToolLoop(
+        create_response=create_response,
+        execute_tool_call=execute_tool_call,
+        max_turns=3,
+    )
+
+    final_answer, history = await loop.run_async(
+        query="Use the tool twice",
+        instructions="Use tools when useful.",
+    )
+
+    assert final_answer == "done"
+    assert max_active_calls == 2
+    assert history[2:] == [
+        first_call,
+        second_call,
+        function_call_output("call_one", "echo"),
+        function_call_output("call_two", "echo"),
+        message("done"),
+    ]
 
 
 def test_responses_replay_fixture_covers_multiple_function_calls() -> None:

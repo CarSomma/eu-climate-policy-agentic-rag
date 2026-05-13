@@ -1,5 +1,6 @@
 """Reusable OpenAI Responses tool-call loop."""
 
+import asyncio
 from collections.abc import Awaitable, Callable
 from inspect import isawaitable
 from typing import Any
@@ -120,22 +121,32 @@ class OpenAIResponsesToolLoop:
         """Async variant of ``_append_response_output``."""
 
         message_history.extend(response.output)
-        has_tool_call = False
         final_answer = ""
+        tool_calls = []
 
         for message in response.output:
             if message.type == "function_call":
-                has_tool_call = True
-                LOGGER.info("Executing tool: %s", message.name)
-                tool_output = self.execute_tool_call(message)
-                if isawaitable(tool_output):
-                    tool_output = await tool_output
-                message_history.append(tool_output)
+                tool_calls.append(message)
             elif message.type == "message":
                 self.on_message(message)
                 final_answer = message.content[0].text
 
-        return has_tool_call, final_answer
+        if tool_calls:
+            tool_outputs = await asyncio.gather(
+                *[self._execute_tool_call_async(message) for message in tool_calls],
+            )
+            message_history.extend(tool_outputs)
+
+        return bool(tool_calls), final_answer
+
+    async def _execute_tool_call_async(self, message: Any) -> dict[str, Any]:
+        """Execute one function call through a sync or async callback."""
+
+        LOGGER.info("Executing tool: %s", message.name)
+        tool_output = self.execute_tool_call(message)
+        if isawaitable(tool_output):
+            tool_output = await tool_output
+        return tool_output
 
     @staticmethod
     def _initial_history(query: str, instructions: str) -> list[Any]:
