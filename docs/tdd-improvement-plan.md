@@ -17,8 +17,9 @@ observability, and RAG quality.
 - Completed: Slice 2, Tool Framework Developer Guide
 - Completed: Slice 3, Registry Introspection
 - Completed: Slice 4, Tool Call Replay Fixtures
-- Next recommended slice: Slice 5, Parallel Async Function Calls
-- Last verification: Slice 4 checks passed on 2026-05-13
+- Completed: Slice 5, Parallel Async Function Calls
+- Next recommended slice: Slice 6, Observability Middleware
+- Last verification: Slice 5 checks passed on 2026-05-13
 
 ## Progress Log
 
@@ -77,6 +78,27 @@ Verification:
 
 ```bash
 uv run pytest tests/unit/test_tool_framework.py
+uv run ruff check src tests
+uv run pytest tests/unit
+```
+
+### 2026-05-13: Slice 5 Completed
+
+Updated the async Responses tool loop to execute same-turn function calls
+concurrently while preserving deterministic output order in message history.
+
+Changed files:
+
+- `src/eu_climate_policy_rag/core/agent_loop.py`
+- `tests/unit/test_agent_loop.py`
+- `docs/tdd-improvement-plan.md`
+
+Verification:
+
+```bash
+uv run pytest tests/unit/test_agent_loop.py tests/unit/test_tool_executor.py
+uv run ruff check src/eu_climate_policy_rag/core/agent_loop.py tests/unit/test_agent_loop.py
+uv run pytest tests/integration/test_rag.py tests/integration/test_fetch_agent.py tests/integration/test_cleaning_agent.py
 uv run ruff check src tests
 uv run pytest tests/unit
 ```
@@ -269,7 +291,7 @@ uv run pytest tests/unit/test_agent_loop.py
 
 ## Slice 5: Parallel Async Function Calls
 
-Status: next.
+Status: completed on 2026-05-13.
 
 Goal: allow the async OpenAI Responses tool loop to execute multiple function
 calls from a single response turn concurrently.
@@ -304,6 +326,8 @@ uv run pytest tests/integration/test_rag.py tests/integration/test_fetch_agent.p
 ```
 
 ## Slice 6: Observability Middleware
+
+Status: next.
 
 Goal: add reusable tool execution observability without baking metrics into
 domain agents.
