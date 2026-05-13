@@ -109,3 +109,65 @@ def test_tool_registry_exposes_openai_tools_and_legacy_schemas_alias() -> None:
     assert registry.get("web_search") is None
     assert registry.is_builtin("web_search") is True
 
+
+def test_tool_registry_describes_tools_without_exposing_handlers() -> None:
+    """Registry descriptions should be serializable and provider-neutral."""
+
+    function_tool = FunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+    web_search = BuiltinTool.web_search(
+        user_location={"country": "IT", "city": "Turin"},
+    )
+
+    registry = ToolRegistry(function_tools=[function_tool], builtin_tools=[web_search])
+
+    assert registry.describe() == {
+        "function_tools": [
+            {
+                "name": "search_documents",
+                "description": "Search local documents",
+                "strict": True,
+            },
+        ],
+        "builtin_tools": [
+            {
+                "type": "web_search",
+                "config": {
+                    "user_location": {
+                        "type": "approximate",
+                        "country": "IT",
+                        "city": "Turin",
+                    },
+                },
+            },
+        ],
+    }
+    assert "handler" not in str(registry.describe())
+
+
+def test_tool_registry_rejects_duplicate_function_names() -> None:
+    """Registry description work should not weaken unique-name validation."""
+
+    first_tool = FunctionTool(
+        name="search_documents",
+        description="Search local documents",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+    duplicate_tool = FunctionTool(
+        name="search_documents",
+        description="Search another index",
+        schema_provider=PydanticSchemaProvider(SearchInput),
+        handler=search_handler,
+    )
+
+    try:
+        ToolRegistry(function_tools=[first_tool, duplicate_tool])
+    except ValueError as exc:
+        assert str(exc) == "Function tool names must be unique."
+    else:
+        raise AssertionError("Duplicate tool names should be rejected.")
