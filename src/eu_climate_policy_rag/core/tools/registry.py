@@ -1,6 +1,7 @@
 """Tool registry for model-visible tools."""
 
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass, field
 
 from eu_climate_policy_rag.core.tools.builtin import BuiltinTool
@@ -78,3 +79,24 @@ class ToolRegistry:
         """Return whether a tool type is registered as provider-managed."""
 
         return name in self._builtin_types
+
+    def describe(self) -> dict[str, list[dict[str, object]]]:
+        """Return a serializable provider-neutral summary of registered tools."""
+
+        return {
+            "function_tools": [
+                {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "strict": tool.strict,
+                }
+                for tool in self.function_tools
+            ],
+            "builtin_tools": [
+                {
+                    "type": tool.type,
+                    "config": deepcopy(dict(tool.config)),
+                }
+                for tool in self._builtins
+            ],
+        }
