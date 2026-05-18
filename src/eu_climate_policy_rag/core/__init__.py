@@ -3,6 +3,11 @@
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.logging_utils import ColoredLogger
+from eu_climate_policy_rag.core.metrics import (
+    ModelPricing,
+    ResponseUsageRecord,
+    ResponseUsageTracker,
+)
 from eu_climate_policy_rag.core.models import (
     CleanedDocumentRecordModel,
     IngestionConfigModel,
@@ -21,9 +26,12 @@ __all__ = [
     "IngestionConfigModel",
     "IngestionResultModel",
     "LinkModel",
+    "ModelPricing",
     "OpenAIResponsesToolLoop",
     "PageSnapshotModel",
     "PipelineConfigModel",
     "PipelineResultModel",
     "PreselectionResultModel",
+    "ResponseUsageRecord",
+    "ResponseUsageTracker",
 ]
