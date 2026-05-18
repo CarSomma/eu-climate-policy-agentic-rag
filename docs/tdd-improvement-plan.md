@@ -18,8 +18,9 @@ observability, and RAG quality.
 - Completed: Slice 3, Registry Introspection
 - Completed: Slice 4, Tool Call Replay Fixtures
 - Completed: Slice 5, Parallel Async Function Calls
-- Next recommended slice: Slice 6, Observability Middleware
-- Last verification: Slice 5 checks passed on 2026-05-13
+- Completed: Slice 6, Observability Middleware
+- Next recommended slice: Slice 7, RAG Dataset Chunking
+- Last verification: Slice 6 checks passed on 2026-05-18
 
 ## Progress Log
 
@@ -82,6 +83,26 @@ uv run ruff check src tests
 uv run pytest tests/unit
 ```
 
+### 2026-05-13: Slice 4 Completed
+
+Added reusable Responses-style replay fixtures for agent-loop regression tests.
+
+Changed files:
+
+- `tests/helpers/__init__.py`
+- `tests/helpers/responses_replay.py`
+- `tests/unit/test_agent_loop.py`
+- `docs/tdd-improvement-plan.md`
+
+Verification:
+
+```bash
+uv run pytest tests/unit/test_agent_loop.py
+uv run ruff check tests/unit/test_agent_loop.py tests/helpers/responses_replay.py
+uv run ruff check src tests
+uv run pytest tests/unit
+```
+
 ### 2026-05-13: Slice 5 Completed
 
 Updated the async Responses tool loop to execute same-turn function calls
@@ -103,24 +124,40 @@ uv run ruff check src tests
 uv run pytest tests/unit
 ```
 
-### 2026-05-13: Slice 4 Completed
+### 2026-05-18: Slice 6 Completed
 
-Added reusable Responses-style replay fixtures for agent-loop regression tests.
+Added reusable observability metrics for local tool execution and model
+Responses token usage. Cost estimates use configurable per-1M-token pricing
+because provider pricing changes over time.
+
+OpenAI docs checked:
+
+- Responses include `usage.input_tokens`, `usage.output_tokens`, and
+  `usage.total_tokens`.
+- OpenAI publishes token pricing per 1M tokens and notes that tokens are billed
+  at the selected model's input and output rates.
 
 Changed files:
 
-- `tests/helpers/__init__.py`
-- `tests/helpers/responses_replay.py`
+- `src/eu_climate_policy_rag/core/tools/middleware.py`
+- `src/eu_climate_policy_rag/core/tools/executor.py`
+- `src/eu_climate_policy_rag/core/tools/result.py`
+- `src/eu_climate_policy_rag/core/tools/__init__.py`
+- `src/eu_climate_policy_rag/core/agent_loop.py`
+- `src/eu_climate_policy_rag/core/metrics.py`
+- `tests/unit/test_tool_middleware.py`
+- `tests/unit/test_response_metrics.py`
 - `tests/unit/test_agent_loop.py`
+- `docs/tools.md`
 - `docs/tdd-improvement-plan.md`
 
 Verification:
 
 ```bash
-uv run pytest tests/unit/test_agent_loop.py
-uv run ruff check tests/unit/test_agent_loop.py tests/helpers/responses_replay.py
-uv run ruff check src tests
+uv run pytest tests/unit/test_tool_middleware.py tests/unit/test_response_metrics.py tests/unit/test_agent_loop.py
 uv run pytest tests/unit
+uv run pytest tests/integration/test_rag.py tests/integration/test_fetch_agent.py tests/integration/test_cleaning_agent.py
+uv run ruff check src tests
 ```
 
 ## TDD Workflow
@@ -327,7 +364,7 @@ uv run pytest tests/integration/test_rag.py tests/integration/test_fetch_agent.p
 
 ## Slice 6: Observability Middleware
 
-Status: next.
+Status: completed on 2026-05-18.
 
 Goal: add reusable tool execution observability without baking metrics into
 domain agents.
@@ -336,7 +373,9 @@ Primary files:
 
 - `src/eu_climate_policy_rag/core/tools/middleware.py`
 - `src/eu_climate_policy_rag/core/tools/executor.py`
+- `src/eu_climate_policy_rag/core/metrics.py`
 - `tests/unit/test_tool_middleware.py`
+- `tests/unit/test_response_metrics.py`
 
 Red tests:
 
@@ -344,20 +383,25 @@ Red tests:
 - middleware can observe validation errors
 - elapsed time is recorded without changing handler return values
 - emitted metadata is attached to `ToolResult`
+- model response token usage is captured from Responses `usage`
+- total estimated cost is calculated from configurable model pricing
 
 Green implementation:
 
 - add a small callback-based metrics or event middleware
+- add a response usage tracker with configurable per-model pricing
 - keep it optional and provider-neutral
 - avoid coupling to a specific telemetry backend
 
 Acceptance:
 
 ```bash
-uv run pytest tests/unit/test_tool_middleware.py tests/unit/test_tool_executor.py
+uv run pytest tests/unit/test_tool_middleware.py tests/unit/test_tool_executor.py tests/unit/test_response_metrics.py
 ```
 
 ## Slice 7: RAG Dataset Chunking
+
+Status: next.
 
 Goal: improve retrieval quality by allowing cleaned documents to be split into
 stable chunks before indexing.
