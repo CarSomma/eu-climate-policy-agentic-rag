@@ -262,6 +262,33 @@ def test_responses_tool_loop_runs_with_callbacks() -> None:
     ]
 
 
+def test_responses_tool_loop_observes_each_response_for_metrics() -> None:
+    """The loop should expose every model response to metrics callbacks."""
+
+    tool_call = function_call("echo", {"text": "hello"}, "call_echo")
+    first_response = response(tool_call)
+    second_response = response(message("done"))
+    responses = [first_response, second_response]
+    observed_responses = []
+
+    def create_response(history: list[Any]) -> Any:
+        return responses.pop(0)
+
+    def execute_tool_call(call: Any) -> dict[str, str]:
+        return function_call_output(call.call_id, "hello")
+
+    loop = OpenAIResponsesToolLoop(
+        create_response=create_response,
+        execute_tool_call=execute_tool_call,
+        max_turns=3,
+        on_response=observed_responses.append,
+    )
+
+    loop.run(query="Say hello", instructions="Use tools.")
+
+    assert observed_responses == [first_response, second_response]
+
+
 async def test_responses_tool_loop_runs_async_tool_callbacks() -> None:
     """The reusable loop should support async tool dispatch callbacks."""
 
