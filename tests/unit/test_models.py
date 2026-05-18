@@ -36,6 +36,23 @@ def test_cleaned_document_record_model_defaults_article() -> None:
     assert record.article == "document"
 
 
+def test_cleaned_document_record_model_accepts_chunk_metadata() -> None:
+    record = CleanedDocumentRecordModel(
+        source="European Climate Law",
+        topic="climate_law",
+        file_path="climate_policy_docs/law.md",
+        text="Climate neutrality by 2050.",
+        content_hash="abc123",
+        chunk_id="abc123:0",
+        chunk_index=0,
+        chunk_start=0,
+        parent_content_hash="abc123",
+    )
+
+    assert record.chunk_id == "abc123:0"
+    assert record.parent_content_hash == "abc123"
+
+
 def test_cleaned_document_record_model_requires_text() -> None:
     with pytest.raises(ValidationError):
         CleanedDocumentRecordModel(
