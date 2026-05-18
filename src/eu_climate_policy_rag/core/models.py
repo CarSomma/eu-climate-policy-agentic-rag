@@ -102,6 +102,10 @@ class CleanedDocumentRecordModel(ProjectModel):
     file_path: str
     text: str = Field(min_length=1)
     content_hash: str = Field(min_length=1)
+    chunk_id: str | None = None
+    chunk_index: int | None = Field(default=None, ge=0)
+    chunk_start: int | None = Field(default=None, ge=0)
+    parent_content_hash: str | None = None
 
 
 class PipelineConfigModel(ProjectModel):
@@ -122,6 +126,9 @@ class IngestionConfigModel(ProjectModel):
     output_path: Path = Path("data/eu_climate_policy.json")
     model: str = Field(default="gpt-5.4-mini", min_length=1)
     max_turns: int = Field(default=50, ge=1)
+    chunk: bool = False
+    chunk_size: int = Field(default=2000, ge=1)
+    chunk_step: int = Field(default=1000, ge=1)
 
 
 class RagConfigModel(ProjectModel):
