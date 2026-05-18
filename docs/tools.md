@@ -178,3 +178,44 @@ executor = ToolExecutor(registry, middleware=[my_middleware])
 ```
 
 Registry middleware is used when executor middleware is not supplied.
+
+## Metrics
+
+Use `ToolMetricsMiddleware` to record compact local tool execution metrics.
+
+```python
+from eu_climate_policy_rag.core.tools import ToolMetricsMiddleware
+
+
+events = []
+executor = ToolExecutor(
+    registry,
+    middleware=[ToolMetricsMiddleware(events.append)],
+)
+```
+
+Each event includes the tool name, call ID, attempt number, success flag,
+duration, and error type when execution fails.
+
+For model response token usage and cost estimates, use
+`ResponseUsageTracker` with explicit pricing values. OpenAI Responses expose
+token usage on the response object, and pricing should stay configurable because
+provider prices can change.
+
+```python
+from eu_climate_policy_rag.core.metrics import ModelPricing, ResponseUsageTracker
+
+
+usage_tracker = ResponseUsageTracker(
+    pricing_by_model={
+        "gpt-4o-mini": ModelPricing(
+            input_per_1m=0.15,
+            cached_input_per_1m=0.075,
+            output_per_1m=0.60,
+        ),
+    },
+)
+```
+
+Pass `usage_tracker.record_response` as the Responses loop `on_response`
+callback when constructing a loop directly.
