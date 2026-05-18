@@ -64,12 +64,14 @@ class ToolExecutor:
         """Validate and execute a registered function tool asynchronously."""
 
         context = ToolContext(tool_name=name, raw_arguments=args, call_id=call_id)
+        context.attempt = 1
         tool = self.registry.get_function(name)
         if tool is None:
             return self._handle_error(
                 UnknownToolError(f"Unknown tool: {name}"),
                 context,
                 error_mode,
+                middleware=self.middleware,
             )
 
         dumped_args = self._validate_arguments(tool, args, context, error_mode)
@@ -98,6 +100,7 @@ class ToolExecutor:
                         context,
                         error_mode,
                         cause=exc,
+                        middleware=self.middleware,
                     )
             except Exception as exc:
                 if attempt > max_retries:
@@ -106,6 +109,7 @@ class ToolExecutor:
                         context,
                         error_mode,
                         cause=exc,
+                        middleware=self.middleware,
                     )
 
         return ToolResult.success(
@@ -126,12 +130,14 @@ class ToolExecutor:
         """Validate and execute a registered function tool synchronously."""
 
         context = ToolContext(tool_name=name, raw_arguments=args, call_id=call_id)
+        context.attempt = 1
         tool = self.registry.get_function(name)
         if tool is None:
             return self._handle_error(
                 UnknownToolError(f"Unknown tool: {name}"),
                 context,
                 error_mode,
+                middleware=self.middleware,
             )
 
         dumped_args = self._validate_arguments(tool, args, context, error_mode)
@@ -154,6 +160,7 @@ class ToolExecutor:
                 context,
                 error_mode,
                 cause=exc,
+                middleware=self.middleware,
             )
 
         return ToolResult.success(
@@ -187,6 +194,7 @@ class ToolExecutor:
                 ),
                 context,
                 error_mode,
+                middleware=self.middleware,
             )
         except Exception as exc:
             return self._handle_error(
@@ -194,6 +202,7 @@ class ToolExecutor:
                 context,
                 error_mode,
                 cause=exc,
+                middleware=self.middleware,
             )
 
     def _before_call(
@@ -266,7 +275,10 @@ class ToolExecutor:
         error_mode: ErrorMode,
         *,
         cause: Exception | None = None,
+        middleware: list[ToolMiddleware] | None = None,
     ) -> ToolResult[object]:
+        for item in middleware or []:
+            item.on_error(context, error)
         if error_mode == "raise":
             if cause is not None:
                 raise error from cause
@@ -275,4 +287,5 @@ class ToolExecutor:
             tool_name=context.tool_name,
             error=error,
             call_id=context.call_id,
+            metadata=context.metadata,
         )
