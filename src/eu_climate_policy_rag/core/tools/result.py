@@ -53,6 +53,7 @@ class ToolResult(Generic[ResultT]):
         tool_name: str,
         error: BaseException,
         call_id: str | None = None,
+        metadata: dict[str, object] | None = None,
     ) -> "ToolResult[object]":
         """Create a failed JSON-mode tool result."""
 
@@ -64,6 +65,7 @@ class ToolResult(Generic[ResultT]):
             call_id=call_id,
             error=payload,
             output=output,
+            metadata=metadata or {},
         )
 
     def to_responses_output(self) -> dict[str, object]:
