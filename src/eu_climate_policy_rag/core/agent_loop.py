@@ -13,6 +13,7 @@ ResponseFactory = Callable[[list[Any]], Any]
 ToolCallHandler = Callable[[Any], dict[str, Any] | Awaitable[dict[str, Any]]]
 MessageHandler = Callable[[Any], None]
 BuiltinToolHandler = Callable[[], None]
+ResponseHandler = Callable[[Any], None]
 
 
 class OpenAIResponsesToolLoop:
@@ -25,12 +26,14 @@ class OpenAIResponsesToolLoop:
         execute_tool_call: ToolCallHandler,
         max_turns: int,
         on_message: MessageHandler | None = None,
+        on_response: ResponseHandler | None = None,
         on_builtin_tool_result: BuiltinToolHandler | None = None,
     ) -> None:
         self.create_response = create_response
         self.execute_tool_call = execute_tool_call
         self.max_turns = max_turns
         self.on_message = on_message or (lambda message: None)
+        self.on_response = on_response or (lambda response: None)
         self.on_builtin_tool_result = on_builtin_tool_result
 
     def run(self, *, query: str, instructions: str) -> tuple[str, list[Any]]:
@@ -42,6 +45,7 @@ class OpenAIResponsesToolLoop:
         for turn in range(1, self.max_turns + 1):
             LOGGER.info("Agent turn %d", turn)
             response = self.create_response(message_history)
+            self.on_response(response)
             has_tool_call, turn_answer, has_builtin_tool_result = (
                 self._append_response_output(response, message_history)
             )
@@ -70,6 +74,7 @@ class OpenAIResponsesToolLoop:
         for turn in range(1, self.max_turns + 1):
             LOGGER.info("Agent turn %d", turn)
             response = self.create_response(message_history)
+            self.on_response(response)
             has_tool_call, turn_answer = await self._append_response_output_async(
                 response,
                 message_history,
