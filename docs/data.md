@@ -5,7 +5,14 @@ There are two data stages:
 - `climate_policy_docs/*.md`: fetched Markdown source documents from the pipeline
 - `data/eu_climate_policy.json`: structured records used by `ClimatePolicyAgent`
 
-The RAG assistant currently reads from `data/eu_climate_policy.json`, not directly from the Markdown folder. The ingestion step should first clean, deduplicate, filter, and convert fetched Markdown into JSON records. Chunking can be added later as a separate step.
+The RAG assistant currently reads from `data/eu_climate_policy.json`, not directly from the Markdown folder. The ingestion step should first clean, deduplicate, filter, and convert fetched Markdown into JSON records. It can also write chunked records for retrieval with `eu-climate-ingest --chunk`.
+
+Chunked records preserve the original document metadata and add:
+
+- `chunk_id`
+- `chunk_index`
+- `chunk_start`
+- `parent_content_hash`
 
 ## CLI usage
 
@@ -21,6 +28,12 @@ uv run eu-climate-ask --help
 #   --num-results INTEGER       Number of documents to retrieve per search. [default: 5]
 #   --max-chars-per-doc INTEGER Max characters per retrieved document.      [default: 2000]
 #   --max-turns INTEGER         Max agent turns before stopping.            [default: 10]
+```
+
+Create a chunked RAG dataset:
+
+```bash
+uv run eu-climate-ingest --chunk --chunk-size 2000 --chunk-step 1000
 ```
 
 ## Python usage
