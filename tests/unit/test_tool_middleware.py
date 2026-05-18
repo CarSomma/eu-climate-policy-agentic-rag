@@ -13,6 +13,7 @@ from eu_climate_policy_rag.core.tools import (
     ToolRegistry,
 )
 from eu_climate_policy_rag.core.tools.middleware import ToolMiddleware
+from eu_climate_policy_rag.core.tools.middleware import ToolMetricsMiddleware
 
 
 class AddInput(BaseModel):
@@ -153,3 +154,42 @@ async def test_tool_executor_runs_middleware_for_async_execution() -> None:
         "before_call:async_add_numbers",
         "after_call:async_add_numbers",
     ]
+
+
+def test_tool_metrics_middleware_records_success_metadata() -> None:
+    """Metrics middleware should record successful tool execution metadata."""
+
+    events = []
+    middleware = ToolMetricsMiddleware(events.append)
+    executor = ToolExecutor(
+        ToolRegistry(function_tools=[build_tool()]),
+        middleware=[middleware],
+    )
+
+    result = executor.run_sync("add_numbers", {"left": 2, "right": 3})
+
+    assert result.ok is True
+    assert result.metadata["metrics"]["tool_name"] == "add_numbers"
+    assert result.metadata["metrics"]["attempt"] == 1
+    assert result.metadata["metrics"]["ok"] is True
+    assert result.metadata["metrics"]["duration_ms"] >= 0
+    assert events == [result.metadata["metrics"]]
+
+
+def test_tool_metrics_middleware_records_validation_errors() -> None:
+    """Metrics middleware should observe validation failures."""
+
+    events = []
+    middleware = ToolMetricsMiddleware(events.append)
+    executor = ToolExecutor(
+        ToolRegistry(function_tools=[build_tool()]),
+        middleware=[middleware],
+    )
+
+    result = executor.run_sync("add_numbers", {"left": -1, "right": 3})
+
+    assert result.ok is False
+    assert result.metadata["metrics"]["tool_name"] == "add_numbers"
+    assert result.metadata["metrics"]["ok"] is False
+    assert result.metadata["metrics"]["error_type"] == "ToolValidationError"
+    assert events == [result.metadata["metrics"]]
