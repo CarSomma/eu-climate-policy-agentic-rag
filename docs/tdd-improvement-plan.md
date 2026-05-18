@@ -19,8 +19,9 @@ observability, and RAG quality.
 - Completed: Slice 4, Tool Call Replay Fixtures
 - Completed: Slice 5, Parallel Async Function Calls
 - Completed: Slice 6, Observability Middleware
-- Next recommended slice: Slice 7, RAG Dataset Chunking
-- Last verification: Slice 6 checks passed on 2026-05-18
+- Completed: Slice 7, RAG Dataset Chunking
+- Next recommended slice: Slice 8, Collection Pipeline Hardening
+- Last verification: Slice 7 checks passed on 2026-05-18
 
 ## Progress Log
 
@@ -157,6 +158,38 @@ Verification:
 uv run pytest tests/unit/test_tool_middleware.py tests/unit/test_response_metrics.py tests/unit/test_agent_loop.py
 uv run pytest tests/unit
 uv run pytest tests/integration/test_rag.py tests/integration/test_fetch_agent.py tests/integration/test_cleaning_agent.py
+uv run ruff check src tests
+```
+
+### 2026-05-18: Slice 7 Completed
+
+Added optional RAG dataset chunking using `gitsource.chunk_documents`. The
+default ingestion output remains one record per kept document; `--chunk`
+rewrites the output as sliding-window chunks with stable chunk metadata.
+
+External package checked:
+
+- `gitsource` exposes `chunk_documents(documents, size=..., step=...)` for
+  sliding-window chunking that preserves document metadata.
+
+Changed files:
+
+- `pyproject.toml`
+- `uv.lock`
+- `src/eu_climate_policy_rag/core/models.py`
+- `src/eu_climate_policy_rag/collection/cleaning/rag_dataset_ingestion.py`
+- `tests/unit/test_models.py`
+- `tests/integration/test_rag_dataset_ingestion.py`
+- `tests/integration/test_rag.py`
+- `docs/data.md`
+- `docs/pipeline.md`
+- `docs/tdd-improvement-plan.md`
+
+Verification:
+
+```bash
+uv run pytest tests/integration/test_rag_dataset_ingestion.py tests/integration/test_rag.py
+uv run pytest tests/unit
 uv run ruff check src tests
 ```
 
@@ -401,7 +434,7 @@ uv run pytest tests/unit/test_tool_middleware.py tests/unit/test_tool_executor.p
 
 ## Slice 7: RAG Dataset Chunking
 
-Status: next.
+Status: completed on 2026-05-18.
 
 Goal: improve retrieval quality by allowing cleaned documents to be split into
 stable chunks before indexing.
@@ -435,6 +468,8 @@ uv run pytest tests/integration/test_rag_dataset_ingestion.py tests/integration/
 ```
 
 ## Slice 8: Collection Pipeline Hardening
+
+Status: next.
 
 Goal: make the document collection workflow more predictable, inspectable, and
 safe to rerun.
