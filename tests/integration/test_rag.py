@@ -72,6 +72,29 @@ def test_from_json_loads_documents(tmp_path, sample_document: dict[str, str]) ->
     assert agent.documents[0]["source"] == "European Climate Law"
 
 
+def test_from_json_loads_and_searches_chunked_documents(tmp_path) -> None:
+    record = {
+        "source": "European Climate Law",
+        "article": "document",
+        "topic": "climate_law",
+        "text": "The 2050 climate neutrality objective is binding.",
+        "file_path": "law.md",
+        "content_hash": "hash123",
+        "chunk_id": "hash123:0",
+        "chunk_index": 0,
+        "chunk_start": 0,
+        "parent_content_hash": "hash123",
+    }
+    path = tmp_path / "chunked_records.json"
+    path.write_text(json.dumps([record]), encoding="utf-8")
+
+    agent = ClimatePolicyAgent.from_json(path, openai_client=object())
+    result = agent.search_tool.run("2050 climate neutrality")
+
+    assert agent.documents[0]["chunk_id"] == "hash123:0"
+    assert result.documents[0]["chunk_id"] == "hash123:0"
+
+
 def test_execute_tool_call_dispatches_search(
     sample_document: dict[str, str],
     make_tool_call,
