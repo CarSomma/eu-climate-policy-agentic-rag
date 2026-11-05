@@ -294,3 +294,25 @@ def test_search_documents_registry_middleware_collects_sources(
     assert isinstance(result.value, str)
     assert "Article 4" in result.value
     assert agent._current_run_sources == ["European Climate Law"]
+
+
+def test_print_answer_renders_markdown_panel_and_sources() -> None:
+    from rich.console import Console
+
+    from eu_climate_policy_rag.core.models import RagAnswerModel
+    from eu_climate_policy_rag.qa.rag import print_answer
+
+    console = Console(record=True, width=100, color_system=None)
+    result = RagAnswerModel(
+        query="What is [the] 2030 target?",
+        answer="The target is **at least 55%**.",
+        sources=["Regulation (EU) 2021/1119: European Climate Law"],
+    )
+
+    print_answer(console, result.query, result)
+    output = console.export_text()
+
+    assert "What is [the] 2030 target?" in output
+    assert "at least 55%" in output
+    assert "**" not in output
+    assert "Regulation (EU) 2021/1119: European Climate Law" in output

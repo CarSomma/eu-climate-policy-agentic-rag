@@ -9,6 +9,10 @@ from typing import Any, Annotated
 import typer
 from chromadb.api.models.Collection import Collection
 from openai import OpenAI
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.markup import escape
+from rich.panel import Panel
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.logging_utils import get_logger
@@ -287,6 +291,25 @@ def strip_citation_markers(text: str) -> str:
     return WEB_CITATION_MARKER.sub("", text)
 
 
+def print_answer(console: Console, question: str, result: RagAnswerModel) -> None:
+    """Render the answer's Markdown in a panel, with the retrieved documents below it."""
+
+    console.print(f"[bold green]Question:[/bold green] {escape(question)}")
+    console.print(
+        Panel(
+            Markdown(result.answer),
+            title="[bold]Answer[/bold]",
+            title_align="left",
+            border_style="green",
+            padding=(1, 2),
+        )
+    )
+    if result.sources:
+        console.print("[dim]Documents searched:[/dim]")
+        for source in result.sources:
+            console.print(f"  [dim]•[/dim] [cyan]{escape(source)}[/cyan]")
+
+
 app = typer.Typer(add_completion=False)
 
 
@@ -367,11 +390,12 @@ def main(
         except FileNotFoundError as error:
             typer.echo(str(error), err=True)
             raise typer.Exit(code=1) from error
+    console = Console()
     if json_output:
-        typer.echo(rag.answer_structured(question).model_dump_json(indent=2))
+        console.print_json(rag.answer_structured(question).model_dump_json())
         return
     result = rag.answer(question)
-    typer.echo(result.answer)
+    print_answer(console, question, result)
 
 
 if __name__ == "__main__":
