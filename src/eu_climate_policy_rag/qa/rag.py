@@ -11,10 +11,14 @@ from openai import OpenAI
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.logging_utils import get_logger
+from pydantic import ValidationError
+
 from eu_climate_policy_rag.core.models import (
+    ClimateAnswerOutputModel,
     CleanedDocumentRecordModel,
     RagAnswerModel,
     RagConfigModel,
+    StructuredRagAnswerModel,
 )
 from eu_climate_policy_rag.core.tools import ToolRegistry
 from eu_climate_policy_rag.qa.vector_store import DEFAULT_CHROMA_DIR, open_collection
@@ -236,6 +240,33 @@ class ClimatePolicyAgent(AbstractAgent):
         sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
         return RagAnswerModel(query=query, answer=final_answer, sources=sources)
 
+    def answer_structured(self, query: str) -> StructuredRagAnswerModel:
+        """Answer with JSON that follows ``ClimateAnswerOutputModel`` (OpenAI structured output).
+
+        The tool loop runs as usual; only the final message is constrained to the
+        schema. If the run ends without valid JSON (for example the turn limit is
+        reached), the text comes back as ``answer`` with no targets.
+        """
+
+        self._current_run_sources.clear()
+        self.text_format = {
+            "type": "json_schema",
+            "name": "climate_answer",
+            "schema": ClimateAnswerOutputModel.model_json_schema(),
+            "strict": True,
+        }
+        try:
+            final_answer, _ = self._run_loop(query)
+        finally:
+            self.text_format = None
+        try:
+            output = ClimateAnswerOutputModel.model_validate_json(final_answer)
+        except ValidationError:
+            LOGGER.warning("Final answer was not valid structured JSON; returning it as text")
+            sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
+            return StructuredRagAnswerModel(query=query, answer=final_answer, targets=[], sources=sources)
+        return StructuredRagAnswerModel(query=query, **output.model_dump())
+
 
 app = typer.Typer(add_completion=False)
 
@@ -281,6 +312,10 @@ def main(
         str,
         typer.Option(help="Folder of the ChromaDB vector store built by eu-climate-index."),
     ] = str(DEFAULT_CHROMA_DIR),
+    json_output: Annotated[
+        bool,
+        typer.Option("--json", help="Print a structured JSON answer (answer, targets, sources)."),
+    ] = False,
 ) -> None:
     """Ask a question about EU climate policy and get a cited answer."""
 
@@ -309,6 +344,9 @@ def main(
         except FileNotFoundError as error:
             typer.echo(str(error), err=True)
             raise typer.Exit(code=1) from error
+    if json_output:
+        typer.echo(rag.answer_structured(question).model_dump_json(indent=2))
+        return
     result = rag.answer(question)
     typer.echo(result.answer)
 

@@ -157,6 +157,41 @@ class RagAnswerModel(ProjectModel):
     sources: list[str]
 
 
+class ClimateTargetModel(ProjectModel):
+    """One climate target as the assistant reports it in structured output."""
+
+    year: int = Field(description="Target year, e.g. 2030.")
+    description: str = Field(
+        description='Short wording of the target, e.g. "at least 55% net GHG reduction".'
+    )
+    reduction_percent: float | None = Field(
+        description="Net greenhouse gas reduction in percent versus baseline_year; "
+        "null when the target is not a percentage (e.g. climate neutrality)."
+    )
+    baseline_year: int | None = Field(description="Reference year for the reduction, e.g. 1990.")
+    binding: bool = Field(description="True only if an adopted law in force sets this target.")
+    legal_basis: str = Field(
+        description='Reference of the document that sets the target, e.g. "Regulation (EU) 2021/1119".'
+    )
+    article: str | None = Field(description='Article, e.g. "Article 4(1)", or null if unknown.')
+
+
+class ClimateAnswerOutputModel(ProjectModel):
+    """JSON schema the model must follow for its final structured answer."""
+
+    answer: str = Field(description="Short prose answer with citations.")
+    targets: list[ClimateTargetModel] = Field(
+        description="Every climate target mentioned in the answer; empty if none."
+    )
+    sources: list[str] = Field(description="References of the documents cited.")
+
+
+class StructuredRagAnswerModel(ClimateAnswerOutputModel):
+    """Structured answer returned by ``ClimatePolicyAgent.answer_structured``."""
+
+    query: str = Field(min_length=1)
+
+
 class SearchDocumentsInputModel(ProjectModel):
     """Validated arguments for the local document search tool."""
 

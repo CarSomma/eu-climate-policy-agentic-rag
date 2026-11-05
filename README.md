@@ -136,6 +136,9 @@ uv run eu-climate-ask "What are climate plans in Italy?" \
   --web-search-city "Turin" \
   --web-search-country "IT"
 
+# Structured JSON answer: prose plus one entry per target (year, percent, baseline, binding, legal basis, article)
+uv run eu-climate-ask "What are the EU's climate targets for 2030, 2040 and 2050?" --json
+
 # Limit agent turns (default 10)
 uv run eu-climate-ask "What is CBAM?" --max-turns 5
 

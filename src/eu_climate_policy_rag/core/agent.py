@@ -44,6 +44,8 @@ class AbstractAgent(ABC):
         self._tool_executor = ToolExecutor(self.tool_registry)
         self.tool_adapter = OpenAIResponsesToolAdapter(self.tool_registry)
         self.max_turns = max_turns
+        # Optional Responses API text format, e.g. a JSON schema for structured output.
+        self.text_format: dict[str, Any] | None = None
 
         # Log available tools for visibility
         schemas = self.tool_adapter.tools
@@ -89,10 +91,14 @@ class AbstractAgent(ABC):
     def _create_response(self, message_history: list[Any]) -> Any:
         """Call the OpenAI Responses API with current tool schemas."""
 
+        options: dict[str, Any] = {}
+        if self.text_format is not None:
+            options["text"] = {"format": self.text_format}
         return self.openai_client.responses.create(
             model=self.model,
             input=message_history,
             tools=self.tool_adapter.tools,
+            **options,
         )
 
     def _build_loop(self, *, async_tools: bool = False) -> OpenAIResponsesToolLoop:
