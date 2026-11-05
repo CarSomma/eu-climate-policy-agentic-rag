@@ -194,7 +194,9 @@ def test_format_context_item_handles_missing_article() -> None:
     assert "Content without article field." in result
 
 
-def test_search_documents_tool_returns_empty_on_no_matches() -> None:
+def test_search_documents_tool_returns_nearest_neighbours_for_unrelated_query() -> None:
+    """Vector search has no "no match": an unrelated query still gets the nearest records."""
+
     documents = [
         {
             "source": "European Climate Law",
@@ -210,7 +212,50 @@ def test_search_documents_tool_returns_empty_on_no_matches() -> None:
     result = tool.run("quantum physics")
 
     assert result.query == "quantum physics"
-    assert len(result.sources) == 0 or result.context == ""
+    assert len(result.documents) == 1
+
+
+def test_search_documents_tool_ranks_by_meaning() -> None:
+    """Embeddings match a paraphrase that shares no keywords with the right record."""
+
+    documents = [
+        {
+            "source": "European Climate Law",
+            "article": "Article 4",
+            "topic": "climate_law",
+            "text": "Net greenhouse gas emissions shall be reduced by at least 55% by 2030.",
+            "file_path": "law.md",
+            "content_hash": "law1",
+        },
+        {
+            "source": "CBAM Regulation",
+            "article": "Article 1",
+            "topic": "cbam",
+            "text": "Importers of steel, cement and aluminium must buy border certificates.",
+            "file_path": "cbam.md",
+            "content_hash": "cbam1",
+        },
+    ]
+    tool = SearchDocumentsTool(documents, num_results=2)
+
+    results = tool.search("How much must pollution fall by the end of the decade?")
+
+    assert results[0]["content_hash"] == "law1"
+
+
+def test_search_documents_tool_reuses_persisted_collection(tmp_path, sample_document) -> None:
+    first = SearchDocumentsTool([sample_document], persist_directory=tmp_path)
+    second = SearchDocumentsTool([sample_document], persist_directory=tmp_path)
+
+    assert second.collection.name == first.collection.name
+    assert second.collection.count() == 1
+    assert second.search("2030 target")[0]["source"] == "European Climate Law"
+
+
+def test_search_documents_tool_with_no_documents_returns_empty() -> None:
+    tool = SearchDocumentsTool([])
+
+    assert tool.search("2030 target") == []
 
 
 def test_climate_policy_agent_with_empty_document_list() -> None:

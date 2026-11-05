@@ -76,6 +76,7 @@ class ClimatePolicyAgent(AbstractAgent):
         search_tool: SearchDocumentsTool | None = None,
         enable_web_search: bool = False,
         web_search_location: dict[str, str] | None = None,
+        persist_directory: str | Path | None = None,
     ) -> None:
         self.documents = [
             CleanedDocumentRecordModel.model_validate(document).model_dump()
@@ -96,6 +97,7 @@ class ClimatePolicyAgent(AbstractAgent):
             documents=self.documents,
             num_results=self.config.num_results,
             max_chars_per_doc=self.config.max_chars_per_doc,
+            persist_directory=persist_directory,
         )
         self._current_run_sources: list[str] = []
 
@@ -138,6 +140,7 @@ class ClimatePolicyAgent(AbstractAgent):
         max_turns: int = 10,
         enable_web_search: bool = False,
         web_search_location: dict[str, str] | None = None,
+        persist_directory: str | Path | None = None,
     ) -> "ClimatePolicyAgent":
         """Load cleaned JSON records and build a configured RAG agent."""
 
@@ -153,6 +156,7 @@ class ClimatePolicyAgent(AbstractAgent):
             max_turns=max_turns,
             enable_web_search=enable_web_search,
             web_search_location=web_search_location,
+            persist_directory=persist_directory,
         )
 
     def search(self, query: str) -> list[dict[str, Any]]:
@@ -237,6 +241,10 @@ def main(
         str | None,
         typer.Option(help="Country code for web search location context (e.g., IT, GB)."),
     ] = None,
+    chroma_dir: Annotated[
+        str,
+        typer.Option(help="Folder where ChromaDB stores the embedded documents."),
+    ] = "data/chroma",
 ) -> None:
     """Ask a question about EU climate policy and get a cited answer."""
 
@@ -257,6 +265,7 @@ def main(
         max_turns=max_turns,
         enable_web_search=enable_web_search,
         web_search_location=web_search_location,
+        persist_directory=chroma_dir,
     )
     result = rag.answer(question)
     typer.echo(result.answer)
