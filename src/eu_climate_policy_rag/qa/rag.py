@@ -38,6 +38,9 @@ Your process:
 
 Rules:
 - Cite the source and article for every claim you make (e.g. "European Climate Law, Article 4").
+- Each passage header shows the document's reference, type, status and date. Cite the reference, e.g. "Regulation (EU) 2021/1119, Article 4".
+- Prefer passages from documents of type law with status in force. If a proposal, an older document or background material gives a different figure, status or article number, use the law's version, and mention the proposal only if it helps the answer.
+- If a passage's status says it was superseded or adopted as another document, search again for that document by its reference (e.g. "Regulation (EU) 2026/667 2040 target") and answer from it.
 - If the retrieved documents do not contain enough information to answer, say so explicitly. Do not guess.
 - Be concise and accurate. Connect related targets or policies when the context supports it.
 """.strip()
@@ -57,6 +60,9 @@ Your process:
 
 Rules:
 - Always cite sources for claims (e.g. "European Climate Law, Article 4" or "according to [web source]")
+- Each passage header shows the document's reference, type, status and date. Cite the reference, e.g. "Regulation (EU) 2021/1119, Article 4".
+- Prefer passages from documents of type law with status in force. If a proposal, an older document or background material gives a different figure, status or article number, use the law's version, and mention the proposal only if it helps the answer.
+- If a passage's status says it was superseded or adopted as another document, search again for that document by its reference (e.g. "Regulation (EU) 2026/667 2040 target") and answer from it.
 - If local documents lack country/city-specific details, use web_search before saying "I don't have enough information"
 - Be concise and accurate. Connect EU-level policies with national/local implementations when found
 - For queries like "plans in [city/country]", use both local EU documents AND web_search for local initiatives

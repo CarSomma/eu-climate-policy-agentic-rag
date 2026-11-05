@@ -1,0 +1,72 @@
+{
+  "climate_policy_docs/eu_climate_law_regulation_2021_1119.md": {
+    "reference": "Regulation (EU) 2021/1119",
+    "title": "European Climate Law",
+    "doc_type": "law",
+    "status": "in force, amended by Regulation (EU) 2026/667",
+    "date": "2021-06-30"
+  },
+  "climate_policy_docs/eu-lex-regulation-2026-667-en.md": {
+    "reference": "Regulation (EU) 2026/667",
+    "title": "Amendment to the European Climate Law setting the 2040 target",
+    "doc_type": "law",
+    "status": "in force",
+    "date": "2026-03-11"
+  },
+  "climate_policy_docs/com_2025_524_en.md": {
+    "reference": "COM(2025) 524",
+    "title": "Proposal amending the European Climate Law (2040 target)",
+    "doc_type": "proposal",
+    "status": "superseded: adopted as Regulation (EU) 2026/667",
+    "date": "2025-07-02"
+  },
+  "climate_policy_docs/eu_climate_law_amended_proposal_com_2020_563.md": {
+    "reference": "COM(2020) 563",
+    "title": "Amended proposal for the European Climate Law",
+    "doc_type": "proposal",
+    "status": "superseded: adopted as Regulation (EU) 2021/1119",
+    "date": "2020-09-17"
+  },
+  "climate_policy_docs/COM_2023_796_EU_wide_assessment_draft_updated_NECPs.md": {
+    "reference": "COM(2023) 796",
+    "title": "EU-wide assessment of the draft updated National Energy and Climate Plans",
+    "doc_type": "assessment",
+    "status": "background",
+    "date": "2023-12-18"
+  },
+  "climate_policy_docs/SWD_2023_932_1_EN.md": {
+    "reference": "SWD(2023) 932",
+    "title": "Assessment of progress on climate adaptation in the Member States",
+    "doc_type": "assessment",
+    "status": "background",
+    "date": "2023-12-18"
+  },
+  "climate_policy_docs/delivering-on-the-clean-industrial-deal-i.md": {
+    "reference": "COM(2025) 378",
+    "title": "Delivering on the Clean Industrial Deal",
+    "doc_type": "communication",
+    "status": "background",
+    "date": "2025-07-02"
+  },
+  "climate_policy_docs/EU_agrees_on_a_2040_Climate_target_that_sets_a_clear_path_towards_a_decarbonised_and_competitive_economy.md": {
+    "reference": "Commission press release, 10 December 2025",
+    "title": "EU agrees on a 2040 climate target",
+    "doc_type": "press release",
+    "status": "background",
+    "date": "2025-12-10"
+  },
+  "climate_policy_docs/eu-climate-law-new-way-reach-2040-targets-2025-07-02_en.md": {
+    "reference": "Commission explainer, 2 July 2025",
+    "title": "EU Climate Law: new way to reach 2040 targets",
+    "doc_type": "explainer",
+    "status": "background, written before the 2040 target was adopted",
+    "date": "2025-07-02"
+  },
+  "climate_policy_docs/european-climate-law-factsheet-ctp-en.md": {
+    "reference": "European Climate Law factsheet",
+    "title": "The European Climate Law (factsheet)",
+    "doc_type": "factsheet",
+    "status": "background",
+    "date": "2020"
+  }
+}

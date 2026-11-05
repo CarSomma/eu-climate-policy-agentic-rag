@@ -8,6 +8,8 @@ There are three data stages:
 
 The ingestion step cleans, deduplicates, filters, and converts fetched Markdown into JSON records. It can also write chunked records with `eu-climate-ingest --chunk`. `eu-climate-index` then embeds those records into ChromaDB: each chunk is stored with its text, its metadata (everything except `text`, dropping empty values) and its embedding. The assistant opens `data/chroma/` and searches it directly; it does not read the JSON at question time.
 
+Document metadata lives in `data/document_metadata.json`, keyed by `file_path`: an official `reference` (e.g. `Regulation (EU) 2021/1119`), a readable `title`, a `doc_type` (law, proposal, assessment, communication, press release, explainer, factsheet), a `status` (in force, superseded, background) and a `date`. `eu-climate-index` copies it onto every chunk of that document. The assistant shows it in each passage header, cites the reference, prefers laws in force, and searches again for the adopting law when a passage is marked superseded. Add an entry here when you add a document.
+
 Embeddings come from Chroma's default model, all-MiniLM-L6-v2, which runs locally and reads about the first 1,000 characters of each input. Each chunk is embedded as its `title` followed by its text. Results are ranked by cosine distance.
 
 Chunked records preserve the original document metadata and add:

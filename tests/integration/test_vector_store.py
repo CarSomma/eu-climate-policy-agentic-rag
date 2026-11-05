@@ -75,3 +75,41 @@ def test_agent_from_chroma_searches_stored_chunks(tmp_path) -> None:
 
     assert result.documents[0]["chunk_id"] == "law1:0"
     assert "at least 55%" in result.context
+
+
+LAW_METADATA = {
+    "climate_policy_docs/law.md": {
+        "reference": "Regulation (EU) 2021/1119",
+        "title": "European Climate Law",
+        "doc_type": "law",
+        "status": "in force",
+        "date": "2021-06-30",
+    }
+}
+
+
+def test_index_cli_attaches_document_metadata_to_every_chunk(tmp_path) -> None:
+    data = tmp_path / "records.json"
+    data.write_text(json.dumps([CHUNK, {**CHUNK, "chunk_id": "law1:1"}]), encoding="utf-8")
+    metadata = tmp_path / "metadata.json"
+    metadata.write_text(json.dumps(LAW_METADATA), encoding="utf-8")
+
+    run_index_cli(data=data, chroma_dir=tmp_path / "chroma", metadata=metadata)
+    results = search_collection(open_collection(tmp_path / "chroma"), "2030 target", num_results=5)
+
+    assert len(results) == 2
+    assert all(result["reference"] == "Regulation (EU) 2021/1119" for result in results)
+    assert all(result["status"] == "in force" for result in results)
+
+
+def test_agent_context_header_shows_reference_type_and_status(tmp_path) -> None:
+    write_records([{**CHUNK, **LAW_METADATA["climate_policy_docs/law.md"]}], persist_directory=tmp_path)
+
+    agent = ClimatePolicyAgent.from_chroma(tmp_path, openai_client=MagicMock())
+    result = agent.search_tool.run("What is the 2030 target?")
+
+    assert result.context.startswith(
+        "[Regulation (EU) 2021/1119: European Climate Law | document | topic: general"
+        " | type: law | status: in force | date: 2021-06-30]"
+    )
+    assert result.sources == ["Regulation (EU) 2021/1119: European Climate Law"]

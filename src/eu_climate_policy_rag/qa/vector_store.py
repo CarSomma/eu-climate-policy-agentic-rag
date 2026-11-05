@@ -6,9 +6,14 @@ JSON file and no embedding at start-up.
 
 Embeddings come from Chroma's default model, all-MiniLM-L6-v2, which runs
 locally and reads about the first 1,000 characters (256 word pieces) of each
-input. Each chunk is embedded as its title followed by its text.
+input. Each chunk is embedded as its reference and title followed by its text.
+
+Document metadata (reference, title, type, status, date) comes from
+``data/document_metadata.json``, keyed by ``file_path``, and is copied onto
+every chunk of that document when the store is built.
 """
 
+import json
 import time
 import uuid
 from collections.abc import Sequence
@@ -28,6 +33,7 @@ LOGGER = get_logger(__name__)
 
 COLLECTION_NAME = "eu_climate_policy"
 DEFAULT_CHROMA_DIR = Path("data/chroma")
+DEFAULT_METADATA_PATH = Path("data/document_metadata.json")
 BATCH_SIZE = 256
 METADATA_TYPES = (str, int, float, bool)
 
@@ -40,10 +46,21 @@ def _client(persist_directory: str | Path | None) -> Any:
 
 
 def embedding_input(record: dict[str, Any]) -> str:
-    """Text the embedding model sees for one record: title, then the chunk text."""
+    """Text the embedding model sees for one record: reference and title, then the chunk text."""
 
     title = record.get("title") or record.get("source", "")
-    return f"{title}\n{record.get('text', '')}"
+    reference = record.get("reference")
+    heading = f"{reference}: {title}" if reference else title
+    return f"{heading}\n{record.get('text', '')}"
+
+
+def apply_document_metadata(
+    records: Sequence[dict[str, Any]],
+    metadata: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Copy each document's metadata onto its records, matched by ``file_path``."""
+
+    return [{**record, **metadata.get(str(record.get("file_path")), {})} for record in records]
 
 
 def record_metadata(record: dict[str, Any]) -> dict[str, Any]:
@@ -137,15 +154,28 @@ def run_index_cli(
         Path,
         typer.Option("--chroma-dir", help="Folder for the ChromaDB vector store."),
     ] = DEFAULT_CHROMA_DIR,
+    metadata: Annotated[
+        Path,
+        typer.Option(
+            "--metadata",
+            help="JSON of document metadata (reference, title, type, status, date) keyed by file_path.",
+        ),
+    ] = DEFAULT_METADATA_PATH,
 ) -> None:
     """Embed a JSON dataset into the ChromaDB vector store used by eu-climate-ask."""
-
-    import json
 
     records = [
         CleanedDocumentRecordModel.model_validate(record).model_dump()
         for record in json.loads(data.read_text(encoding="utf-8"))
     ]
+    if metadata.exists():
+        document_metadata = json.loads(metadata.read_text(encoding="utf-8"))
+        records = apply_document_metadata(records, document_metadata)
+        unmatched = {str(r.get("file_path")) for r in records} - set(document_metadata)
+        if unmatched:
+            LOGGER.warning("No document metadata for: %s", ", ".join(sorted(unmatched)))
+    else:
+        LOGGER.warning("No document metadata file at %s; chunks keep only their own fields", metadata)
     started = time.perf_counter()
     collection = write_records(records, persist_directory=chroma_dir)
     LOGGER.info(

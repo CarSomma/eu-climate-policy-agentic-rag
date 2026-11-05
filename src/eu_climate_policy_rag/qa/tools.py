@@ -79,7 +79,7 @@ class SearchDocumentsTool:
             dict.fromkeys(
                 source
                 for document in documents
-                if (source := str(document.get("title") or document.get("source", "")).strip())
+                if (source := document_label(document))
             )
         )
         return SearchDocumentsResultModel(
@@ -93,13 +93,27 @@ class SearchDocumentsTool:
 def format_context_item(document: dict[str, Any], max_chars: int = 2000) -> str:
     """Format one retrieved document chunk for inclusion in the LLM prompt."""
 
-    source = document.get("title") or document.get("source", "unknown source")
+    source = document_label(document) or "unknown source"
     article = document.get("article", "unknown article")
     topic = document.get("topic", "general")
     text = document.get("text", "")
     if len(text) > max_chars:
         text = text[:max_chars] + "..."
-    return f"[{source} | {article} | topic: {topic}]\n{text}"
+    parts = [source, str(article), f"topic: {topic}"]
+    for field in ("doc_type", "status", "date"):
+        if document.get(field):
+            parts.append(f"{field.removeprefix('doc_')}: {document[field]}")
+    return f"[{' | '.join(parts)}]\n{text}"
+
+
+def document_label(document: dict[str, Any]) -> str:
+    """Name a document for citations: "reference: title" when known, else title or source."""
+
+    title = str(document.get("title") or document.get("source") or "").strip()
+    reference = str(document.get("reference") or "").strip()
+    if reference and title:
+        return f"{reference}: {title}"
+    return reference or title
 
 
 class SearchDocumentsResultMiddleware(ToolMiddleware):
