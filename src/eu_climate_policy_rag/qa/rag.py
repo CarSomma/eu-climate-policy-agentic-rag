@@ -319,13 +319,14 @@ def strip_citation_markers(text: str) -> str:
 
 # Explicit colours for every part of the answer, so nothing falls back to the
 # terminal's default (white) foreground.
+ANSWER_TEXT_COLOUR = "#8fbcbb"  # muted teal: readable, softer than bright cyan
 ANSWER_THEME = Theme(
     {
-        "markdown.item.bullet": "bold bright_cyan",
-        "markdown.item.number": "bold bright_cyan",
-        "markdown.h1": "bold bright_cyan",
-        "markdown.h2": "bold bright_cyan",
-        "markdown.h3": "bold bright_cyan",
+        "markdown.item.bullet": "bold #88c0d0",
+        "markdown.item.number": "bold #88c0d0",
+        "markdown.h1": "bold #88c0d0",
+        "markdown.h2": "bold #88c0d0",
+        "markdown.h3": "bold #88c0d0",
         "markdown.link": "underline bright_blue",
         "markdown.link_url": "bright_blue",
         "markdown.code": "bold yellow",
@@ -339,7 +340,7 @@ def print_answer(console: Console, question: str, result: RagAnswerModel) -> Non
     console.print(f"[bold green]Question:[/bold green] [yellow]{escape(question)}[/yellow]", highlight=False)
     console.print(
         Panel(
-            Markdown(result.answer, style="bright_cyan"),
+            Markdown(result.answer, style=ANSWER_TEXT_COLOUR),
             title="[bold]Answer[/bold]",
             title_align="left",
             border_style="green",
