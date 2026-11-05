@@ -13,6 +13,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.markup import escape
 from rich.panel import Panel
+from rich.theme import Theme
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
 from eu_climate_policy_rag.core.logging_utils import get_logger
@@ -316,13 +317,29 @@ def strip_citation_markers(text: str) -> str:
     return WEB_CITATION_MARKER.sub("", text)
 
 
+# Explicit colours for every part of the answer, so nothing falls back to the
+# terminal's default (white) foreground.
+ANSWER_THEME = Theme(
+    {
+        "markdown.item.bullet": "bold bright_cyan",
+        "markdown.item.number": "bold bright_cyan",
+        "markdown.h1": "bold bright_cyan",
+        "markdown.h2": "bold bright_cyan",
+        "markdown.h3": "bold bright_cyan",
+        "markdown.link": "underline bright_blue",
+        "markdown.link_url": "bright_blue",
+        "markdown.code": "bold yellow",
+    }
+)
+
+
 def print_answer(console: Console, question: str, result: RagAnswerModel) -> None:
     """Render the answer's Markdown in a panel, with the retrieved documents below it."""
 
-    console.print(f"[bold green]Question:[/bold green] {escape(question)}")
+    console.print(f"[bold green]Question:[/bold green] [yellow]{escape(question)}[/yellow]", highlight=False)
     console.print(
         Panel(
-            Markdown(result.answer),
+            Markdown(result.answer, style="bright_cyan"),
             title="[bold]Answer[/bold]",
             title_align="left",
             border_style="green",
@@ -330,9 +347,9 @@ def print_answer(console: Console, question: str, result: RagAnswerModel) -> Non
         )
     )
     if result.sources:
-        console.print("[dim]Documents searched:[/dim]")
+        console.print("[bold green]Documents searched:[/bold green]")
         for source in result.sources:
-            console.print(f"  [dim]•[/dim] [cyan]{escape(source)}[/cyan]")
+            console.print(f"  [green]•[/green] [magenta]{escape(source)}[/magenta]", highlight=False)
 
 
 app = typer.Typer(add_completion=False)
@@ -429,7 +446,7 @@ def main(
         except FileNotFoundError as error:
             typer.echo(str(error), err=True)
             raise typer.Exit(code=1) from error
-    console = Console()
+    console = Console(theme=ANSWER_THEME)
     if json_output:
         console.print_json(rag.answer_structured(question).model_dump_json())
         return
