@@ -243,15 +243,6 @@ def test_search_documents_tool_ranks_by_meaning() -> None:
     assert results[0]["content_hash"] == "law1"
 
 
-def test_search_documents_tool_reuses_persisted_collection(tmp_path, sample_document) -> None:
-    first = SearchDocumentsTool([sample_document], persist_directory=tmp_path)
-    second = SearchDocumentsTool([sample_document], persist_directory=tmp_path)
-
-    assert second.collection.name == first.collection.name
-    assert second.collection.count() == 1
-    assert second.search("2030 target")[0]["source"] == "European Climate Law"
-
-
 def test_search_documents_tool_with_no_documents_returns_empty() -> None:
     tool = SearchDocumentsTool([])
 

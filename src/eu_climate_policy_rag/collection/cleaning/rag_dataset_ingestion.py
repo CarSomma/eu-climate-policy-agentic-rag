@@ -75,6 +75,14 @@ def run_cli(
             show_default=True,
         ),
     ] = 1000,
+    chroma_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--chroma-dir",
+            help="Also embed the records into a ChromaDB vector store in this folder.",
+            show_default=True,
+        ),
+    ] = None,
 ) -> None:
     """Clean fetched Markdown and write one JSON record per kept file."""
 
@@ -98,6 +106,10 @@ def run_cli(
             chunk_step=config.chunk_step,
         )
     LOGGER.info(message)
+    if chroma_dir is not None:
+        from eu_climate_policy_rag.qa.vector_store import run_index_cli
+
+        run_index_cli(data=config.output_path, chroma_dir=chroma_dir)
 
 
 def chunk_records(

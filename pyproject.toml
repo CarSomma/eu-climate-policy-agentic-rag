@@ -22,6 +22,7 @@ dependencies = [
 eu-climate-ingest = "eu_climate_policy_rag.collection.cleaning.rag_dataset_ingestion:main"
 eu-climate-pipeline = "eu_climate_policy_rag.collection.pipeline:main"
 eu-climate-ask = "eu_climate_policy_rag.qa.rag:app"
+eu-climate-index = "eu_climate_policy_rag.qa.vector_store:main"
 
 [build-system]
 requires = ["setuptools>=69"]

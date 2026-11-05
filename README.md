@@ -106,13 +106,25 @@ Users can ask broad explanatory questions, targeted policy questions, or compari
 - What role do carbon removals play in the EU's 2040 climate target?
 - What does the Clean Industrial Deal add to EU climate policy?
 
+### Build the vector store (once)
+
+The assistant searches a ChromaDB vector store in `data/chroma/` (git-ignored). Each chunk is stored with its text, its metadata and its embedding from the local all-MiniLM-L6-v2 model, so no API key is needed for this step. Embedding 1,106 chunks takes about a minute.
+
+```bash
+# From chunked records you already have
+uv run eu-climate-index --data data/eu_climate_policy_chunked.json
+
+# Or clean, chunk and embed in one go
+uv run eu-climate-ingest --chunk --output-path data/eu_climate_policy_chunked.json --chroma-dir data/chroma
+```
+
 ### Ask a question from the terminal
 
 ```bash
-# Basic question
+# Basic question (searches data/chroma)
 uv run eu-climate-ask "How does the EU's 2030 target relate to the 2040 goal?"
 
-# Use a different model or data file
+# Use a different model, or search a JSON file instead (embedded in memory on every run)
 uv run eu-climate-ask "What is CBAM?" --model gpt-4o --data data/eu_climate_policy.json
 
 # Enable web search for location-specific or recent queries
@@ -136,8 +148,8 @@ uv run eu-climate-ask --help
 ```python
 from eu_climate_policy_rag import ClimatePolicyAgent
 
-# Basic RAG with local documents only
-rag = ClimatePolicyAgent.from_json("data/eu_climate_policy.json")
+# Basic RAG over the stored vector store
+rag = ClimatePolicyAgent.from_chroma("data/chroma")
 result = rag.answer("How does the EU's 2030 climate target relate to the 2040 goal?")
 print(result.answer)   # the cited answer text
 print(result.sources)  # list of source document names used

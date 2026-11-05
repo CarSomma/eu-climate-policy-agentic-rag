@@ -19,7 +19,8 @@ Important modules:
 - `collection/document_urls.py`: URL normalization, document detection, and filename helpers
 - `collection/fetching/fetch_tools.py` and `collection/cleaning/cleaning_tools.py`: collection-specific native function-tool builders
 - `qa/rag.py`: agentic RAG orchestration with an LLM-driven tool loop, `RagAnswerModel` responses, and the `eu-climate-ask` CLI (`ClimatePolicyAgent`)
-- `qa/tools.py`: class-based RAG tools, including the `search_documents` ChromaDB tool (local all-MiniLM-L6-v2 embeddings, cosine distance, stored in `data/chroma/`) and prompt context formatting
+- `qa/tools.py`: class-based RAG tools, including the `search_documents` ChromaDB tool and prompt context formatting
+- `qa/vector_store.py`: the ChromaDB vector store (chunk text, metadata and all-MiniLM-L6-v2 embeddings in one collection, cosine distance) and the `eu-climate-index` CLI
 - `core/agent.py`: reusable base agent that connects OpenAI Responses calls to the shared tool loop
 - `core/agent_loop.py`: reusable OpenAI Responses function-calling loop
 - `core/tools/`: provider-neutral tool framework, including function tools,

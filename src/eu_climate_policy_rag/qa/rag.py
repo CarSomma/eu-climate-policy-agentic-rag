@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Annotated
 
 import typer
+from chromadb.api.models.Collection import Collection
 from openai import OpenAI
 
 from eu_climate_policy_rag.core.agent import AbstractAgent
@@ -16,6 +17,7 @@ from eu_climate_policy_rag.core.models import (
     RagConfigModel,
 )
 from eu_climate_policy_rag.core.tools import ToolRegistry
+from eu_climate_policy_rag.qa.vector_store import DEFAULT_CHROMA_DIR, open_collection
 from eu_climate_policy_rag.qa.tools import (
     SearchDocumentsResultMiddleware,
     SearchDocumentsTool,
@@ -76,7 +78,7 @@ class ClimatePolicyAgent(AbstractAgent):
         search_tool: SearchDocumentsTool | None = None,
         enable_web_search: bool = False,
         web_search_location: dict[str, str] | None = None,
-        persist_directory: str | Path | None = None,
+        collection: Collection | None = None,
     ) -> None:
         self.documents = [
             CleanedDocumentRecordModel.model_validate(document).model_dump()
@@ -97,7 +99,7 @@ class ClimatePolicyAgent(AbstractAgent):
             documents=self.documents,
             num_results=self.config.num_results,
             max_chars_per_doc=self.config.max_chars_per_doc,
-            persist_directory=persist_directory,
+            collection=collection,
         )
         self._current_run_sources: list[str] = []
 
@@ -140,7 +142,6 @@ class ClimatePolicyAgent(AbstractAgent):
         max_turns: int = 10,
         enable_web_search: bool = False,
         web_search_location: dict[str, str] | None = None,
-        persist_directory: str | Path | None = None,
     ) -> "ClimatePolicyAgent":
         """Load cleaned JSON records and build a configured RAG agent."""
 
@@ -156,7 +157,34 @@ class ClimatePolicyAgent(AbstractAgent):
             max_turns=max_turns,
             enable_web_search=enable_web_search,
             web_search_location=web_search_location,
-            persist_directory=persist_directory,
+        )
+
+    @classmethod
+    def from_chroma(
+        cls,
+        persist_directory: str | Path = DEFAULT_CHROMA_DIR,
+        openai_client: OpenAI | None = None,
+        model: str = "gpt-5.4-mini",
+        instructions: str | None = None,
+        num_results: int = 5,
+        max_chars_per_doc: int = 2000,
+        max_turns: int = 10,
+        enable_web_search: bool = False,
+        web_search_location: dict[str, str] | None = None,
+    ) -> "ClimatePolicyAgent":
+        """Open the stored ChromaDB vector store and build an agent that searches it."""
+
+        return cls(
+            documents=[],
+            openai_client=openai_client,
+            model=model,
+            instructions=instructions,
+            num_results=num_results,
+            max_chars_per_doc=max_chars_per_doc,
+            max_turns=max_turns,
+            enable_web_search=enable_web_search,
+            web_search_location=web_search_location,
+            collection=open_collection(persist_directory),
         )
 
     def search(self, query: str) -> list[dict[str, Any]]:
@@ -213,9 +241,11 @@ def main(
         typer.Argument(help="The question to ask the RAG assistant."),
     ],
     data: Annotated[
-        str,
-        typer.Option(help="Path to the JSON data file."),
-    ] = "data/eu_climate_policy.json",
+        str | None,
+        typer.Option(
+            help="Search a JSON file instead of the vector store (embeds it in memory on every run).",
+        ),
+    ] = None,
     model: Annotated[str, typer.Option(help="OpenAI model to use.")] = "gpt-5.4-mini",
     num_results: Annotated[
         int,
@@ -243,8 +273,8 @@ def main(
     ] = None,
     chroma_dir: Annotated[
         str,
-        typer.Option(help="Folder where ChromaDB stores the embedded documents."),
-    ] = "data/chroma",
+        typer.Option(help="Folder of the ChromaDB vector store built by eu-climate-index."),
+    ] = str(DEFAULT_CHROMA_DIR),
 ) -> None:
     """Ask a question about EU climate policy and get a cited answer."""
 
@@ -257,16 +287,22 @@ def main(
         if web_search_country:
             web_search_location["country"] = web_search_country
 
-    rag = ClimatePolicyAgent.from_json(
-        data,
-        model=model,
-        num_results=num_results,
-        max_chars_per_doc=max_chars_per_doc,
-        max_turns=max_turns,
-        enable_web_search=enable_web_search,
-        web_search_location=web_search_location,
-        persist_directory=chroma_dir,
-    )
+    options: dict[str, Any] = {
+        "model": model,
+        "num_results": num_results,
+        "max_chars_per_doc": max_chars_per_doc,
+        "max_turns": max_turns,
+        "enable_web_search": enable_web_search,
+        "web_search_location": web_search_location,
+    }
+    if data is not None:
+        rag = ClimatePolicyAgent.from_json(data, **options)
+    else:
+        try:
+            rag = ClimatePolicyAgent.from_chroma(chroma_dir, **options)
+        except FileNotFoundError as error:
+            typer.echo(str(error), err=True)
+            raise typer.Exit(code=1) from error
     result = rag.answer(question)
     typer.echo(result.answer)
 
