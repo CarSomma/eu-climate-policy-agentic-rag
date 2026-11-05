@@ -186,10 +186,27 @@ class ClimateAnswerOutputModel(ProjectModel):
     sources: list[str] = Field(description="References of the documents cited.")
 
 
+class UsageModel(ProjectModel):
+    """Token use and estimated cost of one answer, summed over every model call."""
+
+    model: str | None
+    model_calls: int = Field(ge=0)
+    input_tokens: int = Field(ge=0)
+    cached_input_tokens: int = Field(ge=0)
+    output_tokens: int = Field(ge=0)
+    total_tokens: int = Field(ge=0)
+    web_search_calls: int = Field(ge=0)
+    estimated_cost_usd: float | None = Field(
+        description="Token cost only; null if the model has no configured price. "
+        "Web search calls are billed separately per call."
+    )
+
+
 class StructuredRagAnswerModel(ClimateAnswerOutputModel):
     """Structured answer returned by ``ClimatePolicyAgent.answer_structured``."""
 
     query: str = Field(min_length=1)
+    usage: UsageModel | None = None
 
 
 class SearchDocumentsInputModel(ProjectModel):

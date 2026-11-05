@@ -13,6 +13,16 @@ class ModelPricing:
     cached_input_per_1m: float | None = None
 
 
+# Standard text-token prices in USD per 1M tokens. Checked 2026-11-05 against
+# public price trackers (OpenAI's pricing page is the authority); update when
+# OpenAI changes prices. Web search calls are billed per call, not per token,
+# and are not included in token cost estimates.
+DEFAULT_PRICING: dict[str, ModelPricing] = {
+    "gpt-5.4-mini": ModelPricing(input_per_1m=0.75, output_per_1m=4.50, cached_input_per_1m=0.075),
+    "gpt-4o-mini": ModelPricing(input_per_1m=0.15, output_per_1m=0.60, cached_input_per_1m=0.075),
+}
+
+
 @dataclass(frozen=True)
 class ResponseUsageRecord:
     """Token usage and optional estimated cost for one model response."""
@@ -90,6 +100,17 @@ class ResponseUsageTracker:
         self.records.append(record)
         return record
 
+    def _find_pricing(self, model: str) -> ModelPricing | None:
+        """Exact model name, else the longest priced name it starts with.
+
+        The API reports dated snapshots such as "gpt-5.4-mini-2026-03-17".
+        """
+
+        if model in self.pricing_by_model:
+            return self.pricing_by_model[model]
+        prefixes = [name for name in self.pricing_by_model if model.startswith(f"{name}-")]
+        return self.pricing_by_model[max(prefixes, key=len)] if prefixes else None
+
     def _estimate_cost(
         self,
         model: str | None,
@@ -100,7 +121,7 @@ class ResponseUsageTracker:
     ) -> float | None:
         if model is None:
             return None
-        pricing = self.pricing_by_model.get(model)
+        pricing = self._find_pricing(model)
         if pricing is None:
             return None
 

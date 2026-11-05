@@ -8,6 +8,7 @@ from openai import OpenAI
 
 from eu_climate_policy_rag.core.agent_loop import OpenAIResponsesToolLoop
 from eu_climate_policy_rag.core.logging_utils import get_logger
+from eu_climate_policy_rag.core.metrics import ResponseUsageTracker
 from eu_climate_policy_rag.core.tools import (
     ToolExecutor,
     ToolRegistry as BaseToolRegistry,
@@ -46,6 +47,9 @@ class AbstractAgent(ABC):
         self.max_turns = max_turns
         # Optional Responses API text format, e.g. a JSON schema for structured output.
         self.text_format: dict[str, Any] | None = None
+        # Optional token/cost tracker; every model call in the loop is recorded.
+        self.usage_tracker: ResponseUsageTracker | None = None
+        self.web_search_calls = 0
 
         # Log available tools for visibility
         schemas = self.tool_adapter.tools
@@ -94,12 +98,20 @@ class AbstractAgent(ABC):
         options: dict[str, Any] = {}
         if self.text_format is not None:
             options["text"] = {"format": self.text_format}
-        return self.openai_client.responses.create(
+        response = self.openai_client.responses.create(
             model=self.model,
             input=message_history,
             tools=self.tool_adapter.tools,
             **options,
         )
+        if self.usage_tracker is not None:
+            self.usage_tracker.record_response(response)
+            self.web_search_calls += sum(
+                1
+                for item in (getattr(response, "output", None) or [])
+                if getattr(item, "type", None) == "web_search_call"
+            )
+        return response
 
     def _build_loop(self, *, async_tools: bool = False) -> OpenAIResponsesToolLoop:
         """Build the reusable Responses tool-call loop for this agent."""

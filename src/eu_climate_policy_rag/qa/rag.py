@@ -25,7 +25,9 @@ from eu_climate_policy_rag.core.models import (
     RagAnswerModel,
     RagConfigModel,
     StructuredRagAnswerModel,
+    UsageModel,
 )
+from eu_climate_policy_rag.core.metrics import DEFAULT_PRICING, ResponseUsageTracker
 from eu_climate_policy_rag.core.tools import ToolRegistry
 from eu_climate_policy_rag.qa.vector_store import DEFAULT_CHROMA_DIR, open_collection
 from eu_climate_policy_rag.qa.tools import (
@@ -284,6 +286,8 @@ class ClimatePolicyAgent(AbstractAgent):
         """
 
         self._current_run_sources.clear()
+        self.usage_tracker = ResponseUsageTracker(DEFAULT_PRICING)
+        self.web_search_calls = 0
         self.text_format = {
             "type": "json_schema",
             "name": "climate_answer",
@@ -294,14 +298,33 @@ class ClimatePolicyAgent(AbstractAgent):
             final_answer, _ = self._run_loop(query)
         finally:
             self.text_format = None
+            tracker, self.usage_tracker = self.usage_tracker, None
+        usage = self._usage_summary(tracker)
         final_answer = strip_citation_markers(final_answer)
         try:
             output = ClimateAnswerOutputModel.model_validate_json(final_answer)
         except ValidationError:
             LOGGER.warning("Final answer was not valid structured JSON; returning it as text")
             sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
-            return StructuredRagAnswerModel(query=query, answer=final_answer, targets=[], sources=sources)
-        return StructuredRagAnswerModel(query=query, **output.model_dump())
+            return StructuredRagAnswerModel(
+                query=query, answer=final_answer, targets=[], sources=sources, usage=usage
+            )
+        return StructuredRagAnswerModel(query=query, usage=usage, **output.model_dump())
+
+    def _usage_summary(self, tracker: ResponseUsageTracker) -> UsageModel:
+        """Sum token use and estimated cost over every model call of one answer."""
+
+        models = [record.model for record in tracker.records if record.model]
+        return UsageModel(
+            model=models[-1] if models else None,
+            model_calls=len(tracker.records),
+            input_tokens=tracker.total_input_tokens,
+            cached_input_tokens=sum(record.cached_input_tokens for record in tracker.records),
+            output_tokens=tracker.total_output_tokens,
+            total_tokens=tracker.total_tokens,
+            web_search_calls=self.web_search_calls,
+            estimated_cost_usd=tracker.total_estimated_cost_usd,
+        )
 
 
 WEB_CITATION_MARKER = re.compile(r"\s*\ue200[^\ue201]*\ue201")

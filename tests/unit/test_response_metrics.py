@@ -63,3 +63,32 @@ def test_response_usage_tracker_handles_unpriced_models() -> None:
     assert record.estimated_cost_usd is None
     assert tracker.total_tokens == 15
     assert tracker.total_estimated_cost_usd is None
+
+
+def test_pricing_matches_dated_model_snapshots() -> None:
+    from eu_climate_policy_rag.core.metrics import DEFAULT_PRICING
+
+    tracker = ResponseUsageTracker(DEFAULT_PRICING)
+    record = tracker.record_response(
+        SimpleNamespace(
+            model="gpt-5.4-mini-2026-03-17",
+            usage=SimpleNamespace(
+                input_tokens=1_000_000,
+                output_tokens=1_000_000,
+                total_tokens=2_000_000,
+                input_tokens_details=SimpleNamespace(cached_tokens=0),
+            ),
+        )
+    )
+
+    assert record.estimated_cost_usd == 0.75 + 4.50
+
+
+def test_unknown_model_has_no_cost_estimate() -> None:
+    tracker = ResponseUsageTracker({"gpt-5.4-mini": ModelPricing(0.75, 4.50)})
+
+    record = tracker.record_response(
+        SimpleNamespace(model="gpt-5.4", usage=SimpleNamespace(input_tokens=10, output_tokens=1, total_tokens=11))
+    )
+
+    assert record.estimated_cost_usd is None
