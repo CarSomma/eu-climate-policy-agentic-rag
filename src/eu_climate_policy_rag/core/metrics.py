@@ -19,6 +19,7 @@ class ModelPricing:
 # and are not included in token cost estimates.
 DEFAULT_PRICING: dict[str, ModelPricing] = {
     "gpt-5.4-mini": ModelPricing(input_per_1m=0.75, output_per_1m=4.50, cached_input_per_1m=0.075),
+    "gpt-5-mini": ModelPricing(input_per_1m=0.25, output_per_1m=2.00, cached_input_per_1m=0.025),
     "gpt-4o-mini": ModelPricing(input_per_1m=0.15, output_per_1m=0.60, cached_input_per_1m=0.075),
 }
 

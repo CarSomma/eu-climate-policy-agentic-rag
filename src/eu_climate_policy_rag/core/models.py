@@ -139,6 +139,7 @@ class RagConfigModel(ProjectModel):
         "gpt-4o",
         "gpt-4o-mini",
         "gpt-5.4-mini",
+        "gpt-5-mini",
         "gpt-4-turbo",
         "gpt-4-turbo-preview",
         "gpt-4",
