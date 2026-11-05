@@ -79,7 +79,7 @@ class SearchDocumentsTool:
             dict.fromkeys(
                 source
                 for document in documents
-                if (source := str(document.get("source", "")).strip())
+                if (source := str(document.get("title") or document.get("source", "")).strip())
             )
         )
         return SearchDocumentsResultModel(
@@ -93,7 +93,7 @@ class SearchDocumentsTool:
 def format_context_item(document: dict[str, Any], max_chars: int = 2000) -> str:
     """Format one retrieved document chunk for inclusion in the LLM prompt."""
 
-    source = document.get("source", "unknown source")
+    source = document.get("title") or document.get("source", "unknown source")
     article = document.get("article", "unknown article")
     topic = document.get("topic", "general")
     text = document.get("text", "")

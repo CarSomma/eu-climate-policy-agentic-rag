@@ -13,6 +13,12 @@ def test_format_context_item(sample_document: dict[str, str]) -> None:
     )
 
 
+def test_format_context_item_prefers_title_over_source(sample_document: dict[str, str]) -> None:
+    document = {**sample_document, "source": "climate_policy_docs", "title": "Regulation 2026/667"}
+
+    assert format_context_item(document).startswith("[Regulation 2026/667 | Article 4")
+
+
 def test_search_documents_tool(sample_document: dict[str, str]) -> None:
     tool = SearchDocumentsTool([sample_document], num_results=1)
 
