@@ -134,6 +134,12 @@ uv run eu-climate-ask "What are climate plans in Turin?"
 # Keep the agent offline (local documents only)
 uv run eu-climate-ask "What is CBAM?" --no-web-search
 
+# Web search only reads an allowlist of official domains (europa.eu, unfccc.int,
+# ipcc.ch, oecd.org, iea.org, comune.torino.it), which limits prompt injection
+# from arbitrary web pages. Add a domain for one run, or drop the allowlist:
+uv run eu-climate-ask "What are the climate plans in Germany?" --allow-domain bundesregierung.de
+uv run eu-climate-ask "What are the climate plans in Germany?" --any-domain
+
 # Web search with location context
 uv run eu-climate-ask "What are climate plans in Italy?" \
   --enable-web-search \
