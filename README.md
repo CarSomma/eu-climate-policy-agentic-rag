@@ -127,8 +127,12 @@ uv run eu-climate-ask "How does the EU's 2030 target relate to the 2040 goal?"
 # Use a different model, or search a JSON file instead (embedded in memory on every run)
 uv run eu-climate-ask "What is CBAM?" --model gpt-4o --data data/eu_climate_policy.json
 
-# Enable web search for location-specific or recent queries
-uv run eu-climate-ask "What are climate plans in Turin?" --enable-web-search
+# Web search is available by default: the agent searches the local documents first
+# and only goes online when they do not cover the question (e.g. a city's plans)
+uv run eu-climate-ask "What are climate plans in Turin?"
+
+# Keep the agent offline (local documents only)
+uv run eu-climate-ask "What is CBAM?" --no-web-search
 
 # Web search with location context
 uv run eu-climate-ask "What are climate plans in Italy?" \

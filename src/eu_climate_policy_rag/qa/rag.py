@@ -1,6 +1,7 @@
 """Agentic RAG wrapper for EU climate policy Q&A."""
 
 import json
+import re
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Annotated
@@ -57,13 +58,15 @@ You have two search tools:
 2. **web_search**: Searches the live web for current information, news, and country/city-specific climate initiatives
 
 Your process:
-1. First, try search_documents for official EU policy information
-2. If the query asks about specific countries, cities, or recent developments not in local documents, use web_search
-3. Combine information from both sources when relevant
-4. Once you have enough information, write a final answer
+1. Always start with search_documents for official EU policy information
+2. Decide whether the local documents are enough. Use web_search only when they are not: the question is about a specific country or city, about events after the documents' dates, or about a law or topic the documents only mention in passing
+3. Do not use web_search when the local documents already answer the question
+4. Combine information from both sources when relevant, and say which facts come from the web
+5. Once you have enough information, write a final answer
 
 Rules:
 - Always cite sources for claims (e.g. "European Climate Law, Article 4" or "according to [web source]")
+- Cite local documents in plain text by their reference and article, never with web citation markers. Use web links only for facts that came from web_search.
 - Each passage header shows the document's reference, type, status and date. Cite the reference, e.g. "Regulation (EU) 2021/1119, Article 4".
 - Prefer passages from documents of type law with status in force. If a proposal, an older document or background material gives a different figure, status or article number, use the law's version, and mention the proposal only if it helps the answer.
 - If a passage's status says it was superseded or adopted as another document, search again for that document by its reference (e.g. "Regulation (EU) 2026/667 2040 target") and answer from it.
@@ -238,7 +241,9 @@ class ClimatePolicyAgent(AbstractAgent):
         self._current_run_sources.clear()
         final_answer, _ = self._run_loop(query)
         sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
-        return RagAnswerModel(query=query, answer=final_answer, sources=sources)
+        return RagAnswerModel(
+            query=query, answer=strip_citation_markers(final_answer), sources=sources
+        )
 
     def answer_structured(self, query: str) -> StructuredRagAnswerModel:
         """Answer with JSON that follows ``ClimateAnswerOutputModel`` (OpenAI structured output).
@@ -259,6 +264,7 @@ class ClimatePolicyAgent(AbstractAgent):
             final_answer, _ = self._run_loop(query)
         finally:
             self.text_format = None
+        final_answer = strip_citation_markers(final_answer)
         try:
             output = ClimateAnswerOutputModel.model_validate_json(final_answer)
         except ValidationError:
@@ -266,6 +272,19 @@ class ClimatePolicyAgent(AbstractAgent):
             sources = list(dict.fromkeys(s for s in self._current_run_sources if s))
             return StructuredRagAnswerModel(query=query, answer=final_answer, targets=[], sources=sources)
         return StructuredRagAnswerModel(query=query, **output.model_dump())
+
+
+WEB_CITATION_MARKER = re.compile(r"\s*\ue200[^\ue201]*\ue201")
+
+
+def strip_citation_markers(text: str) -> str:
+    """Remove the model's private-use web citation tokens (e.g. "\ue200cite\ue202turn0search0\ue201").
+
+    With web_search available the model sometimes emits them even for answers
+    from local documents; they render as junk like "citeturn0search0".
+    """
+
+    return WEB_CITATION_MARKER.sub("", text)
 
 
 app = typer.Typer(add_completion=False)
@@ -298,8 +317,12 @@ def main(
     ] = 10,
     enable_web_search: Annotated[
         bool,
-        typer.Option(help="Enable web search for queries beyond local documents."),
-    ] = False,
+        typer.Option(
+            "--enable-web-search/--no-web-search",
+            help="Let the agent use web search when the local documents are not enough. "
+            "On by default; the agent decides when to use it.",
+        ),
+    ] = True,
     web_search_city: Annotated[
         str | None,
         typer.Option(help="City for web search location context."),

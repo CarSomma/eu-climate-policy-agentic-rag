@@ -104,3 +104,21 @@ def test_climate_policy_agent_uses_web_search_for_unknown_queries():
     # This would require a real API call or more sophisticated mocking
     # Skipping for now, but shows the intended behavior
     pass
+
+
+def test_answer_strips_web_citation_markers(sample_document, make_message_response) -> None:
+    client = MagicMock()
+    client.responses.create.return_value = make_message_response(
+        "The 2030 target is binding. citeturn0search0\n\nSo yes."
+    )
+    agent = ClimatePolicyAgent([sample_document], openai_client=client, enable_web_search=True)
+
+    result = agent.answer("Is the 2030 target binding?")
+
+    assert result.answer == "The 2030 target is binding.\n\nSo yes."
+
+
+def test_cli_offers_web_search_by_default() -> None:
+    result = CliRunner().invoke(app, ["--help"], terminal_width=200)
+
+    assert "--no-web-search" in result.output
